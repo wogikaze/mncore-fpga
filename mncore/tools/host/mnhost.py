@@ -830,10 +830,18 @@ def bl616_shell(port: str, lines: list[str], settle: float = 0.5) -> str:
 
 
 def cmd_bridge(a):
+    from serial.tools import list_ports
     port = a.port if a.port and a.port not in ("auto", "fake") else find_port()
     text = bl616_shell(port, (["uart_info"] if a.action == "info" else []) + ["reboot"])
-    time.sleep(6)                          # USB re-enumeration
+    present = lambda: any(p.device == port for p in list_ports.comports())
+    t0 = time.monotonic()
+    while present() and time.monotonic() - t0 < 3:          # wait for the port to drop ...
+        time.sleep(0.1)
+    while not present() and time.monotonic() - t0 < 15:     # ... and to come back
+        time.sleep(0.2)
+    time.sleep(2)
     print(text.replace("\r", ""))
+    print(f"{port} {'is back' if present() else 'did not come back'}; reload the FPGA SRAM image if needed")
 
 
 def bench_one(dev, size: int, window: int, rng: random.Random) -> dict:
