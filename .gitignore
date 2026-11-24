@@ -10,3 +10,4 @@ init/*.fs
 mncore/sim/vectors/
 mncore/.board.lock
 target/
+.claude/worktrees/

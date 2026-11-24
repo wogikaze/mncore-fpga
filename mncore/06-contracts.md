@@ -19,14 +19,22 @@
   auto_stride（`i` 292bit）と q 形式は対象外。
 - 基準のアセンブラは WSL の `~/wgkz/mncore/judge/judge-py/mncore2_emuenv/assemble3`（2024 年配布版）。
   SDK 0.9 版とは L1BM の欄（187..194）が異なる（Scrapbox 参照）。
-- **フィールドの出所は `assemble3 --print-csv`。** CSV の列を順に連結すると `j`/`m` 語とビット単位で一致する（確認済み）。
+- **フィールドの定義は `mncore/spec/isa/j_flat.yaml` と `m.yaml`（WP01 で確定）。**
+  - `assemble3 --print-csv` の値の列を順に連結すると `j`/`m` 語と一致する。
+  - ただし **CSV ヘッダの列名は auto_stride の並びなので、flat の列名には使えない**。列名は j_flat.yaml の `csv_col` で引く。
+- assemble3 の出力に出る `r` 行（.vsm のデータ行をそのまま出したもの）は、ホスト側ツールが `WR_MEM` に変換する。FPGA は解釈しない。
+- submodule の .vsm は `core.autocrlf=true` だと CRLF でチェックアウトされ、assemble3 が失敗する。assemble3 に渡す前に CR を除く。
 
 ### ビット番号
 
 - 文字列の左端を pos 0 とする（Scrapbox と同じ）。
 - Verilog では `input [425:0] jw` とし、**`jw[425-pos]` が pos に対応する**（MSB-first）。MV 語は `[81:0]`。
-- フィールド名は CSV の名前の `.` と `/` を `_` に置き換えたもの。例: `pe.aluc.aluop` → `pe_aluc_aluop`、`l1bm.mabadr/opcode` → `l1bm_mabadr_opcode`。
-- cycle1〜3 のアドレス欄には `_c1` / `_c2` / `_c3` を付ける。名前は WP01 が `spec/isa/` で確定する。
+- フィールド名は j_flat.yaml の `name`（CSV 名の `.` と `/` を `_` に置き換えたもの）。例: `pe.aluc.aluop` → `pe_aluc_aluop`。
+  - flat の L1BM 187..190 / 191..194 は 2 欄に分かれ、`l1bm_mabadr` と `l1bm_opcode` とする。
+- cycle1〜3 のアドレス欄には `_c1` / `_c2` / `_c3` を付ける（`spec/isa/` が正）。
+- 先頭 2bit（ll）: `01` 通常、`11` noforward（書くがフォワーディングを更新しない）、`00` nop、`10` は停止 → FPGA は `E_DECODE`。
+- 予約欄 `rsv_162` / `rsv_164` が 0 以外なら `E_UNSUPPORTED <field>`。
+- imm の語では LM0 欄は即値なので、`pe_lm0_write` を LM0 書き込みとして解釈しない。
 
 ## 3. 縮小トポロジ
 
@@ -36,9 +44,9 @@
 | `N_L1B` | 1 | L2B あたりの L1B の数 |
 | `N_MAB` | 1（P3 から 16） | L1B あたりの MAB の数 |
 | `N_PE` | 4 で固定 | MAB あたりの PE の数（初期の RTL は PE 0 だけを持つ「1 PE モード」） |
-| `LM_DEPTH` | 256 長語 | LM0/LM1 の容量。実機は 2048 |
+| `LM_DEPTH` | 256 長語（1 PE モードでは 512 可。BSRAM の費用は同じ） | LM0/LM1 の容量。実機は 2048 |
 | `GRF_DEPTH` | 256 長語 | GRF0/GRF1 の容量（実機と同じ） |
-| `L1BM_DEPTH` / `L2BM_DEPTH` | 1024 / 4096 長語 | 実機は 8192 / 32768 |
+| `L1BM_DEPTH` / `L2BM_DEPTH` | 1024 / 2048 長語 | 実機は 8192 / 32768（WP07 の予算により L2BM を 4096 → 2048 に変更） |
 
 - 実装する PE は、チップ上の座標 `n0 c0 b0 m0 p0` から順に割り当てる。
   `$peid` / `$l1bid` / `$l2bid` / `$mabid` / `$subpeid` は**実チップでの値**を返す。
@@ -98,16 +106,25 @@ req_valid, req_ready, req_we, req_addr[22:0] (長語単位), req_wdata[63:0], re
 rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に返す
 ```
 
-### 資源予算（暫定。WP07 が確定させる）
+### 資源予算（WP07 で確定。根拠は `mncore/07-device-budget.md`）
 
 | 区分 | BSRAM ブロック数（全 46） | 備考 |
 | --- | --- | --- |
-| 命令メモリ | 8 | 512 語 × 448bit 程度。大きなプログラムは SDRAM から先読みする |
-| PE 1 個分の状態（LM0/LM1/GRF0/GRF1/T） | 10 | 1 PE モード。4 PE 以上は WP34（仮想 PE）で SDRAM に置く |
-| L1BM / L2BM のキャッシュ | 12 | |
-| ボード（UART FIFO など）と予備 | 16 | |
+| 命令メモリ | 12 | 426bit × 256〜512 語。大きなプログラムは SDRAM から先読みする |
+| PE 1 個分の状態（LM0/LM1/GRF0/GRF1） | 8 | 64bit 幅、32bit レーンの 1R1W × 4 面。T（64bit × 8）は SSRAM。1 MAB を BSRAM に置くなら 16 |
+| L1BM / L2BM | 4 + 8 | 1024 / 2048 長語 |
+| ボード | 0〜2 | |
+| 予備 | 残り | 1 PE で計 34/46、1 MAB で 42/46 |
 
-乗算器 48 個のうち FPU に最大 24 個を割り当てる。
+- 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
+
+### RAM と DSP の書き方
+
+- RAM と乗算は `mncore/fpga/recipes/` のレシピ（`mn_ram_1r1w`、`mn_ram_1r1w_be`、`mn_ram_2r1w`、`mn_ram_tdp`、`mn_ram_lut`、`mn_mul_pipe`）を使う。各 unit の `files.txt` からそのパスを参照してよい。
+- BSRAM には `no_rw_check` を付ける（レシピが付けている）。
+- **バイトイネーブルの挙動に依存しない。** 部分書き込みは 32bit レーンに分けた RAM で行う。
+- 各メモリはサイクルあたり読み出しアドレス 1 本で足りる（2R1W は不要）。書き込みの単位は 32bit 語。
+- **DSP の前後には必ずレジスタを置く。** nextpnr は DSP を通る経路の遅延を計算しないため。DSP の上限は 275 MHz とみなす。
 
 ## 7. ホストとの通信（UART）
 
@@ -119,7 +136,7 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - `WR_MEM(space, loc, addr, data)`
   - `RD_MEM(space, loc, addr, n)`
   - `RUN(start, count)`
-  - `STATUS`（停止理由: `OK` / `E_RANGE` / `E_UNSUPPORTED <field>` / `E_DECODE`）
+  - `STATUS`（停止理由: `OK` / `E_RANGE` / `E_UNSUPPORTED <field>` / `E_DECODE`。`E_DECODE` は ll=10 など）
   - `RESET`
 - 詳細は WP04 が `mncore/rtl/board/PROTOCOL.md` に書く。
 - `d set` / `d get` はホスト側ツールが `WR_MEM` / `RD_MEM` と `RUN` の分割に変換する。FPGA は `d` 行を解釈しない。
