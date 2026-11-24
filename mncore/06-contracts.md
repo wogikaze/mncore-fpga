@@ -116,6 +116,11 @@ L1BM n0c0b0 0x0010 0000000000000000
   - 食い違う行は `cargo run --release -- all --official-expect` で公式の出力を期待値にする。ヘッダには `disputed=` と `expect=official` が残る。
   - ベクタの作り方: 生成 → `--official-expect` → `--check-official --sample all` → `fixed`（`FORMAT.md`）。
   - `vectors_fixed` は置き換え済みで、全行が公式と一致する。ユニットテストで disputed の行を除外しない。
+  - `round_twice` の正しい規則は WP12 が確定した（`mncore/rtl/fpu/SPEC.md` の WP12 節）。
+    - 積を捨てる: `Uc - Ep` が T 以上なら積を 0 とする。T は d で 55、f と h で 26。
+    - h の加数は `2^(Ep-28)` の格子に揃える。
+    - 出力丸めのない形でも Sim と違いが出る。seed 1 以外のベクタでは、印のないファイルで食い違いが出うる。
+  - 公式で照合済みの固定サンプルは、`vectors_fixed/` のほかに、各 unit の tb 配下に置いてよい（例: `mncore/sim/tb/fpu_fp/probe/`）。
   - Sim 側の修正は後で行う（viz/core のブランチ）。
 
 ## 6. RTL の規約
@@ -160,7 +165,13 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 | ボード | 0〜2 | |
 | 予備 | 残り | 1 PE で計 34/46、1 MAB で 42/46 |
 
-- LUT の実測（WP10〜14）: デコーダ約 190、整数 ALU 約 1,900〜2,100、PE の記憶 約 5,500（RAM16SDP4 の分を含む。Fmax 約 62 MHz）。全体は 20,736。
+- LUT の実測（WP04〜14）。全体は 20,736。
+  - デコーダ約 190、整数 ALU 約 1,900〜2,100、PE の記憶 約 5,500（RAM16SDP4 の分を含む。Fmax 約 62 MHz）。
+  - FMA / MAU ベクトル 約 3,800（DSP 8）、FP ALU 約 2,500、ブロックフロート化 約 2,700。
+  - ボード（host_if）約 1,900〜3,000、SDRAM 約 1,000。
+  - **単純に足すと LUT が全体の約 100% になる。** WP20 / WP21 は面積の削減を前提にする（共有化、`RND` の省略、加数の位置合わせ窓の縮小、host_if の縮小など）。
+- ALU 系ユニットの共通インタフェースは `mn_alu_int` の形（valid/ready、デコード済みの `pe_aluc_*` 欄）。`mn_fp_alu` はこれに `pe_aluc_iselb` を加え、`imm32` を除いたもの。
+- MAB をまたぐ ALU 命令（bfn / bfe、msl / msr）は、PE p の値を `x[128*p +: 128]` に並べて受け渡す。
 - 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
 
 ### RAM と DSP の書き方

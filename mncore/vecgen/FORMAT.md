@@ -237,3 +237,5 @@ lead の判断（2026-11-24、案 b）により **RTL は公式エミュレー�
 
 `vectors_fixed` は `--official-expect` の後のファイルから選ぶので、食い違っていたファイルの行も含む（期待値は公式の出力。ヘッダに `disputed=` と `expect=official` がある）。
 `--official-expect` をかけていないファイル（`expect=official` がないもの）から作る場合は、従来どおり食い違う行（`r_round` と `fvr_flags` のファイルの全行、`ext_mul` の該当行、`fp` の `round_twice` で「もとの出力精度での結果が縮減後の精度の同点から 1 ulp 以内」の行）を除き、ヘッダに `excluded=<理由>` を付ける。
+
+> **lead 注（WP12 の結果）:** `round_twice` の説明は規則として不正確。正しい規則（積を捨てる閾値 T、h の加数の格子 K = 28）は `mncore/rtl/fpu/SPEC.md` の WP12 節を参照。

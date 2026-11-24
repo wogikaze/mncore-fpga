@@ -12,8 +12,8 @@
 | WP07 | 資源とレシピ | 1 | 完了 2026-11-24 | `07-device-budget.md`。レシピ 6 本。`recipes.py check` は lead が再実行して PASS。§6 の予算を改訂 |
 | WP10 | RTL デコーダ | 2 | 完了 2026-11-24 | yaml から生成。j 8,926 語と m 1,220 語で不一致 0。LUT 約 190。sim、lint、synth は lead が再実行して PASS |
 | WP11 | 整数 ALU | 2 | 完了 2026-11-24 | 144,645 行 × 2 構成で一致（disputed 29,126 行を含む）。LUT 2,142（-nowidelut で 1,871）、124 MHz。sim と lint は lead が再実行して PASS |
-| WP12 | FP の FMA | 2 | 実行中 | |
-| WP13 | FP 系の ALU 命令 | 2 | 実行中 | |
+| WP12 | FP の FMA | 2 | 完了 2026-11-25 | fp 62,340 行、mau 52,480 行、境界 39,669 行が公式と一致。FMA は DSP 8、LUT 約 2,700。round_twice の規則を確定。sim と lint は lead が再実行して PASS |
+| WP13 | FP 系の ALU 命令 | 2 | 完了 2026-11-25 | 151,856 行で一致。fp_alu の LUT 約 2,500、bfn 約 2,700、約 105 MHz。sim と lint は lead が再実行して PASS |
 | WP14 | PE の記憶 | 2 | 完了 2026-11-25 | 公式エミュレータを期待値にした 86 本で 29,568 長語が一致。BSRAM 8、LUT 約 5,500、62 MHz。Rust Sim との食い違い 3 件。sim と lint は lead が再実行して PASS |
 | WP20 | PE コアの統合 | 3 | 未着手 | |
 | WP21 | 1 PE を実機で動かす | 3 | 未着手 | |
