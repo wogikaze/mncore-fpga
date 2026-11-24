@@ -24,13 +24,19 @@
 // RND = 0 removes the input rounding and its pipeline stage (rounda/roundb ignored): use it
 // when the caller already rounds the operands for both ALUs.
 //
+// LITE (area option, WP21): 0 every instruction; 1 without floor / ftoi (no SIMD shifter and
+// incrementer); 2 also without max / min (no comparators): relu, relu1..3, lrelud, lreluo,
+// ilrelud, rsqrt, passa and packbit only. A left-out instruction gives out_err (z = 0) like
+// an ALUC the unit does not execute; the caller should report it as unsupported.
+//
 // Pipeline: input register | rounding (RND only) | per-element decisions (mn_fp_alu_lane:
 // 1 + 2 + 4 instances) and SIMD assembly of the cheap results | SIMD right shifter (ftoi
 // magnitude / floor fraction mask) and segmented max/min comparison | incrementer (floor
 // round-up, ftoi negation) and final selection | output register. The SIMD datapath is the
 // MSB long word cut at element boundaries (groups of 16 bits: q = 0 is bits 15:0).
 module mn_fp_alu #(
-    parameter RND = 1
+    parameter RND  = 1,
+    parameter LITE = 0
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -68,6 +74,8 @@ module mn_fp_alu #(
 
     localparam [2:0] K_SIMPLE = 3'd0, K_MAX = 3'd1, K_MIN = 3'd2, K_FLOOR = 3'd3,
                      K_FTOI = 3'd4, K_NONE = 3'd5;
+    localparam HAS_FT = (LITE == 0);   // floor / ftoi
+    localparam HAS_MM = (LITE <= 1);   // max / min
 
     // ---------------------------------------------------------------------------------------
     // pipeline control: all stages advance together
@@ -91,10 +99,10 @@ module mn_fp_alu #(
             5'b10100, 5'b10101, 5'b10110, 5'b10111: sop = 3'd2;        // relu0..3
             5'b10000: sop = 3'd3;                                      // rsqrt
             5'b11000, 5'b11001, 5'b11010: sop = 3'd4;                  // lrelud, lreluo, ilrelud
-            5'b11011: kind = K_MAX;
-            5'b11100: kind = K_MIN;
-            5'b11110: kind = (iselb == 3'b110) ? K_FLOOR :
-                             (iselb == 3'b111) ? K_FTOI : K_NONE;
+            5'b11011: kind = HAS_MM ? K_MAX : K_NONE;
+            5'b11100: kind = HAS_MM ? K_MIN : K_NONE;
+            5'b11110: kind = (HAS_FT && iselb == 3'b110) ? K_FLOOR :
+                             (HAS_FT && iselb == 3'b111) ? K_FTOI : K_NONE;
             default:  kind = K_NONE;
         endcase
     end
@@ -153,7 +161,7 @@ module mn_fp_alu #(
     // stage 3: per-element decisions, cheap results (SIMD assembly), shifter input
     // ---------------------------------------------------------------------------------------
     wire isD = s2_D, isF = s2_F;  // else H
-    wire is_ftoi = (s2_kind == K_FTOI);
+    wire is_ftoi = HAS_FT && (s2_kind == K_FTOI);
 
     // element masks of the format: top (sign) bits, bottom bits, exponent fields
     wire [63:0] topm = isD ? 64'h8000_0000_0000_0000 :
@@ -287,8 +295,8 @@ module mn_fp_alu #(
             s3_kind <= s2_kind; s3_D <= s2_D; s3_F <= s2_F; s3_uns <= s2_uns;
             s3_X <= s2_X; s3_lo <= s2_lo; s3_amt <= g_amt;
             s3_B <= (s2_kind == K_SIMPLE) ? sres :
-                    (s2_kind == K_FLOOR) ? 64'hffff_ffff_ffff_ffff :
-                    (s2_kind == K_FTOI) ? ftsig : s2_Y;
+                    (HAS_FT && s2_kind == K_FLOOR) ? 64'hffff_ffff_ffff_ffff :
+                    (HAS_FT && s2_kind == K_FTOI) ? ftsig : s2_Y;
             s3_sflag <= g_sflag; s3_ftz <= g_ftz; s3_fts <= g_fts; s3_ftn <= g_ftn;
             s3_flk <= g_flk; s3_fls <= g_fls; s3_eza <= g_eza; s3_ezb <= g_ezb;
         end
@@ -340,7 +348,7 @@ module mn_fp_alu #(
     wire [3:0] pick_max = (~na & ~nb & ~lt) | (na & nb & ~gt) | (~na & nb);
     wire [3:0] pick_min = (~na & ~nb & ~gt) | (na & nb & ~lt) | (na & ~nb);
     wire [3:0] pick = (s3_kind == K_MAX) ? pick_max : pick_min;
-    wire       is_mm = (s3_kind == K_MAX) || (s3_kind == K_MIN);
+    wire       is_mm = HAS_MM && ((s3_kind == K_MAX) || (s3_kind == K_MIN));
 
     // Per-group selection of the stage 5 result, decided here (only the floor round-up waits
     // for the fraction test of stage 5):
@@ -349,7 +357,7 @@ module mn_fp_alu #(
     //   inc     ftoi: negated magnitude; floor mask path with round-up (negative, fraction)
     //   A & ~sh floor mask path without round-up
     //   const   floor: -1.0 (negative, |x| < 1); ftoi: saturation value
-    wire       k_fl = (s3_kind == K_FLOOR), k_ft = (s3_kind == K_FTOI);
+    wire       k_fl = HAS_FT && (s3_kind == K_FLOOR), k_ft = HAS_FT && (s3_kind == K_FTOI);
     wire [3:0] ft_in = {4{k_ft}} & ~s3_fts & ~s3_ftz;        // ftoi, in range
     wire [3:0] fl_mk = {4{k_fl}} & ~s3_flk & ~s3_fls;        // floor, mask path
     wire [3:0] c_selA   = {4{s3_kind == K_SIMPLE}} | ({4{k_fl}} & s3_flk) | ({4{is_mm}} & pick);
@@ -372,7 +380,7 @@ module mn_fp_alu #(
             s4_D <= s3_D; s4_F <= s3_F; s4_uns <= s3_uns;
             s4_fl <= k_fl; s4_none <= (s3_kind == K_NONE);
             s4_A  <= (s3_kind == K_SIMPLE) ? s3_B : s3_X;
-            s4_sh <= is_mm ? s3_B : sh6; s4_lo <= s3_lo;
+            s4_sh <= is_mm ? s3_B : HAS_FT ? sh6 : 64'd0; s4_lo <= s3_lo;
             s4_flag <= is_mm ? pick : (s3_kind == K_SIMPLE) ? s3_sflag : 4'b0000;
             s4_sx <= sx; s4_ftn <= s3_ftn & {4{k_ft}};
             s4_selA <= c_selA; s4_selsh <= c_selsh; s4_selinc <= c_selinc; s4_selc <= c_selc;
@@ -411,8 +419,10 @@ module mn_fp_alu #(
     wire [63:0] m_inc = {{16{g_inc[3]}}, {16{g_inc[2]}}, {16{g_inc[1]}}, {16{g_inc[0]}}};
     wire [63:0] m_ans = {{16{g_ans[3]}}, {16{g_ans[2]}}, {16{g_ans[1]}}, {16{g_ans[0]}}};
     wire [63:0] m_c   = {{16{s4_selc[3]}}, {16{s4_selc[2]}}, {16{s4_selc[1]}}, {16{s4_selc[0]}}};
-    wire [63:0] res = (m_A & s4_A) | (m_sh & s4_sh) | (m_inc & inc) | (m_ans & s4_A & ~s4_sh) |
-                      (m_c & cv);
+    // without floor / ftoi (LITE) only the simple results and max / min remain
+    wire [63:0] res = HAS_FT ? ((m_A & s4_A) | (m_sh & s4_sh) | (m_inc & inc) | (m_ans & s4_A & ~s4_sh) |
+                                (m_c & cv))
+                             : ((m_A & s4_A) | (m_sh & s4_sh));
 
     reg [127:0] s5_z;
     reg [3:0]   s5_f;

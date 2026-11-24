@@ -34,10 +34,14 @@
 //   stage 2: rotator stages 3..5, result selection, flags other than "output is all 0"
 //   stage 3: zero detection for the "output is all 0" flags
 // out_err = 1 if the accepted operation was not of class cls_int (z and flags are then 0).
+// RND = 0 (area option, WP21) leaves out the input rounding: rounda / roundb still classify
+// (cls_bad) but x and y are taken as they are, so the caller must give them rounded (mn_pe_core
+// rounds once for both ALUs when it has the FP ALU too).
 module mn_alu_int #(
     parameter IREG = 1,
     parameter PREG = 1,
-    parameter MREG = 1
+    parameter MREG = 1,
+    parameter RND  = 1
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -114,8 +118,15 @@ module mn_alu_int #(
     /* verilator lint_off UNUSEDSIGNAL */   // only the MSB long word of y is used; the rounded LSB long word is 0
     wire [127:0] y_rnd;
     /* verilator lint_on UNUSEDSIGNAL */
-    mn_alu_rnd u_rnd_x (.d(x), .q(x_rnd));
-    mn_alu_rnd u_rnd_y (.d(y), .q(y_rnd));
+    generate
+        if (RND != 0) begin : g_rnd
+            mn_alu_rnd u_rnd_x (.d(x), .q(x_rnd));
+            mn_alu_rnd u_rnd_y (.d(y), .q(y_rnd));
+        end else begin : g_nornd
+            assign x_rnd = x;   // the caller rounds
+            assign y_rnd = y;
+        end
+    endgenerate
 
     wire [4:0] op      = pe_aluc_aluop;
     wire       op_imm  = (op == 5'b11111);

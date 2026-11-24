@@ -53,9 +53,18 @@
 //   dropped (no write, no read response), like mw_err / mr_err.
 // Reset clears the sequencer and $mb/$nb. Memory, T and the mask registers are RAM and are
 // cleared through the host port, like the chip's d set.
+//
+// RBS (area option, WP21): 0 = one read buffer per memory, opr_grf0 / _grf1 / _lm0 / _lm1 give
+// the four memories of cycle opr_cycle at the same time (opr_mem unused). 1 = one shared read
+// buffer (a quarter of the LUT RAM): READ reads the memories one after the other (a memory
+// starts when every used memory below it has all its responses, so the store answers on one
+// channel at a time, whatever its latency), and the four opr_* outputs all give memory
+// opr_mem (0 GRF0, 1 GRF1, 2 LM0, 3 LM1) of cycle opr_cycle. READ then takes the sum of the
+// memories' times instead of the longest.
 module mn_pe_lsu #(
     parameter LM_AW  = 9,  // LM0/LM1 depth = 2**LM_AW long words (chip: 11)
-    parameter GRF_AW = 8   // GRF0/GRF1 depth = 2**GRF_AW long words (chip: 8)
+    parameter GRF_AW = 8,  // GRF0/GRF1 depth = 2**GRF_AW long words (chip: 8)
+    parameter RBS    = 0   // 1: shared read buffer (see above)
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -68,6 +77,7 @@ module mn_pe_lsu #(
     output wire         busy,
     output wire         opr_valid,
     input  wire [1:0]   opr_cycle,
+    input  wire [1:0]   opr_mem,      // RBS = 1: memory of opr_grf0 .. opr_lm1
     output wire [127:0] opr_grf0,
     output wire [127:0] opr_grf1,
     output wire [127:0] opr_lm0,
@@ -327,7 +337,14 @@ module mn_pe_lsu #(
     wire [3:0]  rq_v;            // request valid
     wire [91:0] rq_a;            // request address, 23 bits per memory
     wire [3:0]  rd_fin;          // all responses received after this clock
-    wire [511:0] opr_m;          // operands per memory, 128 bits each
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [3:0]  rd_all;          // all responses received (before this clock); [3]: no memory follows LM1
+    /* verilator lint_on UNUSEDSIGNAL */
+    wire [511:0] opr_m;          // operands per memory, 128 bits each (RBS = 0)
+    wire [7:0]  r_cr;            // per memory: cycle of the next response
+    wire [3:0]  r_hr, r_dl, r_lane;   // ... its half (1: LSB long word), 2 long words, word lane
+    // RBS = 1: memory m requests when every memory below it has all its responses
+    wire [3:0]  rq_turn = (RBS != 0) ? {&rd_all[2:0], &rd_all[1:0], rd_all[0], 1'b1} : 4'hf;
     generate
         for (m = 0; m < 4; m = m + 1) begin : g_rd
             wire       dl   = rwl[m][1];
@@ -338,27 +355,70 @@ module mn_pe_lsu #(
             wire       hr   = dl & ri[m][0];
             wire [47:0] rav = {ra[m*4+3], ra[m*4+2], ra[m*4+1], ra[m*4]};   // cycles 3..0
             wire [10:0] aq  = rav[12*cq + 1 +: 11];  // long word address
-            assign rq_v[m] = (qi[m] < nreq);
+            assign rq_v[m] = rq_turn[m] & (qi[m] < nreq);
             assign rq_a[23*m +: 23] = {12'd0, aq + {10'd0, hq}};
+            assign rd_all[m] = (ri[m] == nreq);
             assign rd_fin[m] = (ri[m] == nreq) | ((ri[m] + 4'd1 == nreq) & st_rsp_valid[m]);
+            assign r_cr[2*m +: 2] = cr;
+            assign r_hr[m]   = hr;
+            assign r_dl[m]   = dl;
+            assign r_lane[m] = rav[12*cr];
 
-            // read buffer in bus layout: hi = MSB long word, lo = LSB long word (0 unless 2 long words)
-            wire        rb_we = (state == S_READ) & st_rsp_valid[m];
-            wire [63:0] rsp   = st_rsp_rdata[64*m +: 64];
-            wire        lane  = rav[12*cr];
-            wire [63:0] hi_wd = (rwl[m] == 2'b00) ? {(lane ? rsp[31:0] : rsp[63:32]), 32'd0} : rsp;
-            mn_ram_lut #(.W(64), .AW(2), .NR(1)) u_rbh (
-                .clk(clk), .we(rb_we & ~hr), .waddr(cr), .wdata(hi_wd),
-                .raddr(opr_cycle), .rdata(opr_m[128*m + 64 +: 64]));
-            mn_ram_lut #(.W(64), .AW(2), .NR(1)) u_rbl (
-                .clk(clk), .we(rb_we & (hr | ~dl)), .waddr(cr), .wdata(rsp & {64{hr}}),
-                .raddr(opr_cycle), .rdata(opr_m[128*m +: 64]));
+            if (RBS == 0) begin : g_rb
+                // read buffer in bus layout: hi = MSB long word, lo = LSB long word (0 unless 2 long words)
+                wire        rb_we = (state == S_READ) & st_rsp_valid[m];
+                wire [63:0] rsp   = st_rsp_rdata[64*m +: 64];
+                wire [63:0] hi_wd = (rwl[m] == 2'b00) ? {(r_lane[m] ? rsp[31:0] : rsp[63:32]), 32'd0} : rsp;
+                mn_ram_lut #(.W(64), .AW(2), .NR(1)) u_rbh (
+                    .clk(clk), .we(rb_we & ~hr), .waddr(cr), .wdata(hi_wd),
+                    .raddr(opr_cycle), .rdata(opr_m[128*m + 64 +: 64]));
+                mn_ram_lut #(.W(64), .AW(2), .NR(1)) u_rbl (
+                    .clk(clk), .we(rb_we & (hr | ~dl)), .waddr(cr), .wdata(rsp & {64{hr}}),
+                    .raddr(opr_cycle), .rdata(opr_m[128*m +: 64]));
+            end
+        end
+        if (RBS == 0) begin : g_rb_sep
+            assign opr_grf0 = opr_m[127:0];
+            assign opr_grf1 = opr_m[255:128];
+            assign opr_lm0  = opr_m[383:256];
+            assign opr_lm1  = opr_m[511:384];
+            /* verilator lint_off UNUSEDSIGNAL */
+            // RBS = 0: every memory has its own read buffer; the shared buffer's selection is not built
+            wire unused_rbs = ^{opr_mem, r_cr, r_hr, r_dl};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end else begin : g_rb_shared
+            // one memory answers at a time (rq_turn): the lowest one that still waits
+            wire [1:0]  sm  = ~rd_all[0] ? 2'd0 : ~rd_all[1] ? 2'd1 : ~rd_all[2] ? 2'd2 : 2'd3;
+            wire        sv  = (state == S_READ) & st_rsp_valid[sm];
+            wire [63:0] rsp = st_rsp_rdata[64*sm +: 64];
+            wire [1:0]  scr = r_cr[2*sm +: 2];
+            wire        shr = r_hr[sm];
+            wire [1:0]  swl = (sm == 2'd0) ? rwl[0] : (sm == 2'd1) ? rwl[1] : (sm == 2'd2) ? rwl[2] : rwl[3];
+            wire [63:0] hi_wd = (swl == 2'b00) ? {(r_lane[sm] ? rsp[31:0] : rsp[63:32]), 32'd0} : rsp;
+            wire [127:0] rbd;
+            mn_ram_lut #(.W(64), .AW(4), .NR(1)) u_rbh (
+                .clk(clk), .we(sv & ~shr), .waddr({sm, scr}), .wdata(hi_wd),
+                .raddr({opr_mem, opr_cycle}), .rdata(rbd[127:64]));
+            mn_ram_lut #(.W(64), .AW(4), .NR(1)) u_rbl (
+                .clk(clk), .we(sv & (shr | ~r_dl[sm])), .waddr({sm, scr}), .wdata(rsp & {64{shr}}),
+                .raddr({opr_mem, opr_cycle}), .rdata(rbd[63:0]));
+            assign opr_grf0 = rbd;
+            assign opr_grf1 = rbd;
+            assign opr_lm0  = rbd;
+            assign opr_lm1  = rbd;
+            assign opr_m    = 512'd0;     // RBS = 1: the per-memory buffers are not built
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire unused_rbs = ^opr_m;
+            /* verilator lint_on UNUSEDSIGNAL */
+`ifndef SYNTHESIS
+            always @(posedge clk) begin
+                if (state == S_READ && (st_rsp_valid & ~(4'd1 << sm)) != 4'd0)
+                    $display("mn_pe_lsu: ERROR read response on channel %b while memory %0d is read",
+                             st_rsp_valid, sm);
+            end
+`endif
         end
     endgenerate
-    assign opr_grf0 = opr_m[127:0];
-    assign opr_grf1 = opr_m[255:128];
-    assign opr_lm0  = opr_m[383:256];
-    assign opr_lm1  = opr_m[511:384];
 
     // ------------------------------------------------------------------ EXEC: what to write
     // destinations d: 0 GRF0, 1 GRF1, 2 LM0, 3 LM1 (store), 4 T, 5 $mb, 6 $nb

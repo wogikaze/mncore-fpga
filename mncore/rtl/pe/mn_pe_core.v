@@ -10,10 +10,13 @@
 //      The word given to it in this clock has imr = 0, so that every enabled write is
 //      checked, also where the write mask stops it (contract 06 section 3). Out of range:
 //      done with st = E_RANGE, nothing is read or written.
-//   2. READ: mn_pe_lsu reads the memories in rd_use (computed here from the selectors).
+//   2. READ: mn_pe_lsu reads the memories in rd_use (computed here from the selectors), one
+//      memory after the other into its shared read buffer (RBS = 1, WP21).
 //   3. EXEC, for cycle c = 0..3:
 //        gather : the operands the units use (ALU x, y; MAU a, b, c) are picked one per clock
-//                 from a shared source bus into port registers (opr_cycle = c);
+//                 from a shared source bus into port registers (opr_cycle = c, opr_mem = the
+//                 memory of the source); with an FP ALU the `r` option (rounda / roundb) is
+//                 applied here, once for both ALUs (WP21);
 //        issue  : the ALU (int or FP, by mn_alu_cls) and / or the MAU take cycle c;
 //        collect: when the results of cycle c are there (ALU output register / MAU result
 //                 buffer), they go to mn_pe_lsu (res_valid / res_ready), which writes them;
@@ -45,8 +48,9 @@
 // after the range check, contract 06 section 3): decoder errors (err_field), cls_bad of
 // mn_alu_cls (rounda / roundb / dmode), msl / msr and bfn / bfe (they need the other PEs of
 // the MAB: aluop), matrix MAU (mmode), ?mwrite (mw), L1BM (l1bm_bmode) and L2BM
-// (l2bm_lwrite) expressions, and with FPALU = 0 / MAU = 0 the instructions of the unit left
-// out (aluop / enfma). Such a word is not executed: after the start clock mn_pe_lsu gets the
+// (l2bm_lwrite) expressions, and the instructions of a unit left out (FPALU = 0: every FP ALU
+// instruction; FPALU = 2: floor / ftoi; FPALU = 3: also fmax / fmin; MAU = 0: the MAU;
+// aluop / enfma). Such a word is not executed: after the start clock mn_pe_lsu gets the
 // word with ll = 00, so its EXEC phase writes nothing.
 // isel = 11 (matrix read) writes 0 and $lbf reads 0 (the matrix register and L1BM are empty).
 //
@@ -56,7 +60,9 @@
 module mn_pe_core #(
     parameter LM_AW  = 9,   // LM0/LM1 depth = 2**LM_AW long words (contract LM_DEPTH; chip 11)
     parameter GRF_AW = 8,   // GRF0/GRF1 depth = 2**GRF_AW long words
-    parameter FPALU  = 1,   // 0: no FP-side ALU (mn_fp_alu); its instructions are unsupported
+    parameter FPALU  = 1,   // FP-side ALU (mn_fp_alu): 1 all instructions; 0 none (its instructions
+                            // are unsupported); 2 without floor / ftoi (mn_fp_alu LITE = 1);
+                            // 3 also without fmax / fmin (LITE = 2: relu*, lrelu*, rsqrt) (WP21)
     parameter MAU    = 1,   // 0: no MAU (mn_mau_vec); its instructions are unsupported
     parameter integer POS_N = 0,   // chip coordinates of this PE (contract 06 section 3): group 0..3
     parameter integer POS_C = 0,   //   L2B 0..1
@@ -132,7 +138,11 @@ module mn_pe_core #(
     wire cls_int, cls_fp, cls_xpe, cls_none, cls_bad;   // mn_alu_cls inside mn_alu_int
     // bfn / bfe (the same decode as mn_fp_alu's cls_bf)
     wire cls_bf  = (alu_aluop == 5'b11101) | ((alu_aluop == 5'b11110) & (alu_iselb[2:1] != 2'b11));
-    wire fp_here = (FPALU != 0);
+    // FP instructions of the configured FP ALU (FPALU): floor / ftoi (aluop 11110, iselb 11x)
+    // need FPALU = 1, fmax / fmin FPALU = 1 or 2, the others (rsqrt, relu*, lrelu*) any FPALU > 0
+    wire fp_ft   = (alu_aluop == 5'b11110);
+    wire fp_mm   = (alu_aluop == 5'b11011) | (alu_aluop == 5'b11100);
+    wire fp_here = (FPALU == 1) | ((FPALU == 2) & ~fp_ft) | ((FPALU == 3) & ~fp_ft & ~fp_mm);
     wire alu_act = cls_int | (fp_here & cls_fp & ~cls_bf);   // the ALU runs this step
     wire alu_int = cls_int;                             // 1: mn_alu_int, 0: mn_fp_alu
     wire mau_vec = mau_enfma & ~mau_mmode;              // MAU vector instruction
@@ -159,7 +169,7 @@ module mn_pe_core #(
     wire u_mat = mau_enfma & mau_mmode;
     wire u_l1  = d_grp[MN_J_GRP_L1BM];
     wire u_l2  = d_grp[MN_J_GRP_L2BM];
-    wire u_nfp = ~fp_here & cls_fp & ~cls_bf;           // FPALU = 0
+    wire u_nfp = ~fp_here & cls_fp & ~cls_bf;           // not in the FP ALU of this FPALU
     wire u_nma = (MAU == 0) & mau_vec;                  // MAU = 0
     wire unsup = u_der | cls_bad | u_xpe | u_mat | mau_mw | u_l1 | u_l2 | u_nfp | u_nma;
     localparam [31:0] F_ROUNDA = MN_J_PE_ALUC_ROUNDA_IDX, F_ROUNDB = MN_J_PE_ALUC_ROUNDB_IDX;
@@ -238,14 +248,14 @@ module mn_pe_core #(
     wire [63:0] flane = (alu_dmode == 2'b00) ? {fmsb, 57'd0, fid} :
                         (alu_dmode == 2'b10) ? {4{fmsb, 9'd0, fid}} : {2{fmsb, 25'd0, fid}};
 
+    // mn_pe_lsu has one shared read buffer (RBS = 1): opr_mem selects the memory of the source
+    // being gathered and opr_grf0 (= opr_grf1 = opr_lm0 = opr_lm1) gives it
+    wire [1:0] opr_mem = (gcode == 4'd1) ? 2'd1 : (gcode == 4'd3) ? 2'd2 : (gcode == 4'd4) ? 2'd3 : 2'd0;
     reg [127:0] gbus;
     always @* begin
         case (gcode)
-            4'd0:  gbus = opr_grf0;
-            4'd1:  gbus = opr_grf1;
+            4'd0, 4'd1, 4'd3, 4'd4: gbus = opr_grf0;   // $lr $ls $lm $ln
             4'd2:  gbus = opr_t;
-            4'd3:  gbus = opr_lm0;
-            4'd4:  gbus = opr_lm1;
             4'd5, 4'd6, 4'd7, 4'd8, 4'd9, 4'd10: gbus = {flane, flane};
             4'd11: gbus = mauf_rd;
             4'd12: gbus = aluf_rd;
@@ -253,12 +263,27 @@ module mn_pe_core #(
         endcase
     end
 
+    // ALU inputs with the `r` option (rounda / roundb): with an FP ALU both ALUs take them
+    // rounded from here (one mn_alu_rnd instead of two in each ALU, WP21); without it the integer
+    // ALU rounds itself.
+    wire [127:0] gbus_xy;
+    generate
+        if (FPALU != 0) begin : g_grnd
+            wire [127:0] gbus_r;
+            mn_alu_rnd u_rnd (.d(gbus), .q(gbus_r));
+            wire use_r = glow[0] ? alu_rounda : alu_roundb;
+            assign gbus_xy = use_r ? gbus_r : gbus;
+        end else begin : g_nogrnd
+            assign gbus_xy = gbus;
+        end
+    endgenerate
+
     reg [127:0] px, py, pa, pb, pc;   // port registers
     wire run_x = (ph == P_RUN) & lsu_opr_valid & ~unsup_q;   // executing the step
     wire g_on  = run_x & ~iss_fin & (gpend != 5'd0);
     always @(posedge clk) begin
-        if (g_on & glow[0]) px <= gbus;
-        if (g_on & glow[1]) py <= gbus;
+        if (g_on & glow[0]) px <= gbus_xy;
+        if (g_on & glow[1]) py <= gbus_xy;
         if (g_on & glow[2]) pa <= gbus;
         if (g_on & glow[3]) pb <= gbus;
         if (g_on & glow[4]) pc <= gbus;
@@ -285,7 +310,7 @@ module mn_pe_core #(
     wire         acc;   // cycle coll_c accepted by mn_pe_lsu
     wire         alu_pop = acc & alu_act & ~unsup_q;
 
-    mn_alu_int u_alu (
+    mn_alu_int #(.RND((FPALU != 0) ? 0 : 1)) u_alu (
         .clk(clk), .rst(rst),
         .in_valid(alu_iv & alu_int), .in_ready(int_ir),
         .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
@@ -300,7 +325,7 @@ module mn_pe_core #(
             /* verilator lint_off UNUSEDSIGNAL */
             wire fp_clsbf;   // the same decode as cls_bf above
             /* verilator lint_on UNUSEDSIGNAL */
-            mn_fp_alu #(.RND(1)) u_fpalu (
+            mn_fp_alu #(.RND(0), .LITE((FPALU == 1) ? 0 : FPALU - 1)) u_fpalu (
                 .clk(clk), .rst(rst),
                 .in_valid(alu_iv & ~alu_int), .in_ready(fp_ir),
                 .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
@@ -385,10 +410,10 @@ module mn_pe_core #(
     wire [425:0] jw_lsu = (ph == P_IDLE) ? jw_chk : (unsup_q ? jw_nul : jw);
     wire         lsu_busy, lsu_unsup;
     localparam [1:0] SUBPE = V_SUBPE[1:0];
-    mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) u_mem (
+    mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(1)) u_mem (
         .clk(clk), .rst(rst), .subpe(SUBPE),
         .start(go), .idle(lsu_idle), .jw(jw_lsu), .rd_use(rd_use), .busy(lsu_busy),
-        .opr_valid(lsu_opr_valid), .opr_cycle(iss_c),
+        .opr_valid(lsu_opr_valid), .opr_cycle(iss_c), .opr_mem(opr_mem),
         .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
         .res_valid(res_valid), .res_ready(lsu_res_ready), .res_cycle(lsu_res_cycle),
         .res_mau(maub_rd[127:0]), .res_alu(alu_z), .res_l1bm(128'd0), .res_mread(128'd0),
@@ -473,7 +498,8 @@ module mn_pe_core #(
     /* verilator lint_off UNUSEDSIGNAL */
     // lsu_busy: the core uses idle; lsu_unsup (word length 11): the decoder reports it
     // (unsup_vec); int_err / fp_err: routing follows mn_alu_cls, checked in simulation only.
-    wire unused = ^{lsu_busy, lsu_unsup, int_err, fp_err, d_ll, lsu_res_cycle};
+    // opr_grf1 / opr_lm0 / opr_lm1: the shared read buffer gives every memory on opr_grf0.
+    wire unused = ^{lsu_busy, lsu_unsup, int_err, fp_err, d_ll, lsu_res_cycle, opr_grf1, opr_lm0, opr_lm1};
     /* verilator lint_on UNUSEDSIGNAL */
 endmodule
 `default_nettype wire

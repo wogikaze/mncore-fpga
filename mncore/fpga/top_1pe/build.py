@@ -93,6 +93,9 @@ def main(argv=None) -> int:
     ap.add_argument("--tag", help="build sub-directory (default from the parameters)")
     ap.add_argument("--default-synth", action="store_true", help="synth_gowin without -nowidelut")
     ap.add_argument("--no-pnr", action="store_true", help="synthesis only")
+    ap.add_argument("--reuse-synth", action="store_true", help="use build/<tag>/synth.json as it is")
+    ap.add_argument("--pnr-arg", action="append", default=[],
+                    help="extra nextpnr argument, e.g. --pnr-arg=--placer --pnr-arg=sa")
     ap.add_argument("--program", action="store_true", help="load the bitstream into the FPGA SRAM")
     ap.add_argument("--fs", help="with --program: load this bitstream instead of building")
     a = ap.parse_args(argv)
@@ -115,12 +118,15 @@ def main(argv=None) -> int:
     chp = "".join(f" chparam -set {k} {v} {TOP};" for k, v in prm.items())
     opt = "" if a.default_synth else " -nowidelut"
     synth = d / "synth.json"
-    print(f"== yosys {TOP} {prm}{opt}", flush=True)
-    rc, out = run(["yosys", "-p", f"{reads}{chp} synth_gowin -family gw2a -top {TOP}{opt} -json {synth.as_posix()}; stat"],
-                  d / "yosys.log")
-    if rc:
-        print(out[-3000:])
-        return 1
+    if a.reuse_synth and synth.exists():
+        out = (d / "yosys.log").read_text(encoding="utf-8")
+    else:
+        print(f"== yosys {TOP} {prm}{opt}", flush=True)
+        rc, out = run(["yosys", "-p", f"{reads}{chp} synth_gowin -family gw2a -top {TOP}{opt} -json {synth.as_posix()}; stat"],
+                      d / "yosys.log")
+        if rc:
+            print(out[-3000:])
+            return 1
     cells = synth_cells(out)
     lines = [f"design {TOP} {prm} synth_gowin -family gw2a{opt}",
              "yosys: " + ", ".join(f"{k} {v}" for k, v in cells.items()) +
@@ -136,7 +142,8 @@ def main(argv=None) -> int:
         print(f"== nextpnr seed {seed} ({a.freq} MHz)", flush=True)
         rc, out = run(["nextpnr-himbaechel", "--json", synth, "--write", pnr, "--device", DEVICE,
                        "--vopt", f"family={FAMILY}", "--vopt", f"cst={(HERE / 'top_1pe.cst').as_posix()}",
-                       "--freq", str(a.freq), "--seed", seed, "--timing-allow-fail"], d / f"nextpnr{seed}.log")
+                       "--freq", str(a.freq), "--seed", seed, "--timing-allow-fail"] + a.pnr_arg,
+                      d / f"nextpnr{seed}.log")
         if rc:
             err = re.findall(r"ERROR: .*", out)
             lines.append(f"seed {seed}: nextpnr failed: {err[-1] if err else rc}")
