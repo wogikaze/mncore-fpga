@@ -14,6 +14,7 @@
      - T に長語マスクがかかり、そのサイクルの 4 フラグがすべて 0 のとき、公式は何も書かない。
      - `$mb` / `$lmb` にマスクがかかったとき、公式は 12bit が入っている半語のフラグだけで書くかを決める（`$mb` は f[2]、`$lmb` は f[0]）。
      - 同じステップで `$omr` に書いて `$imr` として使うと、公式は書く前の値を使う。
+   - `$mreadf` は、公式では nop / noforward 以外の全ステップで更新される（WP20）。Rust Sim は ?mread のないステップで 0 にする。
    - ユニット単位の演算では食い違いが 4 種ある（§5、WP03）。
    - PDM は比較から外す。公式の `d get $p` は PDM ではなく DRAM の内容を出すため。
 3. SDM（`third_party/mncore/docs/mncore_llm`）、Scrapbox [mncore/機械語](https://scrapbox.io/mncore/機械語)。
@@ -42,7 +43,7 @@
   - flat の L1BM 187..190 / 191..194 は 2 欄に分かれ、`l1bm_mabadr` と `l1bm_opcode` とする。
 - cycle1〜3 のアドレス欄には `_c1` / `_c2` / `_c3` を付ける（`spec/isa/` が正）。
 - 先頭 2bit（ll）: `01` 通常、`11` noforward（書くがフォワーディングを更新しない）、`00` nop、`10` は停止 → FPGA は `E_DECODE`。
-- ll=00 の語でも wd（wait）は有効とする（暫定。WP20 で確認）。
+- ll=00 の語でも wd（wait）は有効（WP20 が公式で確認）。発行していないタグを待つと、後の語は実行されない。
 - 予約欄 `rsv_162` / `rsv_164` が 0 以外なら `E_UNSUPPORTED <field>`。`<field>` は yaml の欄番号（デコーダの `err_field`）で符号化する。
 - m 語の欄の Verilog 上の名前には `mv_` を付ける（`priority` が SystemVerilog の予約語のため）。
 - デコーダは `mncore/tools/gen_dec.py` が yaml から生成する（`mncore/rtl/dec/`）。手で編集しない。
@@ -64,7 +65,8 @@
   `$peid` / `$l1bid` / `$l2bid` / `$mabid` / `$subpeid` は**実チップでの値**を返す。
 - 縮小した容量の外にアクセスしたら、**トラップ**（ステータスコード `E_RANGE` と語番号）を出して停止する。黙って折り返してはいけない。
   - **実際に行うアクセスだけを検査する。** assemble3 は使わないアドレス欄にも値を置くので、欄の値だけで判定しない。
-  - 語番号は 0 始まりの命令語番号。アドレスは折り返しの後で比べる。
+  - 語番号は 0 始まりの命令語番号。STATUS の info では命令メモリのエントリ番号になる。アドレスは折り返しの後で比べる。
+  - マスクで止まる書き込みの検査は、`mn_pe_core` が検査用に imr=0 の語を LSU に渡す今の方式でよい（WP20）。LSU の内部を変えるときはこの前提を保つ。
   - 書き込みマスクで止まる書き込みも検査する。検査するのは存在するユニットだけ。
   - PE メモリの E_RANGE は実行前に検査するので、E_UNSUPPORTED より先に報告する。
 - 存在しないユニットの扱い:
@@ -169,6 +171,7 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - デコーダ約 190、整数 ALU 約 1,900〜2,100、PE の記憶 約 5,500（RAM16SDP4 の分を含む。Fmax 約 62 MHz）。
   - FMA / MAU ベクトル 約 3,800（DSP 8）、FP ALU 約 2,500、ブロックフロート化 約 2,700。
   - ボード（host_if）約 1,900〜3,000、SDRAM 約 1,000。
+  - **実測（WP20）**: 全部入りのコアだけで LUT 換算 80% になり、配置できない。`FPALU=0` ならコアだけで LUT4 66%、55.8 MHz。削減案 A〜H は `mncore/status/WP-20.md` にある。
   - **単純に足すと LUT が全体の約 100% になる。** WP20 / WP21 は面積の削減を前提にする（共有化、`RND` の省略、加数の位置合わせ窓の縮小、host_if の縮小など）。
 - ALU 系ユニットの共通インタフェースは `mn_alu_int` の形（valid/ready、デコード済みの `pe_aluc_*` 欄）。`mn_fp_alu` はこれに `pe_aluc_iselb` を加え、`imm32` を除いたもの。
 - MAB をまたぐ ALU 命令（bfn / bfe、msl / msr）は、PE p の値を `x[128*p +: 128]` に並べて受け渡す。
@@ -205,6 +208,14 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - `STATUS`（停止理由: `OK` / `E_RANGE` / `E_UNSUPPORTED <field>` / `E_DECODE`。`E_DECODE` は ll=10 など）
   - `RESET`
 - 詳細は WP04 が `mncore/rtl/board/PROTOCOL.md` に書く。
+- RESET で PE の状態を 0 にする（ホスト側での初期化は要らない）。
+- STATUS の info の符号化（WP20）:
+  - E_UNSUPPORTED は欄番号。bit7 が 1 なら m 語の欄。
+  - E_DECODE は 0、0x100|種類、0x200。
+  - E_RANGE は命令メモリのエントリ番号。
+  - 細目の正は `PROTOCOL.md`。
+- 命令メモリは 7 レーンを順に書く。
+- 単語の `d get` には dtype が必須。
 - `d set` / `d get` はホスト側ツールが `WR_MEM` / `RD_MEM` と `RUN` の分割に変換する。FPGA は `d` 行を解釈しない。
 
 ## 8. リポジトリとディレクトリの担当
