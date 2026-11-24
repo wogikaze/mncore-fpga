@@ -134,6 +134,12 @@ req_valid, req_ready, req_we, req_addr[22:0] (長語単位), req_wdata[63:0], re
 rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に返す
 ```
 
+- SDRAM（`mncore/rtl/sdram/`、WP05）: 容量は 2^20 長語。バスは下位 20bit で実行し、超えたアドレスでは `err_addr` を立てる。
+  - 上位側（コア、WP34）は、要求を出す前に範囲を検査して E_RANGE で止める。`err_addr` は最後の安全策で、立ったら E_RANGE として扱う。
+  - 推奨設定は 99 MHz / CL2（`IDIV_SEL=2, FBDIV_SEL=10, ODIV_SEL=8`）、`PSDA=8`、`cfg_rdx=1`。
+  - 配置が大きく変わったら `mncore/fpga/sdram_test` の掃引で位相の窓を確かめ直す。
+- nextpnr の `--vopt *reg_in_iob`（IOB へのレジスタ詰め込み）は使わない。UART が壊れたため（WP05）。
+
 ### 資源予算（WP07 で確定。根拠は `mncore/07-device-budget.md`）
 
 | 区分 | BSRAM ブロック数（全 46） | 備考 |
@@ -163,6 +169,9 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 - 位置の符号化: `loc = n<<10 | c<<9 | b<<6 | m<<2 | p`。
 - 命令メモリのエントリ: 448bit。`[447:446]` が種類（01 = j、10 = m）、`[425:0]` が jw（m は下位 82bit）。
 - BL616 の制約: 読み出しは約 70 KiB/s が上限。未受信の応答を 6300 バイト以下に保つ。PC から Ctrl-X / Ctrl-C を単独で送らない（BL616 のシェルに入り、`mnhost.py bridge reboot` が要る）。
+- **FPGA から一方的に送り続けない。** PC が読んでいないのに送り続けると中継が止まる（WP05）。送るのは要求への応答か、PC が定期的に信号を送っている間だけにする。
+- `uart_tx` の初期値（リセット中を含む）は 1。
+- `bridge reboot` をすると FPGA は Flash の内容で読み直され、SRAM に書いたデザインは消える。再起動の後は書き込み直す。
 - フレーム: `0xA5 | cmd u8 | len u16le | payload | crc8`
 - コマンド:
   - `PING`、`INFO`（0x02）、`SET_BAUD`（0x09）
