@@ -138,6 +138,11 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - 上位側（コア、WP34）は、要求を出す前に範囲を検査して E_RANGE で止める。`err_addr` は最後の安全策で、立ったら E_RANGE として扱う。
   - 推奨設定は 99 MHz / CL2（`IDIV_SEL=2, FBDIV_SEL=10, ODIV_SEL=8`）、`PSDA=8`、`cfg_rdx=1`。
   - 配置が大きく変わったら `mncore/fpga/sdram_test` の掃引で位相の窓を確かめ直す。
+- 合成は `synth_gowin -nowidelut` を標準とする。既定の設定ではマルチプレクサの多い論理で LUT が 14〜27% 増え、Fmax も上がらないため（WP11）。各 WP の資源報告は両方の値を書いてよい。
+- `(* keep_hierarchy *)` は、段がまとめられて Fmax が落ちる箇所に、理由をコメントで添えて付けてよい。
+- 整数 ALU（`mn_alu_int`、WP11）の振り分け出力 `cls_bad` は、PE コア（WP20）が `E_UNSUPPORTED` に変換する。
+  - 対象は、`r` を dmode ≠ 10 に付けた語と、dmode = 11 の不正な ALU の語など。
+  - デコーダ（WP10）はここを判定しない。
 - nextpnr の `--vopt *reg_in_iob`（IOB へのレジスタ詰め込み）は使わない。UART が壊れたため（WP05）。
 
 ### 資源予算（WP07 で確定。根拠は `mncore/07-device-budget.md`）

@@ -11,7 +11,7 @@
 | WP06 | Rust Sim の縮小トポロジ対応 | 1 | 完了 2026-11-24 | topo-param `5f0ceb1`（push 済み）。縮小 10 構成で不一致 0。MV n128 の退行を修正し、conformance は 146 件すべて一致。lead が sweep で 12 本を再確認 |
 | WP07 | 資源とレシピ | 1 | 完了 2026-11-24 | `07-device-budget.md`。レシピ 6 本。`recipes.py check` は lead が再実行して PASS。§6 の予算を改訂 |
 | WP10 | RTL デコーダ | 2 | 完了 2026-11-24 | yaml から生成。j 8,926 語と m 1,220 語で不一致 0。LUT 約 190。sim、lint、synth は lead が再実行して PASS |
-| WP11 | 整数 ALU | 2 | 実行中 | |
+| WP11 | 整数 ALU | 2 | 完了 2026-11-24 | 144,645 行 × 2 構成で一致（disputed 29,126 行を含む）。LUT 2,142（-nowidelut で 1,871）、124 MHz。sim と lint は lead が再実行して PASS |
 | WP12 | FP の FMA | 2 | 実行中 | |
 | WP13 | FP 系の ALU 命令 | 2 | 実行中 | |
 | WP14 | PE の記憶 | 2 | 実行中 | |
