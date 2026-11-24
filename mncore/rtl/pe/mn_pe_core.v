@@ -1,0 +1,432 @@
+// mn_pe_core: one PE of the 1-PE mode (WP20).
+//
+// Executes one PE word (a j word with ll = 01 normal or 11 noforward) per step on the PE's
+// local memories (mn_pe_mem, WP14), with the decoder (mn_dec_j, WP10), the integer ALU
+// (mn_alu_int, WP11), the FP-side ALU (mn_fp_alu, WP13) and the MAU vector unit (mn_mau_vec,
+// WP12). mn_core (rtl/core) fetches the words and handles nop (ll = 00), wait and E_DECODE.
+//
+// Step (one j word; jw must stay stable from start until done):
+//   1. start: mn_pe_lsu range checks every access of the step and latches the LM addresses.
+//      The word given to it in this clock has imr = 0, so that every enabled write is
+//      checked, also where the write mask stops it (contract 06 section 3). Out of range:
+//      done with st = E_RANGE, nothing is read or written.
+//   2. READ: mn_pe_lsu reads the memories in rd_use (computed here from the selectors).
+//   3. EXEC, for cycle c = 0..3:
+//        gather : the operands the units use (ALU x, y; MAU a, b, c) are picked one per clock
+//                 from a shared source bus into port registers (opr_cycle = c);
+//        issue  : the ALU (int or FP, by mn_alu_cls) and / or the MAU take cycle c;
+//        collect: when the results of cycle c are there (ALU output register / MAU result
+//                 buffer), they go to mn_pe_lsu (res_valid / res_ready), which writes them;
+//                 the forwarding registers of cycle c are updated at the same time.
+//      Gather and issue run ahead of collect (the ALU pipelines and a 4-entry MAU result
+//      buffer hold the results), so the cycles overlap.
+//   Every read of the step sees the state before the step (SDM 3.6.3.9): memory operands
+//   come from mn_pe_lsu's read buffer, T entry c and the forwarding registers of cycle c are
+//   only written when cycle c is collected, after it was gathered.
+//
+// Operand sources (one bus, code = the ALU isela values; the 3-bit selectors map 5/6/7 to
+// 11/12/13): 0 $lr (GRF0), 1 $ls (GRF1), 2 $t, 3 $lm (LM0), 4 $ln (LM1), 5 $peid,
+// 6 $l1bid, 7 $l2bid, 8 $msb1, 9 $subpeid, 10 $mabid, 11 $mauf, 12 $aluf, 13 $lbf,
+// 14 $mreadf. Fixed operands are the chip coordinates of this PE (POS_*), replicated at the
+// ALU lane width (viz/core machine.rs read_alu_input: d/l 64, f/i/g 32, h/s 16 bits);
+// $msb1 has only the MSB of each lane set.
+//
+// Forwarding registers (SDM 3.6.1.15 - 3.6.1.18): the value of cycle c of the last step that
+// had the unit, after its zero flush (mn_pe_lsu zf_*); ll = 11 (noforward) steps and nop
+// steps (not sent here) leave them unchanged. Checked on the official emulator (WP20):
+//   - $mreadf is updated by every step that is not nop / noforward: the MAUC fields always
+//     encode a matrix register read (a word without ?mread reads `dmread $ly0`). The matrix
+//     register is never written in the 1-PE mode (?mwrite is unsupported), so $mreadf is 0.
+//   - $lbf only changes with an L1BM -> PE transfer (unsupported here): it stays 0.
+//   - Reading $aluf / $mauf after a step without that unit is an error in the emulator, so
+//     the old value is kept.
+//
+// Unsupported in the 1-PE mode (st = E_UNSUPPORTED, st_field = MN_J_<field>_IDX; reported
+// after the range check, contract 06 section 3): decoder errors (err_field), cls_bad of
+// mn_alu_cls (rounda / roundb / dmode), msl / msr and bfn / bfe (they need the other PEs of
+// the MAB: aluop), matrix MAU (mmode), ?mwrite (mw), L1BM (l1bm_bmode) and L2BM
+// (l2bm_lwrite) expressions. Such a word is not executed: after the start clock mn_pe_lsu
+// gets the word with ll = 00, so its EXEC phase writes nothing.
+// isel = 11 (matrix read) writes 0 and $lbf reads 0 (the matrix register and L1BM are empty).
+//
+// Host port: mn_pe_lsu's (WR_MEM / RD_MEM; PROTOCOL.md spaces 1..5, 0x10 OMR, 0x11 BAR),
+// usable between steps.
+`default_nettype none
+module mn_pe_core #(
+    parameter LM_AW  = 9,   // LM0/LM1 depth = 2**LM_AW long words (contract LM_DEPTH; chip 11)
+    parameter GRF_AW = 8,   // GRF0/GRF1 depth = 2**GRF_AW long words
+    parameter POS_N  = 0,   // chip coordinates of this PE (contract 06 section 3): group 0..3
+    parameter POS_C  = 0,   //   L2B 0..1
+    parameter POS_B  = 0,   //   L1B 0..7
+    parameter POS_M  = 0,   //   MAB 0..15
+    parameter POS_P  = 0    //   PE 0..3 in the MAB
+) (
+    input  wire         clk,
+    input  wire         rst,
+    // ---- step
+    input  wire         start,       // execute jw; taken when ready
+    output wire         ready,
+    input  wire [425:0] jw,
+    output reg          done,        // 1-clock pulse after the step
+    output reg  [1:0]   st,          // with done: 0 OK, 1 E_RANGE, 2 E_UNSUPPORTED
+    output reg  [6:0]   st_field,    // with st = E_UNSUPPORTED: field index (MN_J_<field>_IDX)
+    output wire         trap_wr,     // with st = E_RANGE (mn_pe_lsu): write access,
+    output wire [1:0]   trap_mem,    //   memory (0 GRF0, 1 GRF1, 2 LM0, 3 LM1),
+    output wire [1:0]   trap_cycle,  //   cycle,
+    output wire [11:0]  trap_addr,   //   word address
+    // ---- host port (between steps)
+    input  wire         hp_req_valid,
+    output wire         hp_req_ready,
+    input  wire         hp_req_we,
+    input  wire [7:0]   hp_req_space,
+    input  wire [22:0]  hp_req_addr,
+    input  wire [63:0]  hp_req_wdata,
+    input  wire [7:0]   hp_req_wmask,
+    output wire         hp_req_err,
+    output wire         hp_rsp_valid,
+    output wire [63:0]  hp_rsp_rdata
+);
+`include "mn_jfields.vh"
+
+    // ------------------------------------------------------------------ decoder
+    wire [1:0]   d_ll;
+    wire         d_noforward;
+    wire [1:0]   mau_dmode;
+    wire         mau_enfma, mau_mmode, mau_round_out, mau_mw, mau_passa, mau_zeroc, mau_mdw_side;
+    wire         mau_signa, mau_signb, mau_signc, mau_exta, mau_extb, mau_extc;
+    wire [2:0]   mau_isela, mau_iselb, mau_iselc;
+    wire [1:0]   alu_dmode;
+    wire [4:0]   alu_aluop;
+    wire         alu_uns, alu_rounda, alu_roundb;
+    wire [3:0]   alu_isela;
+    wire [2:0]   alu_iselb;
+    wire [2:0]   l1_isel;
+    wire         d_is_imm;
+    wire [31:0]  d_imm32;
+    wire [14:0]  d_grp;
+    wire [1:0]   d_err_kind;
+    wire [6:0]   d_err_field;
+    /* verilator lint_off PINMISSING */
+    // The decoder has an output for every field of the word; the PE core connects the fields
+    // it uses (the memory fields are decoded by mn_pe_lsu from the same word).
+    mn_dec_j u_dec (
+        .jw(jw), .ll(d_ll), .noforward(d_noforward),
+        .pe_mauc_dmode(mau_dmode), .pe_mauc_enfma(mau_enfma), .pe_mauc_mmode(mau_mmode),
+        .pe_mauc_round_out(mau_round_out), .pe_mauc_mw(mau_mw), .pe_mauc_signa(mau_signa),
+        .pe_mauc_signc(mau_signc), .pe_mauc_passa(mau_passa), .pe_mauc_zeroc(mau_zeroc),
+        .pe_mauc_mdw_side(mau_mdw_side), .pe_mauc_exta(mau_exta), .pe_mauc_extb(mau_extb),
+        .pe_mauc_extc(mau_extc), .pe_mauc_signb(mau_signb), .pe_mauc_isela(mau_isela),
+        .pe_mauc_iselb(mau_iselb), .pe_mauc_iselc(mau_iselc),
+        .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
+        .pe_aluc_rounda(alu_rounda), .pe_aluc_roundb(alu_roundb), .pe_aluc_isela(alu_isela),
+        .pe_aluc_iselb(alu_iselb), .l1bm_isel(l1_isel),
+        .is_imm(d_is_imm), .imm32(d_imm32), .grp(d_grp),
+        .err_kind(d_err_kind), .err_field(d_err_field)
+    );
+    /* verilator lint_on PINMISSING */
+
+    // ------------------------------------------------------------------ classification
+    wire cls_int, cls_fp, cls_xpe, cls_none, cls_bad;   // mn_alu_cls inside mn_alu_int
+    wire cls_bf;                                        // bfn / bfe (mn_fp_alu)
+    wire alu_act = cls_int | (cls_fp & ~cls_bf);        // the ALU runs this step
+    wire alu_int = cls_int;                             // 1: mn_alu_int, 0: mn_fp_alu
+    wire mau_act = mau_enfma & ~mau_mmode;              // MAU vector instruction
+    wire op_zero = (alu_aluop == 5'b11101) & alu_uns & (alu_isela == 4'b0101);
+    // ALU instructions with a second input (viz/core vsm.rs ALU_OPS): add sub and or xor
+    // max min lsl lsr bsl bsr packbit relu* lrelud lreluo ilrelud fmax fmin
+    reg two_in;
+    always @* begin
+        case (alu_aluop)
+            5'b00000, 5'b00001, 5'b00101, 5'b00110, 5'b00111, 5'b01000, 5'b01001,
+            5'b01011, 5'b01100, 5'b01101, 5'b01110, 5'b10011, 5'b10100, 5'b10101,
+            5'b10110, 5'b10111, 5'b11000, 5'b11001, 5'b11010, 5'b11011, 5'b11100:
+                two_in = 1'b1;
+            default: two_in = 1'b0;
+        endcase
+    end
+    // the ALU reads operands (also the unsupported classes, for the range check)
+    wire alu_rd = ~cls_none & ~d_is_imm & ~op_zero;
+
+    // ------------------------------------------------------------------ unsupported words
+    wire u_der = (d_err_kind == `MN_DEC_E_UNSUPPORTED);
+    wire u_xpe = cls_xpe | (cls_fp & cls_bf);
+    wire u_mat = mau_enfma & mau_mmode;
+    wire u_l1  = d_grp[MN_J_GRP_L1BM];
+    wire u_l2  = d_grp[MN_J_GRP_L2BM];
+    wire unsup = u_der | cls_bad | u_xpe | u_mat | mau_mw | u_l1 | u_l2;
+    localparam [31:0] F_ROUNDA = MN_J_PE_ALUC_ROUNDA_IDX, F_ROUNDB = MN_J_PE_ALUC_ROUNDB_IDX;
+    localparam [31:0] F_ADMODE = MN_J_PE_ALUC_DMODE_IDX, F_ALUOP = MN_J_PE_ALUC_ALUOP_IDX;
+    localparam [31:0] F_MMODE = MN_J_PE_MAUC_MMODE_IDX, F_MW = MN_J_PE_MAUC_MW_IDX;
+    localparam [31:0] F_L1BM = MN_J_L1BM_BMODE_IDX, F_L2BM = MN_J_L2BM_LWRITE_IDX;
+    wire [6:0] ufield = u_der   ? d_err_field :
+                        cls_bad ? ((alu_rounda & (alu_dmode != 2'b10)) ? F_ROUNDA[6:0] :
+                                   (alu_roundb & (alu_dmode != 2'b10)) ? F_ROUNDB[6:0] : F_ADMODE[6:0]) :
+                        u_xpe   ? F_ALUOP[6:0] :
+                        u_mat   ? F_MMODE[6:0] :
+                        mau_mw  ? F_MW[6:0] :
+                        u_l1    ? F_L1BM[6:0] : F_L2BM[6:0];
+
+    // ------------------------------------------------------------------ rd_use
+    // memories read as an operand, {LM1, LM0, GRF1, GRF0}; selector values 0..4 are
+    // $lr $ls $t $lm $ln (T needs no request). Only these are read and range checked.
+    function [3:0] mem_of(input [3:0] s, input en);
+        mem_of = !en ? 4'd0 : (s == 4'd0) ? 4'b0001 : (s == 4'd1) ? 4'b0010 :
+                 (s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b1000 : 4'd0;
+    endfunction
+    wire [3:0] rd_use = mem_of(alu_isela, alu_rd) |
+                        mem_of({1'b0, alu_iselb}, alu_rd & two_in) |
+                        mem_of({1'b0, mau_isela}, mau_enfma | mau_mw) |
+                        mem_of({1'b0, mau_iselb}, mau_enfma & ~mau_passa) |
+                        mem_of({1'b0, mau_iselc}, mau_enfma & ~mau_zeroc) |
+                        mem_of({1'b0, l1_isel}, 1'b1);
+
+    // ------------------------------------------------------------------ step state
+    localparam P_IDLE = 1'b0, P_RUN = 1'b1;
+    reg         ph;
+    reg         unsup_q;
+    reg [6:0]   ufield_q;
+    reg [1:0]   iss_c;      // cycle being gathered / issued
+    reg         iss_fin;    // the 4 cycles are issued
+    reg [4:0]   gpend;      // ports still to gather for iss_c: {c, b, a, y, x}
+    reg         alu_isd, mau_isd;   // cycle iss_c taken by the ALU / MAU
+    reg [1:0]   coll_c;     // cycle being collected (= mn_pe_lsu res_cycle)
+    reg [2:0]   mau_cnt;    // MAU results received in this step
+
+    wire        lsu_idle, lsu_opr_valid, lsu_res_ready, lsu_done, lsu_trap;
+    wire [1:0]  lsu_res_cycle;
+    wire        zf_en;
+    wire [1:0]  zf_sel;
+    wire [127:0] zf_mask;
+
+    assign ready = (ph == P_IDLE) & lsu_idle;
+    wire go = start & ready;
+    wire [4:0] need = {mau_act & ~mau_zeroc, mau_act & ~mau_passa, mau_act,
+                       alu_act & two_in, alu_act & ~d_is_imm};
+
+    // ------------------------------------------------------------------ operand gather
+    function [3:0] code3(input [2:0] s);   // 3-bit selector -> source code
+        code3 = (s == 3'd5) ? 4'd11 : (s == 3'd6) ? 4'd12 : (s == 3'd7) ? 4'd13 : {1'b0, s};
+    endfunction
+    wire [4:0] glow = gpend & (~gpend + 5'd1);          // lowest pending port, one-hot
+    wire [3:0] gcode = glow[0] ? alu_isela : glow[1] ? code3(alu_iselb) :
+                       glow[2] ? code3(mau_isela) : glow[3] ? code3(mau_iselb) : code3(mau_iselc);
+
+    wire [127:0] opr_grf0, opr_grf1, opr_lm0, opr_lm1, opr_t;
+    wire [127:0] aluf_rd, mauf_rd;
+
+    // fixed operands: chip coordinates (contract 06 section 3, viz/core read_alu_input)
+    localparam [5:0] V_PEID  = POS_M * 4 + POS_P;
+    localparam [5:0] V_L1BID = POS_B;
+    localparam [5:0] V_L2BID = POS_N * 2 + POS_C;
+    localparam [5:0] V_SUBPE = POS_P;
+    localparam [5:0] V_MABID = POS_M;
+    wire [5:0] fid = (gcode == 4'd5) ? V_PEID : (gcode == 4'd6) ? V_L1BID :
+                     (gcode == 4'd7) ? V_L2BID : (gcode == 4'd9) ? V_SUBPE :
+                     (gcode == 4'd10) ? V_MABID : 6'd0;
+    wire       fmsb = (gcode == 4'd8);
+    // lane width from the ALU dmode: 00 64 bits, 10 16 bits, 01 / 11 32 bits
+    wire [63:0] flane = (alu_dmode == 2'b00) ? {fmsb, 57'd0, fid} :
+                        (alu_dmode == 2'b10) ? {4{fmsb, 9'd0, fid}} : {2{fmsb, 25'd0, fid}};
+
+    reg [127:0] gbus;
+    always @* begin
+        case (gcode)
+            4'd0:  gbus = opr_grf0;
+            4'd1:  gbus = opr_grf1;
+            4'd2:  gbus = opr_t;
+            4'd3:  gbus = opr_lm0;
+            4'd4:  gbus = opr_lm1;
+            4'd5, 4'd6, 4'd7, 4'd8, 4'd9, 4'd10: gbus = {flane, flane};
+            4'd11: gbus = mauf_rd;
+            4'd12: gbus = aluf_rd;
+            default: gbus = 128'd0;   // 13 $lbf, 14 $mreadf (always 0 here), 15 (E_UNSUPPORTED)
+        endcase
+    end
+
+    reg [127:0] px, py, pa, pb, pc;   // port registers
+    wire run_x = (ph == P_RUN) & lsu_opr_valid & ~unsup_q;   // executing the step
+    wire g_on  = run_x & ~iss_fin & (gpend != 5'd0);
+    always @(posedge clk) begin
+        if (g_on & glow[0]) px <= gbus;
+        if (g_on & glow[1]) py <= gbus;
+        if (g_on & glow[2]) pa <= gbus;
+        if (g_on & glow[3]) pb <= gbus;
+        if (g_on & glow[4]) pc <= gbus;
+    end
+
+    // ------------------------------------------------------------------ units
+    wire iss_on = run_x & ~iss_fin & (gpend == 5'd0);
+    wire alu_iv = iss_on & alu_act & ~alu_isd;
+    wire mau_iv = iss_on & mau_act & ~mau_isd;
+    wire int_ir, fp_ir, mau_ir;
+    wire alu_ir = alu_int ? int_ir : fp_ir;
+    wire alu_acc = alu_iv & alu_ir;
+    wire mau_acc = mau_iv & mau_ir;
+    wire iss_adv = iss_on & (~alu_act | alu_isd | alu_acc) & (~mau_act | mau_isd | mau_acc);
+
+    wire         int_ov, fp_ov, int_err, fp_err;
+    wire [127:0] int_z, fp_z;
+    wire [3:0]   int_f, fp_f;
+    wire         alu_ov = alu_int ? int_ov : fp_ov;
+    wire [127:0] alu_z  = alu_int ? int_z : fp_z;
+    wire [3:0]   alu_f  = alu_int ? int_f : fp_f;
+
+    wire         acc;   // cycle coll_c accepted by mn_pe_lsu
+    wire         alu_pop = acc & alu_act & ~unsup_q;
+
+    mn_alu_int u_alu (
+        .clk(clk), .rst(rst),
+        .in_valid(alu_iv & alu_int), .in_ready(int_ir),
+        .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
+        .pe_aluc_rounda(alu_rounda), .pe_aluc_roundb(alu_roundb), .pe_aluc_isela(alu_isela),
+        .imm32(d_imm32), .x(px), .y(py),
+        .cls_int(cls_int), .cls_fp(cls_fp), .cls_xpe(cls_xpe), .cls_none(cls_none), .cls_bad(cls_bad),
+        .out_valid(int_ov), .out_ready(alu_pop & alu_int), .z(int_z), .flags(int_f), .out_err(int_err)
+    );
+
+    mn_fp_alu #(.RND(1)) u_fpalu (
+        .clk(clk), .rst(rst),
+        .in_valid(alu_iv & ~alu_int), .in_ready(fp_ir),
+        .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
+        .pe_aluc_rounda(alu_rounda), .pe_aluc_roundb(alu_roundb), .pe_aluc_isela(alu_isela),
+        .pe_aluc_iselb(alu_iselb), .x(px), .y(py), .cls_bf(cls_bf),
+        .out_valid(fp_ov), .out_ready(alu_pop & ~alu_int), .z(fp_z), .flags(fp_f), .out_err(fp_err)
+    );
+
+    wire         mau_ov;
+    wire [127:0] mau_z;
+    wire [3:0]   mau_f;
+    wire [1:0]   mau_tag;
+    localparam [1:0] PE_SUB = POS_P;
+    mn_mau_vec #(.TAGW(2)) u_mau (
+        .clk(clk), .rst(rst), .in_valid(mau_iv), .in_ready(mau_ir),
+        .dmode(mau_dmode), .round_out(mau_round_out), .passa(mau_passa), .zeroc(mau_zeroc),
+        .mdw_side(mau_mdw_side), .signa(mau_signa), .signb(mau_signb), .signc(mau_signc),
+        .exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(PE_SUB),
+        .a_bus(pa), .b_bus(pb), .c_bus(pc), .in_tag(iss_c),
+        .out_valid(mau_ov), .z_bus(mau_z), .flags(mau_f), .out_tag(mau_tag)
+    );
+
+    // MAU results of the step, by cycle (mn_mau_vec has no output stall)
+    wire [131:0] maub_rd;
+    mn_ram_lut #(.W(132), .AW(2), .NR(1)) u_maub (
+        .clk(clk), .we(mau_ov), .waddr(mau_tag), .wdata({mau_f, mau_z}),
+        .raddr(coll_c), .rdata(maub_rd));
+
+    // ------------------------------------------------------------------ collect
+    wire alu_rdy = ~alu_act | alu_ov;
+    wire mau_rdy = ~mau_act | (mau_cnt > {1'b0, coll_c});
+    wire res_valid = (ph == P_RUN) & lsu_opr_valid & (unsup_q | (alu_rdy & mau_rdy));
+    assign acc = res_valid & lsu_res_ready;
+
+    // forwarding registers, written with the zero flush of the cycle (mn_pe_lsu zf_*)
+    wire         fwd_on  = acc & ~unsup_q & ~d_noforward;
+    wire [127:0] aluf_wd = (zf_en & (zf_sel == 2'b01)) ? (alu_z & zf_mask) : alu_z;
+    wire [127:0] mauf_wd = (zf_en & (zf_sel == 2'b00)) ? (maub_rd[127:0] & zf_mask) : maub_rd[127:0];
+    mn_ram_lut #(.W(128), .AW(2), .NR(1)) u_aluf (
+        .clk(clk), .we(fwd_on & alu_act), .waddr(coll_c), .wdata(aluf_wd),
+        .raddr(iss_c), .rdata(aluf_rd));
+    mn_ram_lut #(.W(128), .AW(2), .NR(1)) u_mauf (
+        .clk(clk), .we(fwd_on & mau_act), .waddr(coll_c), .wdata(mauf_wd),
+        .raddr(iss_c), .rdata(mauf_rd));
+
+    // ------------------------------------------------------------------ local memories
+    // the word for mn_pe_lsu: imr = 0 in the start clock (check every enabled write), then the
+    // word itself, or ll = 00 for an unsupported word (nothing is written)
+    wire [425:0] jw_chk = {jw[425:424], 5'b00000, jw[418:0]};
+    wire [425:0] jw_nul = {2'b00, jw[423:0]};
+    wire [425:0] jw_lsu = (ph == P_IDLE) ? jw_chk : (unsup_q ? jw_nul : jw);
+    wire         lsu_busy, lsu_unsup;
+    localparam [1:0] SUBPE = POS_P;
+    mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) u_mem (
+        .clk(clk), .rst(rst), .subpe(SUBPE),
+        .start(go), .idle(lsu_idle), .jw(jw_lsu), .rd_use(rd_use), .busy(lsu_busy),
+        .opr_valid(lsu_opr_valid), .opr_cycle(iss_c),
+        .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
+        .res_valid(res_valid), .res_ready(lsu_res_ready), .res_cycle(lsu_res_cycle),
+        .res_mau(maub_rd[127:0]), .res_alu(alu_z), .res_l1bm(128'd0), .res_mread(128'd0),
+        .res_alu_flags(alu_f), .res_mau_flags(maub_rd[131:128]),
+        .zf_en(zf_en), .zf_sel(zf_sel), .zf_mask(zf_mask),
+        .done(lsu_done), .trap(lsu_trap), .trap_wr(trap_wr), .trap_mem(trap_mem),
+        .trap_cycle(trap_cycle), .trap_addr(trap_addr), .unsup(lsu_unsup),
+        .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we),
+        .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
+        .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
+        .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+    );
+
+    // ------------------------------------------------------------------ sequencer
+    always @(posedge clk) begin
+        if (rst) begin
+            ph       <= P_IDLE;
+            done     <= 1'b0;
+            st       <= 2'd0;
+            st_field <= 7'd0;
+            unsup_q  <= 1'b0;
+            ufield_q <= 7'd0;
+            iss_c    <= 2'd0;
+            iss_fin  <= 1'b0;
+            gpend    <= 5'd0;
+            alu_isd  <= 1'b0;
+            mau_isd  <= 1'b0;
+            coll_c   <= 2'd0;
+            mau_cnt  <= 3'd0;
+        end else begin
+            done <= 1'b0;
+            if (go) begin
+                ph       <= P_RUN;
+                unsup_q  <= unsup;
+                ufield_q <= ufield;
+                iss_c    <= 2'd0;
+                iss_fin  <= 1'b0;
+                gpend    <= need;
+                alu_isd  <= 1'b0;
+                mau_isd  <= 1'b0;
+                coll_c   <= 2'd0;
+                mau_cnt  <= 3'd0;
+            end else if (ph == P_RUN) begin
+                // gather / issue
+                if (g_on) gpend <= gpend & ~glow;
+                if (iss_adv) begin
+                    iss_c   <= iss_c + 2'd1;
+                    iss_fin <= (iss_c == 2'd3);
+                    gpend   <= need;
+                    alu_isd <= 1'b0;
+                    mau_isd <= 1'b0;
+                end else begin
+                    alu_isd <= alu_isd | alu_acc;
+                    mau_isd <= mau_isd | mau_acc;
+                end
+                // collect
+                if (mau_ov) mau_cnt <= mau_cnt + 3'd1;
+                if (acc) coll_c <= coll_c + 2'd1;
+                // end of the step
+                if (lsu_done) begin
+                    ph       <= P_IDLE;
+                    done     <= 1'b1;
+                    st       <= lsu_trap ? 2'd1 : unsup_q ? 2'd2 : 2'd0;
+                    st_field <= ufield_q;
+                end
+            end
+        end
+    end
+
+`ifndef SYNTHESIS
+    // simulation checks of the internal protocol
+    always @(posedge clk) begin
+        if (!rst && acc && !unsup_q && (lsu_res_cycle != coll_c))
+            $display("mn_pe_core: ERROR res_cycle %0d != collected cycle %0d", lsu_res_cycle, coll_c);
+        if (!rst && alu_pop && (alu_int ? int_err : fp_err))
+            $display("mn_pe_core: ERROR the ALU did not execute the instruction (out_err)");
+        if (!rst && go && (d_ll[0] == 1'b0))
+            $display("mn_pe_core: ERROR start with a word that is not executed (ll = %b)", d_ll);
+    end
+`endif
+
+    /* verilator lint_off UNUSEDSIGNAL */
+    // lsu_busy: the core uses idle; lsu_unsup (word length 11): the decoder reports it
+    // (unsup_vec); int_err / fp_err: routing follows mn_alu_cls, checked in simulation only.
+    wire unused = ^{lsu_busy, lsu_unsup, int_err, fp_err, d_ll, lsu_res_cycle};
+    /* verilator lint_on UNUSEDSIGNAL */
+endmodule
+`default_nettype wire
