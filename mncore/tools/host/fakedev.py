@@ -23,16 +23,18 @@ class FakeDevice:
         self.topo = topo
         self.space_depth = space_depth if space_depth is not None else {
             0x00: imem_depth * 8, 0x01: 1024, 0x02: 1024, 0x03: 256, 0x04: 256, 0x05: 8,
-            0x06: 1024, 0x07: 4096, 0x08: 4096, 0x09: 65536, 0x0F: 8192}
+            0x06: 1024, 0x07: 4096, 0x08: 4096, 0x09: 65536, 0x0F: 8192, 0x10: 16}
         self.design_id, self.flags = design_id, flags
         self.mem = defaultdict(int)          # (space, loc, addr) -> long word
         self.baudrate = baud
         self._in = bytearray()
         self._out = bytearray()
         self.pc = self.steps = 0
+        self.reason = self.info_word = 0
         self.runs = []                       # (start, count) log
         self.counters = [0, 0, 0, 0]
         self.corrupt_next_response = 0       # test hook: flip a bit in the next N responses
+        self.stop_rule = None                # test hook: f(start, count) -> (reason, pc, info) or None
 
     # -- pyserial-like surface
     def write(self, data: bytes):
@@ -102,7 +104,7 @@ class FakeDevice:
         if cmd == CMD["STATUS"]:
             if p:
                 return self._respond(cmd, ST_E_LEN)
-            body = bytes([0, 0]) + self.pc.to_bytes(2, "little") + (0).to_bytes(4, "little")
+            body = bytes([0, self.reason]) + self.pc.to_bytes(2, "little") + self.info_word.to_bytes(4, "little")
             body += self.steps.to_bytes(4, "little")
             body += b"".join(c.to_bytes(2, "little") for c in self.counters)
             body += (0).to_bytes(2, "little") + self.div.to_bytes(4, "little") + bytes([0])
@@ -120,6 +122,11 @@ class FakeDevice:
             start, count = u16(0), u32(2)
             self.runs.append((start, count))
             self.pc, self.steps = start + count, count
+            self.reason = self.info_word = 0
+            stop = self.stop_rule(start, count) if self.stop_rule else None
+            if stop:
+                self.reason, self.pc, self.info_word = stop
+                self.steps = self.pc - start
             return self._respond(cmd, ST_OK)
         if cmd == CMD["SET_BAUD"]:
             if len(p) != 4:

@@ -18,9 +18,13 @@
 //
 // Parameter TB_RND (iverilog -Ptb_fpalu.TB_RND=0) builds both units with RND = 0 (no input
 // rounding) and skips the `r` vector files.
+// Parameter TB_LITE (WP21, iverilog -Ptb_fpalu.TB_LITE=1 / 2) builds mn_fp_alu with LITE = 1 (no
+// floor / ftoi) or 2 (also no max / min): the vector files of the left-out instructions are
+// skipped and those instructions must give out_err.
 `timescale 1ns / 1ps
 module tb_fpalu #(
-    parameter TB_RND = 1
+    parameter TB_RND  = 1,
+    parameter TB_LITE = 0
 );
     reg clk = 1'b0;
     always #5 clk = ~clk;
@@ -39,7 +43,7 @@ module tb_fpalu #(
     wire         in_ready, out_valid, out_err, cls_bf;
     wire [127:0] z;
     wire [3:0]   flags;
-    mn_fp_alu #(.RND(TB_RND)) dut (
+    mn_fp_alu #(.RND(TB_RND), .LITE(TB_LITE)) dut (
         .clk(clk), .rst(rst), .in_valid(in_valid), .in_ready(in_ready),
         .pe_aluc_dmode(dmode), .pe_aluc_aluop(aluop), .pe_aluc_is_unsigned(uns),
         .pe_aluc_rounda(ra), .pe_aluc_roundb(rb), .pe_aluc_isela(isela), .pe_aluc_iselb(iselb),
@@ -335,6 +339,15 @@ module tb_fpalu #(
         check_err(1'b1, 2'b01, 5'b11011, 3'b001);  // fmax: per-PE unit
         check_err(1'b1, 2'b00, 5'b11110, 3'b110);  // dfloor: per-PE unit
         $display("out_err: checked for 5 ALUCs that the units do not execute");
+        if (TB_LITE >= 1) begin
+            check_err(1'b0, 2'b00, 5'b11110, 3'b110);  // dfloor: left out (LITE)
+            check_err(1'b0, 2'b01, 5'b11110, 3'b111);  // fftoi
+        end
+        if (TB_LITE >= 2) begin
+            check_err(1'b0, 2'b01, 5'b11011, 3'b001);  // fmax
+            check_err(1'b0, 2'b10, 5'b11100, 3'b001);  // hmin
+        end
+        if (TB_LITE != 0) $display("LITE = %0d: out_err checked for the left-out instructions", TB_LITE);
 
         mf = $fopen(manifest, "r");
         if (mf == 0) begin
@@ -385,6 +398,13 @@ module tb_fpalu #(
             rand_isela = (s.len() == 0);
             hdr_isela = s.atobin();
             bf = has(hdr, " x0_hi");
+            // LITE: instructions mn_fp_alu leaves out (the block-float unit is not affected)
+            if (!bf && ((TB_LITE >= 1 && aluop == 5'b11110) ||
+                        (TB_LITE >= 2 && (aluop == 5'b11011 || aluop == 5'b11100)))) begin
+                $fclose(vf_fd);
+                n_skip = n_skip + 1;
+                continue;
+            end
             exp_int = (aluop == 5'b01010) || (aluop == 5'b10011);  // passa, packbit
             if (hget(hdr, "expect") == "official") n_off_files = n_off_files + 1;
             else if (hget(hdr, "disputed") != "") begin

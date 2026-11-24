@@ -10,11 +10,14 @@
 // [463:400] data, [425:0] j word (EXEC). ops: 0 END, 1 CLEAR, 2 WR, 3 EXEC, 4 CHK,
 // 5 BEGIN (space = PE, addr = test), 6 EXPECT_TRAP (mask = {wr, mem[1:0], cycle[1:0]},
 // data = word address; applies to the next EXEC).
+// RBS = 1 (WP21): the DUT has the shared read buffer; opr_mem selects the memory of the ALU
+// input (isela), the only operand the core model reads.
 module tb_pemem_drv #(
     parameter SLOW   = 0,
     parameter SEED   = 1,
     parameter LM_AW  = 9,
-    parameter GRF_AW = 8
+    parameter GRF_AW = 8,
+    parameter RBS    = 0
 ) (
     input  wire clk,
     input  wire rst,
@@ -53,12 +56,16 @@ module tb_pemem_drv #(
 
     mn_pe_rduse u_ru (.jw(jw), .rd_use(rd_use));
 
+    // memory of the ALU input A (isela 0 $lr, 1 $ls, 3 $lm, 4 $ln) for the shared read buffer
+    wire [3:0] isela_w = jw[425-155 -: 4];
+    wire [1:0] opr_mem = (isela_w == 4'd1) ? 2'd1 : (isela_w == 4'd3) ? 2'd2 : (isela_w == 4'd4) ? 2'd3 : 2'd0;
+
     generate
         if (SLOW == 0) begin : g_fast
-            mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) dut (
+            mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(RBS)) dut (
                 .clk(clk), .rst(rst), .subpe(subpe),
                 .start(start), .idle(idle), .jw(jw), .rd_use(rd_use), .busy(busy),
-                .opr_valid(opr_valid), .opr_cycle(res_cycle),
+                .opr_valid(opr_valid), .opr_cycle(res_cycle), .opr_mem(opr_mem),
                 .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
                 .res_valid(res_valid), .res_ready(res_ready), .res_cycle(res_cycle),
                 .res_mau(res_mau), .res_alu(res_alu), .res_l1bm(res_l1bm), .res_mread(res_mread),
@@ -77,10 +84,10 @@ module tb_pemem_drv #(
             wire [91:0]  st_req_addr;
             wire [255:0] st_req_wdata, st_rsp_rdata;
             wire [31:0]  st_req_wmask;
-            mn_pe_lsu #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) dut (
+            mn_pe_lsu #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(RBS)) dut (
                 .clk(clk), .rst(rst), .subpe(subpe),
                 .start(start), .idle(idle), .jw(jw), .rd_use(rd_use), .busy(busy),
-                .opr_valid(opr_valid), .opr_cycle(res_cycle),
+                .opr_valid(opr_valid), .opr_cycle(res_cycle), .opr_mem(opr_mem),
                 .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
                 .res_valid(res_valid), .res_ready(res_ready), .res_cycle(res_cycle),
                 .res_mau(res_mau), .res_alu(res_alu), .res_l1bm(res_l1bm), .res_mread(res_mread),

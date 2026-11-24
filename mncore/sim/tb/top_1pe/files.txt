@@ -1,0 +1,35 @@
+# WP21: the 1-PE board top (brd_host_if + mn_core) driven through its UART pin. The default
+# script mncore/sim/tb/top_1pe/fixed/top.scr is made by gen_top.py from the corpus regression
+# (expected values: official emulator). mncore/fpga/top_1pe/build.py builds the bitstream from
+# the RTL of this list.
+top: tb_top_1pe
+rtl_top: mn_top_1pe
+incdir: mncore/rtl/dec
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/core/mn_core.v
+mncore/rtl/board/brd_ram_1r1w.v
+mncore/rtl/board/brd_fifo.v
+mncore/rtl/board/brd_uart_rx.v
+mncore/rtl/board/brd_uart_tx.v
+mncore/rtl/board/brd_host_if.v
+mncore/rtl/top/mn_top_1pe.v
+mncore/sim/tb/top_1pe/tb_top_1pe.v

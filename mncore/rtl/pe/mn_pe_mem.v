@@ -7,7 +7,8 @@
 // BSRAM: 8 blocks for LM_AW <= 9 and GRF_AW <= 8 (64 bits wide, 32-bit lanes; WP07 budget).
 module mn_pe_mem #(
     parameter LM_AW  = 9,  // LM0/LM1 depth = 2**LM_AW long words (contract LM_DEPTH; chip 11)
-    parameter GRF_AW = 8   // GRF0/GRF1 depth = 2**GRF_AW long words (chip 8)
+    parameter GRF_AW = 8,  // GRF0/GRF1 depth = 2**GRF_AW long words (chip 8)
+    parameter RBS    = 0   // 1: shared read buffer, opr_* give memory opr_mem (mn_pe_lsu, WP21)
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -19,6 +20,7 @@ module mn_pe_mem #(
     output wire         busy,
     output wire         opr_valid,
     input  wire [1:0]   opr_cycle,
+    input  wire [1:0]   opr_mem,
     output wire [127:0] opr_grf0,
     output wire [127:0] opr_grf1,
     output wire [127:0] opr_lm0,
@@ -59,10 +61,10 @@ module mn_pe_mem #(
     wire [255:0] st_req_wdata, st_rsp_rdata;
     wire [31:0]  st_req_wmask;
 
-    mn_pe_lsu #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) u_lsu (
+    mn_pe_lsu #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(RBS)) u_lsu (
         .clk(clk), .rst(rst), .subpe(subpe),
         .start(start), .idle(idle), .jw(jw), .rd_use(rd_use), .busy(busy),
-        .opr_valid(opr_valid), .opr_cycle(opr_cycle),
+        .opr_valid(opr_valid), .opr_cycle(opr_cycle), .opr_mem(opr_mem),
         .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
         .res_valid(res_valid), .res_ready(res_ready), .res_cycle(res_cycle),
         .res_mau(res_mau), .res_alu(res_alu), .res_l1bm(res_l1bm), .res_mread(res_mread),

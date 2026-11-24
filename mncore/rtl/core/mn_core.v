@@ -40,7 +40,8 @@
 // The architectural state (memories, T, masks, $mb/$nb, forwarding registers) stays across
 // RUNs.
 // FPALU = 0 / MAU = 0 leave the FP-side ALU / the MAU out (area); their instructions then stop
-// with E_UNSUPPORTED pe_aluc_aluop / pe_mauc_enfma (mn_pe_core).
+// with E_UNSUPPORTED pe_aluc_aluop / pe_mauc_enfma (mn_pe_core). FPALU = 2 is the FP ALU without
+// floor / ftoi, FPALU = 3 also without fmax / fmin (WP21 area options; mn_pe_core).
 `default_nettype none
 module mn_core #(
     parameter IMEM_AW = 9,           // instruction memory: 2**IMEM_AW entries
@@ -48,7 +49,7 @@ module mn_core #(
     parameter LM_AW   = 9,           // LM0/LM1: 2**LM_AW long words
     parameter GRF_AW  = 8,           // GRF0/GRF1: 2**GRF_AW long words
     parameter CLEAR   = 1,           // 1: clear the PE state after reset
-    parameter FPALU   = 1,           // 0: no FP-side ALU (mn_fp_alu)
+    parameter FPALU   = 1,           // FP-side ALU: 1 full, 0 none, 2 / 3 reduced (mn_pe_core)
     parameter MAU     = 1,           // 0: no MAU (mn_mau_vec)
     parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0)
 ) (
