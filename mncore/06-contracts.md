@@ -75,6 +75,7 @@
   - そこへの転送は捨てる。
   - そこから受け取る結合・縮約の入力は値ゼロとする。ただし `l2bmr` の集合の外は単位元とする。
   - L1BM の結合では、存在しない MAB の位置には 0 を書く。
+  - 4 PE（時分割）では、どれかの PE が範囲外なら、どの PE も書く前に E_RANGE で止まる。
   - L1BM の E_RANGE の対象は、欄のある語の読み出し（存在する PE の分）と、me=1 の書き込み。
   - グループは L2B を 1 つ以上持つものだけが存在する。容量には `PDM_DEPTH` / `DRAM_DEPTH` もある。
   - 定義の正は `third_party/mncore/viz/core/docs/topology.md`。
@@ -182,6 +183,12 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - **単純に足すと LUT が全体の約 100% になる。** WP20 / WP21 は面積の削減を前提にする（共有化、`RND` の省略、加数の位置合わせ窓の縮小、host_if の縮小など）。
 - ALU 系ユニットの共通インタフェースは `mn_alu_int` の形（valid/ready、デコード済みの `pe_aluc_*` 欄）。`mn_fp_alu` はこれに `pe_aluc_iselb` を加え、`imm32` を除いたもの。
 - MAB をまたぐ ALU 命令（bfn / bfe、msl / msr）は、PE p の値を `x[128*p +: 128]` に並べて受け渡す。
+  - msl / msr の結果は {隣の PE の x の MSB 側の長語, 0}、フラグは 0 で、`$aluf` に入る（公式で確認）。
+- 1 MAB（4 PE 時分割、WP30）の実測（27 MHz）:
+  - 構成 A（FPALU=0、MAU=1）: LUT4 75%、BSRAM 33/46、48 MHz。
+  - 構成 B（FPALU=3、BFN=1）: LUT4 71%、49 MHz。
+  - 全部入りは yosys の換算で 105% になり、載らない。
+  - L1BM と L2BM を足すと、BSRAM は 45/46 の見込み。
 - 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
 
 ### RAM と DSP の書き方
@@ -222,7 +229,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - E_RANGE は命令メモリのエントリ番号。
   - 細目の正は `PROTOCOL.md`。
 - 命令メモリは 7 レーンを順に書く。
-- デザイン ID: 0x02 は `mn_top_1pe`。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
+- デザイン ID: 0x02 は `mn_top_1pe`、0x03 は `mn_top_mab`（1 MAB）。
+  - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
 - `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。
 - 実機での回帰は `python mncore/fpga/top_1pe/hwrun.py --all --fpalu <n>` で行う。
 - 単語の `d get` には dtype が必須。

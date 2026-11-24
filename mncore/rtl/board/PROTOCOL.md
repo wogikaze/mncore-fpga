@@ -235,3 +235,5 @@ FPGA 側の誤り計数が 0 のままでも、ブリッジ側でデータが落
 - `bridge reboot` は FPGA を Flash の内容で読み直す。SRAM に書いたデザインは書き直すこと。
 
 - 設計固有の空間 ID: 0x10 OMR、0x11 BAR（`` / ``）（WP14）。
+
+- デザイン ID 0x03: `mn_top_mab`（1 MAB、4 PE の時分割）。INFO のフラグは bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN（WP30）。
