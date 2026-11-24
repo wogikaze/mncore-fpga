@@ -97,8 +97,9 @@ L1BM n0c0b0 0x0010 0000000000000000
 - 小さな固定サンプルだけは `mncore/sim/vectors_fixed/` に置いてコミットする（各ファイルから 50 行。全行を公式と照合済み）。
 - ヘッダの拡張（機械語の欄、`sdm`、`disputed`、`edge`）と行ごとの制御列は `mncore/vecgen/FORMAT.md` が正。
 - **RTL が合わせる相手は公式エミュレータ。** WP03 で見つかった Sim と公式の食い違い 4 種（`r_round`、`ext_mul`、`fvr_flags`、`round_twice`）は公式の挙動を実装する。
-  - `disputed=` の付いた行の期待値は、vecgen の公式置換モード（WP03 の追加作業）で公式の出力に差し替える。
-  - それまでは、ユニットテストで `disputed` の行を除外してよい。その場合は報告書に件数を書く。
+  - 食い違う行は `cargo run --release -- all --official-expect` で公式の出力を期待値にする。ヘッダには `disputed=` と `expect=official` が残る。
+  - ベクタの作り方: 生成 → `--official-expect` → `--check-official --sample all` → `fixed`（`FORMAT.md`）。
+  - `vectors_fixed` は置き換え済みで、全行が公式と一致する。ユニットテストで disputed の行を除外しない。
   - Sim 側の修正は後で行う（viz/core のブランチ）。
 
 ## 6. RTL の規約
