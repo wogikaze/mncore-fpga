@@ -91,7 +91,12 @@ L1BM n0c0b0 0x0010 0000000000000000
 
 - 空白区切りの hex。`|` の左が入力、右が期待値。1 行目の `#` に列の定義を書く。
 - 生成するのは WP03（`mncore/vecgen`、Rust）。置き場所は `mncore/sim/vectors/<unit>/*.vec`。生成物なので git 管理しない。
-- 小さな固定サンプルだけは `mncore/sim/vectors_fixed/` に置いてコミットする。
+- 小さな固定サンプルだけは `mncore/sim/vectors_fixed/` に置いてコミットする（各ファイルから 50 行。全行を公式と照合済み）。
+- ヘッダの拡張（機械語の欄、`sdm`、`disputed`、`edge`）と行ごとの制御列は `mncore/vecgen/FORMAT.md` が正。
+- **RTL が合わせる相手は公式エミュレータ。** WP03 で見つかった Sim と公式の食い違い 4 種（`r_round`、`ext_mul`、`fvr_flags`、`round_twice`）は公式の挙動を実装する。
+  - `disputed=` の付いた行の期待値は、vecgen の公式置換モード（WP03 の追加作業）で公式の出力に差し替える。
+  - それまでは、ユニットテストで `disputed` の行を除外してよい。その場合は報告書に件数を書く。
+  - Sim 側の修正は後で行う（viz/core のブランチ）。
 
 ## 6. RTL の規約
 
