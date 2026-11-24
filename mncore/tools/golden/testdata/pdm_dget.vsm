@@ -1,0 +1,13 @@
+# Evidence that the official emulator's `d get $p` prints DRAM, not PDM (see norm_gpfn3.py).
+# L2BM -> PDM -> L2BM round trip: L2BM 128 gets the data back, so PDM held it, yet
+# `d get $p0n0` prints 0 like `d get $d0n0`. golden_dump prints the real PDM (the data).
+# pdm_dget.official.dmp was captured with
+#   python mncore/tools/golden/run_official.py mncore/tools/golden/testdata/pdm_dget.vsm --probe none
+d set $lc0n0c0 2 1234567890abcdef1111111122222222
+mvd/n64 $lc0 $p0@0
+nop/4
+d get $p0n0 2
+d get $d0n0 2
+mvp/n64 $p0@0 $lc128@0.0
+nop/4
+d get $lc128n0c0 2

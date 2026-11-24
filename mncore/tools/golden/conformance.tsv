@@ -1,0 +1,960 @@
+path	kind	testcase	official	rust	words_official	words_rust	compared	mismatches	only_official	only_rust	diff_spaces	result	note
+docs/mnist-golf/submissions/1.a-b.vsm	solution	problems/1.a-b/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/10.sumrow.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	16	16	77304	0	0	0	-	match	
+docs/mnist-golf/submissions/11.maxrow.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	20	20	77304	0	0	0	-	match	
+docs/mnist-golf/submissions/12.divrow-vec.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	29	29	78744	0	0	0	-	match	
+docs/mnist-golf/submissions/13.exp-low-prec.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	9	9	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/14.exp.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	16	16	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/15.onehot-mini.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	7	7	77432	0	0	0	-	match	
+docs/mnist-golf/submissions/16.onehot.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	24	24	78744	0	0	0	-	match	
+docs/mnist-golf/submissions/17.dram-dl-256-16.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/18.dram-ul-256-16.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	6	6	79256	0	0	0	-	match	
+docs/mnist-golf/submissions/19.dram-dl-256-16p.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	ok	ok	19	19	78744	0	0	0	-	match	
+docs/mnist-golf/submissions/2.fmul7.vsm	solution	problems/2.fmul7/testcase.vsm	ok	ok	5	5	85336	0	0	0	-	match	
+docs/mnist-golf/submissions/20.dram-ul-256-16p.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	ok	ok	10	10	79256	0	0	0	-	match	
+docs/mnist-golf/submissions/21.dram-dl-256-16-l2b.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	ok	ok	12	12	79000	0	0	0	-	match	
+docs/mnist-golf/submissions/22.dram-dl-1024-16.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	ok	ok	8	8	85272	0	0	0	-	match	
+docs/mnist-golf/submissions/23.dram-dl-256-1024.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	ok	ok	68	68	208088	0	0	0	-	match	
+docs/mnist-golf/submissions/24.dram-dl-16.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	4	4	77264	0	0	0	-	match	
+docs/mnist-golf/submissions/25.dram-ul-16.vsm	solution	problems/25.dram-ul-16/testcase.vsm	ok	ok	4	4	77216	0	0	0	-	match	
+docs/mnist-golf/submissions/26.dram-dl-16-1024.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	ok	ok	39	39	93512	0	0	0	-	match	
+docs/mnist-golf/submissions/27.dram-ul-16-1024.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+docs/mnist-golf/submissions/28.dram-dl-16-16.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	ok	ok	7	7	77208	504	0	0	L1BM,L2BM,LM0	MISMATCH	first L1BM n0c0b0 0x0010 official=4280800042838000 rust=42c1800042c38000
+docs/mnist-golf/submissions/29.dram-ul-16-16.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	8	8	77336	0	0	0	-	match	
+docs/mnist-golf/submissions/3.relu.vsm	solution	problems/3.relu/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/30.dram-dl-256.vsm	solution	problems/30.dram-dl-256/testcase.vsm	ok	ok	10	10	77304	0	0	0	-	match	
+docs/mnist-golf/submissions/31.dram-ul-256.vsm	solution	problems/31.dram-ul-256/testcase.vsm	ok	ok	7	7	77336	0	0	0	-	match	
+docs/mnist-golf/submissions/32.matmul-trb-mab-lm-4-8-8.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/33.matmul-trb-mab-lm-4-8-16.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/34.matmul-trb-mab-lm-4-16-8.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/35.matmul-trb-mab-lm-4-16-16.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/36.matmul-trb-pkg-lm-256-16-16.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	ok	ok	6	6	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/37.matmul-trb-mab-lm-32-8-16.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	ok	ok	17	17	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/38.matmul-trb-pkg-lm-256-128-16.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	ok	ok	23	23	79000	0	0	0	-	match	
+docs/mnist-golf/submissions/39.matmul-trb-pkg-lmdram-256-1024-16.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	29	29	79256	0	0	0	-	match	
+docs/mnist-golf/submissions/4.relu-grad.vsm	solution	problems/4.relu-grad/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/40.matmul-notr-mab-lm-4-8-8.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	ok	ok	7	7	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/41.matmul-notr-mab-lm-4-16-16.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	ok	ok	13	13	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/42.matmul-notr-pkg-lm-256-16-16.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	ok	ok	10	10	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/43.matmul-tra-mab-lm-8-8-8.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	ok	ok	8	8	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/44.matmul-tra-mab-lm-16-8-16.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	ok	ok	15	15	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/45.matmul-tra-mab-lm-16-4-16.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	ok	ok	14	14	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/46.matmul-tra-pkg-lmdram-16-256-16.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	ok	ok	22	22	77336	112	0	0	DRAM	MISMATCH	first DRAM n0 0x00000010 official=c857b3804a10f6a4 rust=0000000000000000
+docs/mnist-golf/submissions/47.matmul-tra-mab-lm-16-32-8.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	ok	ok	17	17	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/48.matmul-tra-pkg-lmdram-16-256-1024.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	ok	ok	61	61	85400	0	0	0	-	match	
+docs/mnist-golf/submissions/5.addcol-vec.vsm	solution	problems/5.addcol-vec/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+docs/mnist-golf/submissions/6.subrow-vec.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	24	24	78744	0	0	0	-	match	
+docs/mnist-golf/submissions/7.sumcol-mini.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+docs/mnist-golf/submissions/8.sumcol.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	8	8	77216	0	0	0	-	match	
+docs/mnist-golf/submissions/9.sumrow-mini.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+mncompile/benchmarks/results/1.a-b/kernel.vsm	solution	problems/1.a-b/testcase.vsm	ok	ok	4	4	79224	0	0	0	-	match	
+mncompile/benchmarks/results/1.plus-one/kernel.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	ok	ok	2	2	77208	0	0	0	-	match	
+mncompile/benchmarks/results/10.gather-easy/kernel.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	ok	ok	12	12	77448	0	0	0	-	match	
+mncompile/benchmarks/results/10.sumrow/kernel.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	24	24	77304	0	0	0	-	match	
+mncompile/benchmarks/results/11.maxrow/kernel.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	24	24	77304	0	0	0	-	match	
+mncompile/benchmarks/results/11.square-sum/kernel.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	ok	ok	21	21	77236	0	0	0	-	match	
+mncompile/benchmarks/results/12.convert-endian/kernel.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+mncompile/benchmarks/results/12.divrow-vec/kernel.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	56	56	78744	0	0	0	-	match	
+mncompile/benchmarks/results/13.exp-low-prec/kernel.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	20	20	79224	0	0	0	-	match	
+mncompile/benchmarks/results/13.mod3/kernel.vsm	solution	problems/challenge/13.mod3/testcase.vsm	ok	ok	15	15	78168	0	0	0	-	match	
+mncompile/benchmarks/results/14.exp/kernel.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	30	30	79224	0	0	0	-	match	
+mncompile/benchmarks/results/14.mat-sq/kernel.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	ok	ok	12	12	78104	0	0	0	-	match	
+mncompile/benchmarks/results/15.contains/kernel.vsm	solution	problems/challenge/15.contains/testcase.vsm	ok	ok	59	59	78216	0	0	0	-	match	
+mncompile/benchmarks/results/15.onehot-mini/kernel.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	17	17	77432	0	0	0	-	match	
+mncompile/benchmarks/results/16.count-up/kernel.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	43	43	93592	0	0	0	-	match	
+mncompile/benchmarks/results/16.onehot/kernel.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	44	44	78744	0	0	0	-	match	
+mncompile/benchmarks/results/17.dram-dl-256-16/kernel.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+mncompile/benchmarks/results/17.transpose-mab/kernel.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	ok	ok	45	45	77448	0	0	0	-	match	
+mncompile/benchmarks/results/18.dram-ul-256-16/kernel.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	6	6	79256	0	0	0	-	match	
+mncompile/benchmarks/results/18.inversion-small/kernel.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	ok	ok	30	30	77271	0	0	0	-	match	
+mncompile/benchmarks/results/19.dram-dl-256-16p/kernel.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	ok	ok	25	25	78744	0	0	0	-	match	
+mncompile/benchmarks/results/19.inversion/kernel.vsm	solution	problems/challenge/19.inversion/testcase.vsm	ok	ok	76	76	77268	0	0	0	-	match	
+mncompile/benchmarks/results/2.fmul7/kernel.vsm	solution	problems/2.fmul7/testcase.vsm	ok	ok	5	5	85336	0	0	0	-	match	
+mncompile/benchmarks/results/2.plus-two/kernel.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	ok	ok	7	7	77208	0	0	0	-	match	
+mncompile/benchmarks/results/20.dram-ul-256-16p/kernel.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	ok	ok	16	16	79256	0	0	0	-	match	
+mncompile/benchmarks/results/20.fizzbuzz/kernel.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	ok	ok	103	103	81304	0	0	0	-	match	
+mncompile/benchmarks/results/21.dram-dl-256-16-l2b/kernel.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	ok	ok	14	14	79000	0	0	0	-	match	
+mncompile/benchmarks/results/21.hello-world/kernel.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	ok	ok	13	13	77210	0	0	0	-	match	
+mncompile/benchmarks/results/22.bit-reverse/kernel.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	ok	ok	32	32	77208	0	0	0	-	match	
+mncompile/benchmarks/results/22.dram-dl-1024-16/kernel.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	ok	ok	10	10	85272	0	0	0	-	match	
+mncompile/benchmarks/results/23.dram-dl-256-1024/kernel.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	ok	ok	74	74	208088	0	0	0	-	match	
+mncompile/benchmarks/results/23.fizzbuzz-pe/kernel.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	ok	ok	12	12	93568	0	0	0	-	match	
+mncompile/benchmarks/results/24.dram-dl-16/kernel.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	5	5	77264	0	0	0	-	match	
+mncompile/benchmarks/results/24.log2/kernel.vsm	solution	problems/challenge/24.log2/testcase.vsm	ok	ok	15	15	78168	0	0	0	-	match	
+mncompile/benchmarks/results/25.dram-ul-16/kernel.vsm	solution	problems/25.dram-ul-16/testcase.vsm	ok	ok	5	5	77216	0	0	0	-	match	
+mncompile/benchmarks/results/25.hsv2rgb/kernel.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	ok	ok	27	27	77208	0	0	0	-	match	
+mncompile/benchmarks/results/26.dram-dl-16-1024/kernel.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	ok	ok	44	44	93512	0	0	0	-	match	
+mncompile/benchmarks/results/27.dram-ul-16-1024/kernel.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	18	18	85400	0	0	0	-	match	
+mncompile/benchmarks/results/28.dram-dl-16-16/kernel.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+mncompile/benchmarks/results/29.dram-ul-16-16/kernel.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	13	13	77336	0	0	0	-	match	
+mncompile/benchmarks/results/3.a-plus-b/kernel.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+mncompile/benchmarks/results/3.relu/kernel.vsm	solution	problems/3.relu/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+mncompile/benchmarks/results/30.dram-dl-256/kernel.vsm	solution	problems/30.dram-dl-256/testcase.vsm	ok	ok	11	11	77304	0	0	0	-	match	
+mncompile/benchmarks/results/31.dram-ul-256/kernel.vsm	solution	problems/31.dram-ul-256/testcase.vsm	ok	ok	9	9	77336	0	0	0	-	match	
+mncompile/benchmarks/results/32.matmul-trb-mab-lm-4-8-8/kernel.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+mncompile/benchmarks/results/33.matmul-trb-mab-lm-4-8-16/kernel.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	ok	ok	7	7	77208	0	0	0	-	match	
+mncompile/benchmarks/results/34.matmul-trb-mab-lm-4-16-8/kernel.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+mncompile/benchmarks/results/35.matmul-trb-mab-lm-4-16-16/kernel.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+mncompile/benchmarks/results/36.matmul-trb-pkg-lm-256-16-16/kernel.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	ok	ok	6	6	79224	0	0	0	-	match	
+mncompile/benchmarks/results/37.matmul-trb-mab-lm-32-8-16/kernel.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	ok	ok	21	21	77208	0	0	0	-	match	
+mncompile/benchmarks/results/38.matmul-trb-pkg-lm-256-128-16/kernel.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	ok	ok	48	48	79000	0	0	0	-	match	
+mncompile/benchmarks/results/39.matmul-trb-pkg-lmdram-256-1024-16/kernel.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	38	38	79256	0	0	0	-	match	
+mncompile/benchmarks/results/4.mul7/kernel.vsm	solution	problems/challenge/4.mul7/testcase.vsm	ok	ok	10	10	78168	0	0	0	-	match	
+mncompile/benchmarks/results/4.relu-grad/kernel.vsm	solution	problems/4.relu-grad/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+mncompile/benchmarks/results/40.matmul-notr-mab-lm-4-8-8/kernel.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	ok	ok	7	7	77208	0	0	0	-	match	
+mncompile/benchmarks/results/41.matmul-notr-mab-lm-4-16-16/kernel.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	ok	ok	23	23	77208	0	0	0	-	match	
+mncompile/benchmarks/results/42.matmul-notr-pkg-lm-256-16-16/kernel.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	ok	ok	23	23	79224	0	0	0	-	match	
+mncompile/benchmarks/results/43.matmul-tra-mab-lm-8-8-8/kernel.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+mncompile/benchmarks/results/44.matmul-tra-mab-lm-16-8-16/kernel.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	ok	ok	26	26	77208	0	0	0	-	match	
+mncompile/benchmarks/results/45.matmul-tra-mab-lm-16-4-16/kernel.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	ok	ok	20	20	77208	0	0	0	-	match	
+mncompile/benchmarks/results/46.matmul-tra-pkg-lmdram-16-256-16/kernel.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	ok	ok	31	31	77336	112	0	0	DRAM	MISMATCH	first DRAM n0 0x00000010 official=c857b3804a10f6a4 rust=0000000000000000
+mncompile/benchmarks/results/47.matmul-tra-mab-lm-16-32-8/kernel.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	ok	ok	50	50	77208	0	0	0	-	match	
+mncompile/benchmarks/results/48.matmul-tra-pkg-lmdram-16-256-1024/kernel.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	ok	ok	94	94	85400	0	0	0	-	match	
+mncompile/benchmarks/results/5.abs/kernel.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	15	15	79848	0	0	0	-	match	
+mncompile/benchmarks/results/5.addcol-vec/kernel.vsm	solution	problems/5.addcol-vec/testcase.vsm	ok	ok	4	4	79224	0	0	0	-	match	
+mncompile/benchmarks/results/6.fadd-mul/kernel.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	ok	ok	18	18	81048	0	0	0	-	match	
+mncompile/benchmarks/results/6.subrow-vec/kernel.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	35	35	78744	0	0	0	-	match	
+mncompile/benchmarks/results/7.mul2/kernel.vsm	solution	problems/challenge/7.mul2/testcase.vsm	ok	ok	13	13	80088	0	0	0	-	match	
+mncompile/benchmarks/results/7.sumcol-mini/kernel.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+mncompile/benchmarks/results/8.fle/kernel.vsm	solution	problems/challenge/8.fle/testcase.vsm	ok	ok	9	9	78408	0	0	0	-	match	
+mncompile/benchmarks/results/8.sumcol/kernel.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	12	12	77216	0	0	0	-	match	
+mncompile/benchmarks/results/9.sumrow-mini/kernel.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	9	9	77208	0	0	0	-	match	
+mncompile/benchmarks/results/9.transpose-addr/kernel.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	ok	ok	16	16	77208	0	0	0	-	match	
+problems/1.a-b/answer.vsm	solution	problems/1.a-b/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+problems/1.a-b/main.vsm	solution	problems/1.a-b/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+problems/1.a-b/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/10.sumrow/answer.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	16	16	77304	0	0	0	-	match	
+problems/10.sumrow/main.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	160	160	77304	0	0	0	-	match	
+problems/10.sumrow/testcase.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+problems/11.maxrow/answer.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	20	20	77304	0	0	0	-	match	
+problems/11.maxrow/main.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	145	145	77304	0	0	0	-	match	
+problems/11.maxrow/testcase.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+problems/12.divrow-vec/answer.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	28	28	78744	0	0	0	-	match	
+problems/12.divrow-vec/main.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	577	577	78744	0	0	0	-	match	
+problems/12.divrow-vec/testcase.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+problems/13.exp-low-prec/answer.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	8	8	79224	0	0	0	-	match	
+problems/13.exp-low-prec/main.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	39	39	79224	0	0	0	-	match	
+problems/13.exp-low-prec/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/14.exp/answer.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	14	14	79224	0	0	0	-	match	
+problems/14.exp/main.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	86	86	79224	0	0	0	-	match	
+problems/14.exp/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/15.onehot-mini/answer.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	7	7	77432	0	0	0	-	match	
+problems/15.onehot-mini/main.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	23	23	77432	0	0	0	-	match	
+problems/15.onehot-mini/scratch/test_mau.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	parse_error	4	-	-	-	-	-	-	skip	official: Trailing letter after location. /$imr1; rust: PARSE line 22: bad mask `1000/$imr1`
+problems/15.onehot-mini/scratch/test_syntax.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	ok	0	2	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+problems/15.onehot-mini/scratch/test_syntax2.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	1	1	77432	0	0	0	-	match	
+problems/15.onehot-mini/scratch/test_syntax3.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	ok	0	1	-	-	-	-	-	skip	official: conflict of word length between location and mask. Maybe ll1000 or 1000p?
+problems/15.onehot-mini/scratch/test_syntax4.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	21	21	77432	0	0	0	-	match	
+problems/15.onehot-mini/scratch/test_syntax5.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	ok	0	19	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+problems/15.onehot-mini/scratch/test_syntax6.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	unsupported	0	-	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'; rust: UNSUPPORTED line 20: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+problems/15.onehot-mini/scratch/test_syntax7.vsm	solution	problems/15.onehot-mini/testcase.vsm	emu_fail 134	unsupported	20	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 20: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+problems/15.onehot-mini/scratch/test_syntax8.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	parse_error	3	-	-	-	-	-	-	skip	official: No valid operation in this line.; rust: PARSE line 22: unknown opcode `inc`
+problems/15.onehot-mini/scratch/test_syntax9.vsm	solution	problems/15.onehot-mini/testcase.vsm	asm_fail 134	ok	0	13	-	-	-	-	-	skip	official: Invalid operand as the second ALU input.
+problems/15.onehot-mini/solution.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	24	24	77432	0	0	0	-	match	
+problems/15.onehot-mini/testcase.vsm	testcase	-	ok	ok	0	0	77432	0	0	0	-	match	
+problems/16.onehot/answer.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	24	24	78744	0	0	0	-	match	
+problems/16.onehot/main.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	560	560	78744	0	0	0	-	match	
+problems/16.onehot/solution.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	562	562	78744	0	0	0	-	match	
+problems/16.onehot/testcase.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+problems/17.dram-dl-256-16/answer.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+problems/17.dram-dl-256-16/main.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+problems/17.dram-dl-256-16/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/18.dram-ul-256-16/answer.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	6	6	79256	0	0	0	-	match	
+problems/18.dram-ul-256-16/main.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	6	6	79256	0	0	0	-	match	
+problems/18.dram-ul-256-16/testcase.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+problems/19.dram-dl-256-16p/answer.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	ok	ok	19	19	78744	0	0	0	-	match	
+problems/19.dram-dl-256-16p/main.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	ok	ok	25	25	78744	0	0	0	-	match	
+problems/19.dram-dl-256-16p/testcase.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+problems/2.fmul7/answer.vsm	solution	problems/2.fmul7/testcase.vsm	ok	ok	5	5	85336	0	0	0	-	match	
+problems/2.fmul7/main.vsm	solution	problems/2.fmul7/testcase.vsm	ok	ok	5	5	85336	0	0	0	-	match	
+problems/2.fmul7/testcase.vsm	testcase	-	ok	ok	0	0	85336	0	0	0	-	match	
+problems/20.dram-ul-256-16p/answer.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	ok	ok	10	10	79256	0	0	0	-	match	
+problems/20.dram-ul-256-16p/main.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	ok	ok	26	26	79256	0	0	0	-	match	
+problems/20.dram-ul-256-16p/testcase.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+problems/21.dram-dl-256-16-l2b/answer.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	ok	ok	12	12	79000	0	0	0	-	match	
+problems/21.dram-dl-256-16-l2b/main.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	ok	ok	14	14	79000	0	0	0	-	match	
+problems/21.dram-dl-256-16-l2b/testcase.vsm	testcase	-	ok	ok	0	0	79000	0	0	0	-	match	
+problems/22.dram-dl-1024-16/answer.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	ok	ok	8	8	85272	0	0	0	-	match	
+problems/22.dram-dl-1024-16/main.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	ok	ok	10	10	85272	0	0	0	-	match	
+problems/22.dram-dl-1024-16/testcase.vsm	testcase	-	ok	ok	0	0	85272	0	0	0	-	match	
+problems/23.dram-dl-256-1024/answer.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	ok	ok	68	68	208088	0	0	0	-	match	
+problems/23.dram-dl-256-1024/main.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	ok	ok	74	74	208088	0	0	0	-	match	
+problems/23.dram-dl-256-1024/testcase.vsm	testcase	-	ok	ok	0	0	208088	0	0	0	-	match	
+problems/24.dram-dl-16/answer.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	3	3	77264	0	0	0	-	match	
+problems/24.dram-dl-16/main.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	5	5	77264	0	0	0	-	match	
+problems/24.dram-dl-16/testcase.vsm	testcase	-	ok	ok	0	0	77264	0	0	0	-	match	
+problems/25.dram-ul-16/answer.vsm	solution	problems/25.dram-ul-16/testcase.vsm	ok	ok	4	4	77216	0	0	0	-	match	
+problems/25.dram-ul-16/main.vsm	solution	problems/25.dram-ul-16/testcase.vsm	ok	ok	5	5	77216	0	0	0	-	match	
+problems/25.dram-ul-16/testcase.vsm	testcase	-	ok	ok	0	0	77216	0	0	0	-	match	
+problems/26.dram-dl-16-1024/answer.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	ok	ok	39	39	93512	0	0	0	-	match	
+problems/26.dram-dl-16-1024/main.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	ok	ok	41	41	93512	0	0	0	-	match	
+problems/26.dram-dl-16-1024/testcase.vsm	testcase	-	ok	ok	0	0	93512	0	0	0	-	match	
+problems/27.dram-ul-16-1024/answer.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+problems/27.dram-ul-16-1024/main.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	41	41	85400	0	0	0	-	match	
+problems/27.dram-ul-16-1024/testcase.vsm	testcase	-	ok	ok	0	0	85400	0	0	0	-	match	
+problems/28.dram-dl-16-16/answer.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	ok	ok	7	7	77208	504	0	0	L1BM,L2BM,LM0	MISMATCH	first L1BM n0c0b0 0x0010 official=4280800042838000 rust=42c1800042c38000
+problems/28.dram-dl-16-16/main.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	ok	ok	13	13	77208	0	0	0	-	match	
+problems/28.dram-dl-16-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/29.dram-ul-16-16/answer.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	8	8	77336	0	0	0	-	match	
+problems/29.dram-ul-16-16/improved.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	8	8	77336	0	0	0	-	match	
+problems/29.dram-ul-16-16/main.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	13	13	77336	0	0	0	-	match	
+problems/29.dram-ul-16-16/testcase.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+problems/3.relu/answer.vsm	solution	problems/3.relu/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+problems/3.relu/main.vsm	solution	problems/3.relu/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+problems/3.relu/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/30.dram-dl-256/answer.vsm	solution	problems/30.dram-dl-256/testcase.vsm	ok	ok	10	10	77304	0	0	0	-	match	
+problems/30.dram-dl-256/main.vsm	solution	problems/30.dram-dl-256/testcase.vsm	ok	ok	11	11	77304	0	0	0	-	match	
+problems/30.dram-dl-256/testcase.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+problems/31.dram-ul-256/answer.vsm	solution	problems/31.dram-ul-256/testcase.vsm	ok	ok	7	7	77336	0	0	0	-	match	
+problems/31.dram-ul-256/main.vsm	solution	problems/31.dram-ul-256/testcase.vsm	ok	ok	37	37	77336	0	0	0	-	match	
+problems/31.dram-ul-256/testcase.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+problems/32.matmul-trb-mab-lm-4-8-8/answer.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+problems/32.matmul-trb-mab-lm-4-8-8/main.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/33.matmul-trb-mab-lm-4-8-16/answer.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/33.matmul-trb-mab-lm-4-8-16/main.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/34.matmul-trb-mab-lm-4-16-8/answer.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/34.matmul-trb-mab-lm-4-16-8/improved.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/34.matmul-trb-mab-lm-4-16-8/main.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/35.matmul-trb-mab-lm-4-16-16/answer.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/35.matmul-trb-mab-lm-4-16-16/improved.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/35.matmul-trb-mab-lm-4-16-16/main.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	ok	ok	24	24	77208	0	0	0	-	match	
+problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/36.matmul-trb-pkg-lm-256-16-16/answer.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	ok	ok	6	6	79224	0	0	0	-	match	
+problems/36.matmul-trb-pkg-lm-256-16-16/main.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	ok	ok	24	24	79224	0	0	0	-	match	
+problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/37.matmul-trb-mab-lm-32-8-16/answer.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	ok	ok	13	13	77208	0	0	0	-	match	
+problems/37.matmul-trb-mab-lm-32-8-16/main.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	ok	ok	96	96	77208	0	0	0	-	match	
+problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/38.matmul-trb-pkg-lm-256-128-16/answer.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	ok	ok	15	15	79000	0	0	0	-	match	
+problems/38.matmul-trb-pkg-lm-256-128-16/main.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	ok	ok	132	132	79000	0	0	0	-	match	
+problems/38.matmul-trb-pkg-lm-256-128-16/solution.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	ok	ok	132	132	79000	0	0	0	-	match	
+problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	testcase	-	ok	ok	0	0	79000	0	0	0	-	match	
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/answer.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	29	29	79256	0	0	0	-	match	
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/main.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	121	121	79256	0	0	0	-	match	
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/solution.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	123	123	79256	0	0	0	-	match	
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+problems/4.relu-grad/answer.vsm	solution	problems/4.relu-grad/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+problems/4.relu-grad/main.vsm	solution	problems/4.relu-grad/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+problems/4.relu-grad/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/40.matmul-notr-mab-lm-4-8-8/answer.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	ok	ok	7	7	77208	0	0	0	-	match	
+problems/40.matmul-notr-mab-lm-4-8-8/main.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/41.matmul-notr-mab-lm-4-16-16/answer.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	ok	ok	13	13	77208	0	0	0	-	match	
+problems/41.matmul-notr-mab-lm-4-16-16/main.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	ok	ok	40	40	77208	0	0	0	-	match	
+problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/42.matmul-notr-pkg-lm-256-16-16/answer.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	ok	ok	9	9	79224	0	0	0	-	match	
+problems/42.matmul-notr-pkg-lm-256-16-16/main.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	ok	ok	40	40	79224	0	0	0	-	match	
+problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/43.matmul-tra-mab-lm-8-8-8/answer.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	ok	ok	8	8	77208	0	0	0	-	match	
+problems/43.matmul-tra-mab-lm-8-8-8/main.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	ok	ok	16	16	77208	0	0	0	-	match	
+problems/43.matmul-tra-mab-lm-8-8-8/solution.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	ok	ok	16	16	77208	0	0	0	-	match	
+problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/44.matmul-tra-mab-lm-16-8-16/answer.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+problems/44.matmul-tra-mab-lm-16-8-16/main.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	ok	ok	40	40	77208	0	0	0	-	match	
+problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/45.matmul-tra-mab-lm-16-4-16/answer.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	ok	ok	9	9	77208	0	0	0	-	match	
+problems/45.matmul-tra-mab-lm-16-4-16/main.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	ok	ok	54	54	77208	0	0	0	-	match	
+problems/45.matmul-tra-mab-lm-16-4-16/solution.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	ok	ok	38	38	77208	0	0	0	-	match	
+problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/46.matmul-tra-pkg-lmdram-16-256-16/answer.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	ok	ok	21	21	77336	112	0	0	DRAM	MISMATCH	first DRAM n0 0x00000010 official=c857b3804a10f6a4 rust=0000000000000000
+problems/46.matmul-tra-pkg-lmdram-16-256-16/main.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	ok	ok	44	44	77336	0	0	0	-	match	
+problems/46.matmul-tra-pkg-lmdram-16-256-16/solution.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	ok	ok	44	44	77336	0	0	0	-	match	
+problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+problems/47.matmul-tra-mab-lm-16-32-8/answer.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	ok	ok	14	14	77208	0	0	0	-	match	
+problems/47.matmul-tra-mab-lm-16-32-8/main.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	ok	ok	96	96	77208	0	0	0	-	match	
+problems/47.matmul-tra-mab-lm-16-32-8/solution.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	ok	ok	96	96	77208	0	0	0	-	match	
+problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/answer.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	ok	ok	58	58	85400	0	0	0	-	match	
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/main.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	ok	ok	61	61	85400	0	0	0	-	match	
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/scratch/test_fmfma.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	asm_fail 134	unsupported	2	-	-	-	-	-	-	skip	official: Matrix mode operation B port should have matrix register; rust: UNSUPPORTED line 133126: unsupported: matrix operand in `fmfma $mreadf $lm128v $llr0 $llr0`
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	testcase	-	ok	ok	0	0	85400	0	0	0	-	match	
+problems/5.addcol-vec/answer.vsm	solution	problems/5.addcol-vec/testcase.vsm	ok	ok	2	2	79224	0	0	0	-	match	
+problems/5.addcol-vec/main.vsm	solution	problems/5.addcol-vec/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+problems/5.addcol-vec/scratch/5lines.vsm	solution	problems/5.addcol-vec/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+problems/5.addcol-vec/testcase.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+problems/6.subrow-vec/answer.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	22	22	78744	0	0	0	-	match	
+problems/6.subrow-vec/main.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	64	64	78744	0	0	0	-	match	
+problems/6.subrow-vec/testcase.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+problems/7.sumcol-mini/answer.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+problems/7.sumcol-mini/main.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+problems/7.sumcol-mini/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/8.sumcol/answer.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	6	6	77216	0	0	0	-	match	
+problems/8.sumcol/main.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	11	11	77216	0	0	0	-	match	
+problems/8.sumcol/testcase.vsm	testcase	-	ok	ok	0	0	77216	0	0	0	-	match	
+problems/9.sumrow-mini/answer.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	5	5	77208	0	0	0	-	match	
+problems/9.sumrow-mini/main.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	8	8	77208	0	0	0	-	match	
+problems/9.sumrow-mini/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/1.plus-one/answer.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	ok	ok	2	2	77208	0	0	0	-	match	
+problems/challenge/1.plus-one/main.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	ok	ok	2	2	77208	0	0	0	-	match	
+problems/challenge/1.plus-one/official.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	ok	ok	2	2	77208	0	0	0	-	match	
+problems/challenge/1.plus-one/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/10.gather-easy/answer.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	ok	ok	6	6	77448	0	0	0	-	match	
+problems/challenge/10.gather-easy/main.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	ok	ok	6	6	77448	0	0	0	-	match	
+problems/challenge/10.gather-easy/testcase.vsm	testcase	-	ok	ok	0	0	77448	0	0	0	-	match	
+problems/challenge/11.square-sum/answer.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	ok	ok	11	11	77236	0	0	0	-	match	
+problems/challenge/11.square-sum/main.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	ok	ok	11	11	77236	0	0	0	-	match	
+problems/challenge/11.square-sum/testcase.vsm	testcase	-	ok	ok	0	0	77236	0	0	0	-	match	
+problems/challenge/12.convert-endian/answer.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	ok	ok	3	3	77208	0	0	0	-	match	
+problems/challenge/12.convert-endian/main.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	ok	ok	3	3	77208	0	0	0	-	match	
+problems/challenge/12.convert-endian/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/13.mod3/answer.vsm	solution	problems/challenge/13.mod3/testcase.vsm	ok	ok	8	8	78168	0	0	0	-	match	
+problems/challenge/13.mod3/main.vsm	solution	problems/challenge/13.mod3/testcase.vsm	ok	ok	8	8	78168	0	0	0	-	match	
+problems/challenge/13.mod3/testcase.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+problems/challenge/14.mat-sq/answer.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	ok	ok	10	10	78104	0	0	0	-	match	
+problems/challenge/14.mat-sq/main.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	ok	ok	10	10	78104	0	0	0	-	match	
+problems/challenge/14.mat-sq/testcase.vsm	testcase	-	ok	ok	0	0	78104	0	0	0	-	match	
+problems/challenge/15.contains/answer.vsm	solution	problems/challenge/15.contains/testcase.vsm	ok	ok	20	20	78216	0	0	0	-	match	
+problems/challenge/15.contains/main.vsm	solution	problems/challenge/15.contains/testcase.vsm	ok	ok	20	20	78216	0	0	0	-	match	
+problems/challenge/15.contains/testcase.vsm	testcase	-	ok	ok	0	0	78216	0	0	0	-	match	
+problems/challenge/16.count-up/answer.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	21	21	93592	0	0	0	-	match	
+problems/challenge/16.count-up/main.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	21	21	93592	0	0	0	-	match	
+problems/challenge/16.count-up/testcase.vsm	testcase	-	ok	ok	0	0	93592	0	0	0	-	match	
+problems/challenge/17.transpose-mab/answer.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	ok	ok	15	15	77448	0	0	0	-	match	
+problems/challenge/17.transpose-mab/main.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	ok	ok	15	15	77448	0	0	0	-	match	
+problems/challenge/17.transpose-mab/testcase.vsm	testcase	-	ok	ok	0	0	77448	0	0	0	-	match	
+problems/challenge/18.inversion-small/answer.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	ok	ok	9	9	77271	0	0	0	-	match	
+problems/challenge/18.inversion-small/main.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	ok	ok	9	9	77271	0	0	0	-	match	
+problems/challenge/18.inversion-small/testcase.vsm	testcase	-	ok	ok	0	0	77271	0	0	0	-	match	
+problems/challenge/19.inversion/answer.vsm	solution	problems/challenge/19.inversion/testcase.vsm	ok	ok	31	31	77268	0	0	0	-	match	
+problems/challenge/19.inversion/main.vsm	solution	problems/challenge/19.inversion/testcase.vsm	ok	ok	31	31	77268	0	0	0	-	match	
+problems/challenge/19.inversion/testcase.vsm	testcase	-	ok	ok	0	0	77268	0	0	0	-	match	
+problems/challenge/2.plus-two/answer.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	ok	ok	5	5	77208	0	0	0	-	match	
+problems/challenge/2.plus-two/main.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	ok	ok	5	5	77208	0	0	0	-	match	
+problems/challenge/2.plus-two/official.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	ok	ok	9	9	77208	0	0	0	-	match	
+problems/challenge/2.plus-two/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/20.fizzbuzz/answer.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	ok	ok	47	47	81304	0	0	0	-	match	
+problems/challenge/20.fizzbuzz/lpha100.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	ok	parse_error	100	-	-	-	-	-	-	skip	rust: PARSE line 18: bad float `0x3.p+22`
+problems/challenge/20.fizzbuzz/main.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	ok	ok	98	98	81304	0	0	0	-	match	
+problems/challenge/20.fizzbuzz/testcase.vsm	testcase	-	ok	ok	0	0	81304	0	0	0	-	match	
+problems/challenge/21.hello-world/answer.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	ok	ok	9	9	77210	0	0	0	-	match	
+problems/challenge/21.hello-world/main.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	ok	ok	9	9	77210	0	0	0	-	match	
+problems/challenge/21.hello-world/testcase.vsm	testcase	-	ok	ok	0	0	77210	0	0	0	-	match	
+problems/challenge/22.bit-reverse/answer.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	ok	ok	9	9	77208	0	0	0	-	match	
+problems/challenge/22.bit-reverse/main.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+problems/challenge/22.bit-reverse/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/23.fizzbuzz-pe/answer.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	ok	ok	9	9	93568	0	0	0	-	match	
+problems/challenge/23.fizzbuzz-pe/main.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	ok	ok	9	9	93568	0	0	0	-	match	
+problems/challenge/23.fizzbuzz-pe/testcase.vsm	testcase	-	ok	ok	0	0	93568	0	0	0	-	match	
+problems/challenge/24.log2/answer.vsm	solution	problems/challenge/24.log2/testcase.vsm	ok	ok	7	7	78168	0	0	0	-	match	
+problems/challenge/24.log2/main.vsm	solution	problems/challenge/24.log2/testcase.vsm	ok	ok	7	7	78168	0	0	0	-	match	
+problems/challenge/24.log2/testcase.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+problems/challenge/25.hsv2rgb/answer.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+problems/challenge/25.hsv2rgb/main.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+problems/challenge/25.hsv2rgb/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/3.a-plus-b/answer.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/challenge/3.a-plus-b/main.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+problems/challenge/3.a-plus-b/official.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	ok	ok	8	8	77208	0	0	0	-	match	
+problems/challenge/3.a-plus-b/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+problems/challenge/4.mul7/answer.vsm	solution	problems/challenge/4.mul7/testcase.vsm	ok	ok	6	6	78168	0	0	0	-	match	
+problems/challenge/4.mul7/main.vsm	solution	problems/challenge/4.mul7/testcase.vsm	ok	ok	6	6	78168	0	0	0	-	match	
+problems/challenge/4.mul7/testcase.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+problems/challenge/5.abs/answer.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	13	13	79848	0	0	0	-	match	
+problems/challenge/5.abs/main.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	13	13	79848	0	0	0	-	match	
+problems/challenge/5.abs/testcase.vsm	testcase	-	ok	ok	0	0	79848	0	0	0	-	match	
+problems/challenge/6.fadd-mul/answer.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	ok	ok	14	14	81048	0	0	0	-	match	
+problems/challenge/6.fadd-mul/main.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	ok	ok	14	14	81048	0	0	0	-	match	
+problems/challenge/6.fadd-mul/testcase.vsm	testcase	-	ok	ok	0	0	81048	0	0	0	-	match	
+problems/challenge/7.mul2/answer.vsm	solution	problems/challenge/7.mul2/testcase.vsm	ok	ok	9	9	80088	0	0	0	-	match	
+problems/challenge/7.mul2/main.vsm	solution	problems/challenge/7.mul2/testcase.vsm	ok	ok	9	9	80088	0	0	0	-	match	
+problems/challenge/7.mul2/testcase.vsm	testcase	-	ok	ok	0	0	80088	0	0	0	-	match	
+problems/challenge/8.fle/answer.vsm	solution	problems/challenge/8.fle/testcase.vsm	ok	ok	4	4	78408	0	0	0	-	match	
+problems/challenge/8.fle/main.vsm	solution	problems/challenge/8.fle/testcase.vsm	ok	ok	4	4	78408	0	0	0	-	match	
+problems/challenge/8.fle/testcase.vsm	testcase	-	ok	ok	0	0	78408	0	0	0	-	match	
+problems/challenge/9.transpose-addr/answer.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+problems/challenge/9.transpose-addr/main.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+problems/challenge/9.transpose-addr/testcase.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+proofs_lean/evidence/empty-baselines/empty.vsm	standalone	-	ok	ok	0	0	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/00-alu-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/01-alu-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/02-alu-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/03-alu-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/04-alu-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/05-alu-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/06-alu-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/07-alu-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/08-alu-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to IALU forwarding register failed. The error on the previous step is: IALU is di; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing IALU forwarding register failed; the error on the previous step is: IALU is d
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/09-alu-disabled-long-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/10-alu-disabled-flush-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/11-alu-disabled-register-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/12-mau-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/13-mau-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/14-mau-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/15-mau-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/16-mau-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/17-mau-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/18-mau-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/19-mau-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/20-mau-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disa; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing MAU forwarding register failed; the error on the previous step is: MAU is dis
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/21-mread-valid.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/22-mread-nop.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/23-mread-noforward.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/24-mread-noforward-alu.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/25-mread-disabled-write.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/26-mread-disabled-discard.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/27-mread-disabled-mask-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/28-mread-disabled-narrow-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/29-mread-disabled-chain.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/30-lbf-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/31-lbf-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/32-lbf-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/33-lbf-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/34-lbf-disabled-write.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/35-lbf-disabled-discard.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/36-lbf-disabled-mask-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/37-lbf-disabled-narrow-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/38-lbf-disabled-chain.vsm	standalone	-	asm_fail 1	ok	3	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/00-alu-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/01-alu-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/02-alu-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/03-alu-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/04-alu-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/05-alu-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/06-alu-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/07-alu-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/08-alu-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to IALU forwarding register failed. The error on the previous step is: IALU is di; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing IALU forwarding register failed; the error on the previous step is: IALU is d
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/09-alu-disabled-long-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/10-alu-disabled-flush-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/11-alu-disabled-register-off.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/12-alu-disabled-register-focus.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/12-mau-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/13-mau-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/13-mau-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/14-mau-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/14-mau-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/15-mau-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/15-mau-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/16-mau-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/16-mau-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/17-mau-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/17-mau-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/18-mau-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/18-mau-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/19-mau-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/19-mau-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/20-mau-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disa; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing MAU forwarding register failed; the error on the previous step is: MAU is dis
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/20-mau-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/21-mau-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disa; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing MAU forwarding register failed; the error on the previous step is: MAU is dis
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/21-mread-valid.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/22-mread-nop.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/22-mread-valid.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/23-mread-noforward.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/23-mread-nop.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/24-mread-noforward-alu.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/24-mread-noforward.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/25-mread-disabled-write.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/25-mread-noforward-alu.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/26-mread-disabled-discard.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/26-mread-disabled-write.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/27-mread-disabled-discard.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/27-mread-disabled-mask-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/28-mread-disabled-mask-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/28-mread-disabled-narrow-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/29-mread-disabled-chain.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/29-mread-disabled-narrow-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-lbf-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-mread-disabled-chain.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-disabled-write.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/35-lbf-disabled-discard.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/35-lbf-disabled-write.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/36-lbf-disabled-discard.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/36-lbf-disabled-mask-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/37-lbf-disabled-mask-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/37-lbf-disabled-narrow-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/38-lbf-disabled-chain.vsm	standalone	-	asm_fail 1	ok	3	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/38-lbf-disabled-narrow-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/39-lbf-disabled-chain.vsm	standalone	-	asm_fail 1	ok	3	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/programs/00-alu-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/01-alu-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/02-alu-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/03-alu-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/04-alu-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/programs/05-alu-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/06-alu-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/07-alu-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/08-alu-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to IALU forwarding register failed. The error on the previous step is: IALU is di; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing IALU forwarding register failed; the error on the previous step is: IALU is d
+proofs_lean/evidence/forwarding/programs/09-alu-disabled-long-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/programs/10-alu-disabled-flush-off.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: IALU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing IALU forwarding register failed; the error on the previous step is: IALU is disabled
+proofs_lean/evidence/forwarding/programs/11-alu-disabled-register-off.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/12-alu-disabled-register-focus.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/13-mau-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/14-mau-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/15-mau-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/16-mau-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/17-mau-disabled-write.vsm	standalone	-	emu_fail 134	unsupported	5	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 5: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+proofs_lean/evidence/forwarding/programs/18-mau-disabled-discard.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/19-mau-disabled-mask-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/20-mau-disabled-narrow-off.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/21-mau-disabled-chain.vsm	standalone	-	emu_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disa; rust: UNSUPPORTED line 6: runtime error: accessing IALU forwarding register failed; the error on the previous step is: accessing MAU forwarding register failed; the error on the previous step is: MAU is dis
+proofs_lean/evidence/forwarding/programs/22-mread-valid.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/23-mread-nop.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/24-mread-noforward.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/25-mread-noforward-alu.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/26-mread-disabled-write.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/27-mread-disabled-discard.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/28-mread-disabled-mask-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/29-mread-disabled-narrow-off.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/30-mread-disabled-chain.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/31-mread-disabled-alu-imm.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/32-mread-disabled-mau.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/33-lbf-valid.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/34-lbf-nop.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/35-lbf-noforward.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/36-lbf-noforward-alu.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/forwarding/programs/37-lbf-disabled-write.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/programs/38-lbf-disabled-discard.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/programs/39-lbf-disabled-mask-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/programs/40-lbf-disabled-narrow-off.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/forwarding/programs/41-lbf-disabled-chain.vsm	standalone	-	asm_fail 1	ok	3	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/hm34/solution.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+proofs_lean/evidence/hm35/solution.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/00-disabled-write/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/00-disabled-write/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/00-disabled-write/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/intended.vsm	standalone	-	asm_fail 1	ok	3	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/template.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/06-after-mau/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/06-after-mau/intended.vsm	standalone	-	asm_fail 1	ok	3	5	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/06-after-mau/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/driver.vsm	standalone	-	ok	ok	2	2	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/intended.vsm	standalone	-	asm_fail 1	ok	4	6	-	-	-	-	-	skip	official: Check `ialu_op->a()' failed!  in ValueTypeFromUOpNode at value_type.cc:127 with codegen_dir=:
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/08-producer-new/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/08-producer-new/intended.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/08-producer-new/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/driver.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/intended.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/10-nop/driver.vsm	standalone	-	ok	ok	3	3	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/10-nop/intended.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+proofs_lean/evidence/lbf-encoded/10-nop/template.vsm	standalone	-	ok	ok	4	4	77208	0	0	0	-	match	
+proofs_lean/evidence/pkg36/solution.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+proofs_lean/evidence/ul29/solution.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+research/experiments/algo-redesign/t_coord.vsm	standalone	-	ok	ok	19	19	77208	0	0	0	-	match	
+research/experiments/algo-redesign/t_coord2.vsm	standalone	-	ok	ok	20	20	77208	0	0	0	-	match	
+research/experiments/algo-redesign/tt.vsm	standalone	-	asm_fail 134	ok	0	11	-	-	-	-	-	skip	official: No output location.
+research/experiments/constants/base.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/constants/cand_c1_Tmoved.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/cand_c2_maskL3.vsm	standalone	-	asm_fail 134	unsupported	2	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `mau_dmode` and `mau_dmode`.; rust: UNSUPPORTED line 3: assembler error: `dmread $lx0 $lr0v4` and `hvpassa -$aluf $omr15` have different precisions
+research/experiments/constants/cand_c3_maskL56.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/cand_c4_32atL2.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/cand_d18_s28_13.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/cand_d18_s29_8.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/cand_e1_mt42_on_L77.vsm	standalone	-	asm_fail 134	unsupported	75	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `in_grf0` and `in_grf0`.; rust: UNSUPPORTED line 76: assembler error: GRF0 is read at two different addresses (`lpassa $lr18 $t` and `fvpassa/$imr15 $r67v $mt42v`)
+research/experiments/constants/cand_e2_mt42_merge.vsm	standalone	-	asm_fail 134	unsupported	41	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `in_grf1` and `in_grf1`.; rust: UNSUPPORTED line 42: assembler error: GRF1 is read at two different addresses (`lsub $ls200 $ls132 $omr1` and `lsub $ls200 $ls132 $omr1`)
+research/experiments/constants/cand_e3_mt42_LM1.vsm	standalone	-	asm_fail 134	ok	77	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/constants/cand_f1_Twrite_on_L76.vsm	standalone	-	asm_fail 134	unsupported	75	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `in_grf0` and `in_grf0`.; rust: UNSUPPORTED line 76: assembler error: GRF0 is read at two different addresses (`fvpassa/$imr15 $r67v $mt42v` and `lpassa $lr18 $t`)
+research/experiments/constants/cand_f2_pack_s28_del78.vsm	standalone	-	asm_fail 134	ok	77	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/constants/cand_m1_masklit.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/constants/cand_m2_l16mask.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/constants/cand_v1_63mau.vsm	standalone	-	asm_fail 134	ok	20	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/constants/cand_v2_63mau.vsm	standalone	-	asm_fail 134	ok	20	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/constants/del_1.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to IALU forwarding register failed. The error on the previous step is: Uninitialized IALU forwarding register is read.; rust: UNSUPPORTED line 1: runtime error: accessing IALU forwarding register failed; the error on the previous step is: uninitialized IALU forwarding register
+research/experiments/constants/del_11.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_12.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_13.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_14.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_16.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_17.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_19.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_2.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_20.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_21.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 21: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+research/experiments/constants/del_25.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_26.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_27.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 27: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+research/experiments/constants/del_28.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_29.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_3.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_30.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_31.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_36.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 36: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+research/experiments/constants/del_37.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_38.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_39.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_42.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_43.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 43: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+research/experiments/constants/del_44.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_45.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_46.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_47.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_48.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_52.vsm	standalone	-	emu_fail 134	unsupported	92	-	-	-	-	-	-	skip	official: [runtime error exception] : Accessing to MAU forwarding register failed. The error on the previous step is: MAU is disabled; rust: UNSUPPORTED line 52: runtime error: accessing MAU forwarding register failed; the error on the previous step is: MAU is disabled
+research/experiments/constants/del_53.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_55.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_58.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_59.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_61.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_62.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_64.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_65.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_66.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_68.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_69.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_70.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_72.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_73.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_75.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_76.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_81.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_82.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_83.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_84.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_86.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_89.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_9.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_90.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_92.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/del_93.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/host18_86.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/host18_89.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/constants/host18_90.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/digit-closedform/cand_drop51.vsm	standalone	-	asm_fail 134	ok	48	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/digit-closedform/cand_move51.vsm	standalone	-	asm_fail 134	unsupported	51	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `alu` and `alu`.; rust: UNSUPPORTED line 52: assembler error: `ffloor $mauf $ls18v` and `fftoi $lmt[18,18,16,16] $t` are both in the alu group
+research/experiments/digit-closedform/cand_r18.vsm	standalone	-	ok	ok	88	88	77208	0	0	0	-	match	
+research/experiments/digit-closedform/cand_table.vsm	standalone	-	asm_fail 134	ok	48	90	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/digit-closedform/cand_table_keep51.vsm	standalone	-	ok	ok	91	91	77208	0	0	0	-	match	
+research/experiments/digit-closedform/cand_zero.vsm	standalone	-	ok	ok	88	88	77208	0	0	0	-	match	
+research/experiments/fable52/v13_54.vsm	standalone	-	ok	ok	54	54	77208	0	0	0	-	match	
+research/experiments/fable52/v13_55.vsm	standalone	-	ok	ok	55	55	77208	0	0	0	-	match	
+research/experiments/fable52/v15_47.vsm	standalone	-	ok	ok	47	47	77208	0	0	0	-	match	
+research/experiments/fable52/v15_47_commented.vsm	standalone	-	ok	ok	47	47	77208	0	0	0	-	match	
+research/experiments/fable52/v15_47_fmt.vsm	standalone	-	ok	ok	47	47	77208	0	0	0	-	match	
+research/experiments/fable52/v15_48.vsm	standalone	-	ok	ok	48	48	77208	0	0	0	-	match	
+research/experiments/fable52/v15_49.vsm	standalone	-	ok	ok	49	49	77208	0	0	0	-	match	
+research/experiments/fable52/v15_50.vsm	standalone	-	ok	ok	50	50	77208	0	0	0	-	match	
+research/experiments/fable52/v15_51.vsm	standalone	-	ok	ok	51	51	77208	0	0	0	-	match	
+research/experiments/fable52/v1_181.vsm	standalone	-	ok	ok	181	181	77208	0	0	0	-	match	
+research/experiments/fable52/v2_101.vsm	standalone	-	ok	ok	101	101	77208	0	0	0	-	match	
+research/experiments/fable52/v2_118.vsm	standalone	-	ok	ok	118	118	77208	0	0	0	-	match	
+research/experiments/fable52/v2_79.vsm	standalone	-	ok	ok	79	79	77208	0	0	0	-	match	
+research/experiments/fable52/v2_79_commented.vsm	standalone	-	ok	ok	79	79	77208	0	0	0	-	match	
+research/experiments/fable52/v2_82.vsm	standalone	-	ok	ok	82	82	77208	0	0	0	-	match	
+research/experiments/fable52/v2_84.vsm	standalone	-	ok	ok	84	84	77208	0	0	0	-	match	
+research/experiments/fable52/v2_87.vsm	standalone	-	ok	ok	87	87	77208	0	0	0	-	match	
+research/experiments/fable52/v2_92.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/fable52/v3_75.vsm	standalone	-	ok	ok	75	75	77208	0	0	0	-	match	
+research/experiments/fable52/v4_60.vsm	standalone	-	ok	ok	60	60	77208	0	0	0	-	match	
+research/experiments/fable52/v4_62.vsm	standalone	-	ok	ok	62	62	77208	0	0	0	-	match	
+research/experiments/fable52/v4_65.vsm	standalone	-	ok	ok	65	65	77208	0	0	0	-	match	
+research/experiments/fable52/v4_66.vsm	standalone	-	ok	ok	66	66	77208	0	0	0	-	match	
+research/experiments/fable52/v5_59.vsm	standalone	-	ok	ok	59	59	77208	0	0	0	-	match	
+research/experiments/fable52/v8_58.vsm	standalone	-	ok	ok	58	58	77208	0	0	0	-	match	
+research/experiments/fable52/v9_55.vsm	standalone	-	ok	ok	55	55	77208	0	0	0	-	match	
+research/experiments/fable52/v9_57.vsm	standalone	-	ok	ok	57	57	77208	0	0	0	-	match	
+research/experiments/fb52/prim_8lanes.vsm	standalone	-	ok	ok	24	24	77208	0	0	0	-	match	
+research/experiments/fb52/val_digit.vsm	standalone	-	ok	ok	107	107	77208	0	0	0	-	match	
+research/experiments/fb52/val_inv.vsm	standalone	-	ok	ok	67	67	77208	0	0	0	-	match	
+research/experiments/fb52/val_x.vsm	standalone	-	ok	ok	27	27	77208	0	0	0	-	match	
+research/experiments/isa-analyst/logs/a_dump.vsm	standalone	-	asm_fail 134	parse_error	0	-	-	-	-	-	-	skip	official: No valid operation in this line.; rust: PARSE line 1: unknown opcode `j`
+research/experiments/isa-analyst/progs/b_base.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvd.vsm	standalone	-	ok	ok	2	2	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvp_l2bm_par.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvp_l2bm_single.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvp_pdm.vsm	standalone	-	ok	ok	2	2	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvr.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvr2.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/b_mvr4.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/e2_l1bmd_extent.vsm	standalone	-	ok	ok	5	5	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/e2_multiwrite.vsm	standalone	-	ok	ok	5	5	77212	0	0	0	-	match	
+research/experiments/isa-analyst/progs/e2_three_mem.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/t_base.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/t_l2bm_dram.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/t_mv_share.vsm	standalone	-	asm_fail 134	parse_error	0	-	-	-	-	-	-	skip	official: Non PE operation after separator.; rust: PARSE line 1: unknown opcode `mvp/n64`
+research/experiments/isa-analyst/progs/t_mvp.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/t_nop.vsm	standalone	-	ok	ok	6	6	77208	0	0	0	-	match	
+research/experiments/isa-analyst/progs/t_pdm_base.vsm	standalone	-	ok	ok	1	1	77212	0	0	0	-	match	
+research/experiments/lowerbound/cand_aluf.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/lowerbound/cand_one_l2bmd.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/lowerbound/nine_word.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/packer/baseline-93.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_direct_l2bm_dram.vsm	standalone	-	ok	ok	91	91	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_direct_l2bm_dram_par.vsm	standalone	-	ok	ok	91	91	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_drop_nop85.vsm	standalone	-	asm_fail 134	ok	86	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_drop_nop87.vsm	standalone	-	asm_fail 134	ok	86	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_drop_nop8791.vsm	standalone	-	asm_fail 134	ok	86	91	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_drop_nop88.vsm	standalone	-	asm_fail 134	ok	86	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_drop_nop8889.vsm	standalone	-	asm_fail 134	ok	86	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_drop_nop91.vsm	standalone	-	asm_fail 134	ok	86	92	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/cand/c_l1bm_to_dram.vsm	standalone	-	asm_fail 134	parse_error	6	-	-	-	-	-	-	skip	official: Invalid mv instruction operands.; rust: PARSE line 7: bad MV statement `mvp/n64 $lb0 $d0@0`
+research/experiments/packer/cand/c_l2bm512_to_d0.vsm	standalone	-	ok	ok	91	91	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_mvd_only_then_dist.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_skip_gather1.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_skip_gather2.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/packer/cand/c_skip_l1bmd.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/packer/probes/p01_word_half.vsm	standalone	-	asm_fail 134	ok	0	2	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p02_pack_sim.vsm	standalone	-	ok	ok	12	12	77212	0	0	0	-	match	
+research/experiments/packer/probes/p03_dump_stages.vsm	standalone	-	ok	ok	93	93	77225	8	0	0	PDM	MISMATCH	PDM only: the official `d get $p` prints DRAM (testdata/pdm_dget.vsm); first PDM n0 0x00000000 official=0000000000000000 rust=310a320a46697a7a
+research/experiments/packer/probes/p04_grf_write.vsm	standalone	-	asm_fail 134	ok	0	4	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p05_mask.vsm	standalone	-	asm_fail 134	ok	0	5	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p06_canvas.vsm	standalone	-	ok	ok	93	93	77256	0	0	0	-	match	
+research/experiments/packer/probes/p07_tag_2block.vsm	standalone	-	ok	ok	21	21	81304	0	0	0	-	match	
+research/experiments/packer/probes/p08_tag_1block.vsm	standalone	-	asm_fail 134	ok	0	16	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p09_dar_scatter.vsm	standalone	-	asm_fail 134	ok	10	14	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p10_l1bm_dup.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/packer/probes/p11_write4words.vsm	standalone	-	asm_fail 134	ok	0	2	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p12_2block_pack.vsm	standalone	-	ok	ok	52	52	81304	0	0	0	-	match	
+research/experiments/packer/probes/p12_final_2block.vsm	standalone	-	ok	ok	51	51	81304	0	0	0	-	match	
+research/experiments/packer/probes/p12b.vsm	standalone	-	asm_fail 134	ok	48	50	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p12c.vsm	standalone	-	asm_fail 134	ok	48	50	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/packer/probes/p13_flat_canvas_writes.vsm	standalone	-	ok	ok	7	7	77208	0	0	0	-	match	
+research/experiments/parent/dead_chain_84.vsm	standalone	-	ok	ok	84	84	77208	0	0	0	-	match	
+research/experiments/parent/no_nops.vsm	standalone	-	asm_fail 134	ok	67	85	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/10.sumrow/base.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	16	16	77304	0	0	0	-	match	
+research/experiments/resched/10.sumrow/best.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	15	15	77304	0	0	0	-	match	
+research/experiments/resched/10.sumrow/fail14_lm0port.vsm	solution	problems/10.sumrow/testcase.vsm	asm_fail 134	ok	10	14	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/10.sumrow/fail_lm1_inout.vsm	solution	problems/10.sumrow/testcase.vsm	asm_fail 134	unsupported	6	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `in_lm1` and `out_lm1`.; rust: UNSUPPORTED line 2057: assembler error: LM1 is read and written at different addresses in one step (`l1bmrffadd $lln528 $llbi` and `l1bmm $llbi $lln0v`)
+research/experiments/resched/10.sumrow/probe_fmmul.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	6	6	77304	0	0	0	-	match	
+research/experiments/resched/10.sumrow/probe_fpassa_t.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	6	6	77304	0	0	0	-	match	
+research/experiments/resched/10.sumrow/probe_peid_t.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	6	6	77304	0	0	0	-	match	
+research/experiments/resched/10.sumrow/r15.vsm	solution	problems/10.sumrow/testcase.vsm	ok	ok	15	15	77304	0	0	0	-	match	
+research/experiments/resched/11.maxrow/c_twolm.vsm	solution	problems/11.maxrow/testcase.vsm	asm_fail 134	unsupported	3	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `lm0` and `in_lm0`.; rust: UNSUPPORTED line 2054: assembler error: LM0 is read at two different addresses (`fmax $mt0v4 $mt1v4 $nowrite` and `fmax $mt0v4 $mt1v4 $nowrite`)
+research/experiments/resched/11.maxrow/d1.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	0	0	77318	0	0	0	-	match	
+research/experiments/resched/11.maxrow/t1.vsm	solution	problems/11.maxrow/testcase.vsm	ok	ok	6	6	77304	0	0	0	-	match	
+research/experiments/resched/11.square-sum/base.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	ok	ok	11	11	77236	0	0	0	-	match	
+research/experiments/resched/11.square-sum/p_nonop.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	asm_fail 134	ok	10	10	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/11.square-sum/p_tline2.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	asm_fail 134	ok	10	10	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/12.divrow-vec/best.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	28	28	78744	0	0	0	-	match	
+research/experiments/resched/12.divrow-vec/p1.vsm	solution	problems/12.divrow-vec/testcase.vsm	ok	ok	28	28	78744	0	0	0	-	match	
+research/experiments/resched/13.exp-low-prec/answer.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	10	10	79224	0	0	0	-	match	
+research/experiments/resched/13.exp-low-prec/c8.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	8	8	79224	0	0	0	-	match	
+research/experiments/resched/13.exp-low-prec/exp8.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	8	8	79224	0	0	0	-	match	
+research/experiments/resched/13.exp-low-prec/exp9.vsm	solution	problems/13.exp-low-prec/testcase.vsm	ok	ok	9	9	79224	0	0	0	-	match	
+research/experiments/resched/14.exp/a14.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	14	14	79224	0	0	0	-	match	
+research/experiments/resched/14.exp/exp14.vsm	solution	problems/14.exp/testcase.vsm	ok	ok	14	14	79224	0	0	0	-	match	
+research/experiments/resched/15.contains/c1.vsm	solution	problems/challenge/15.contains/testcase.vsm	asm_fail 134	ok	10	19	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/15.contains/c2.vsm	solution	problems/challenge/15.contains/testcase.vsm	asm_fail 134	ok	20	20	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/15.contains/c3.vsm	solution	problems/challenge/15.contains/testcase.vsm	asm_fail 134	ok	20	20	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/resched/15.contains/c5_nohbfn.vsm	solution	problems/challenge/15.contains/testcase.vsm	ok	ok	20	20	78216	0	0	0	-	match	
+research/experiments/resched/16.count-up/base.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	21	21	93592	0	0	0	-	match	
+research/experiments/resched/16.count-up/dbg.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	21	21	93609	4	0	0	PDM	MISMATCH	PDM only: the official `d get $p` prints DRAM (testdata/pdm_dget.vsm); first PDM n0 0x00000000 official=0000000100000002 rust=0000000000000001
+research/experiments/resched/16.count-up/proto_mv.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	7	7	93592	0	0	0	-	match	
+research/experiments/resched/16.count-up/v1.vsm	solution	problems/challenge/16.count-up/testcase.vsm	ok	ok	35	35	93592	0	0	0	-	match	
+research/experiments/resched/16.count-up/v2.vsm	solution	problems/challenge/16.count-up/testcase.vsm	asm_fail 134	ok	20	34	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/16.onehot/c23.vsm	solution	problems/16.onehot/testcase.vsm	ok	ok	23	23	78744	0	0	0	-	match	
+research/experiments/resched/17.transpose-mab/base.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	ok	ok	15	15	77448	0	0	0	-	match	
+research/experiments/resched/17.transpose-mab/nodiag14.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	asm_fail 134	ok	10	14	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/17.transpose-mab/nonop.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	asm_fail 134	ok	10	14	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/19.inversion/c30a.vsm	solution	problems/challenge/19.inversion/testcase.vsm	asm_fail 134	unsupported	8	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `out_grf1` and `out_grf1`.; rust: UNSUPPORTED line 4107: assembler error: `fvadd $lr2v4 -$ln64 $lr2v4/$imr2 $ls2v4/$imr2` and `l1bmd $lbi $ls160v` both write GRF1
+research/experiments/resched/19.inversion/c30b.vsm	solution	problems/challenge/19.inversion/testcase.vsm	asm_fail 134	ok	10	30	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/19.inversion/c30c.vsm	solution	problems/challenge/19.inversion/testcase.vsm	asm_fail 134	ok	20	30	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/19.inversion/c30d.vsm	solution	problems/challenge/19.inversion/testcase.vsm	asm_fail 134	unsupported	3	-	-	-	-	-	-	skip	official: GRF0 used twice as output.; rust: UNSUPPORTED line 4102: assembler error: `fvmul $aluf $aluf $lr2v4 $lr0v4 $ls0v4 $ls96v` and `fvmul $aluf $aluf $lr2v4 $lr0v4 $ls0v4 $ls96v` both write GRF0
+research/experiments/resched/25.hsv2rgb/dbg.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	ok	ok	12	12	77208	0	0	0	-	match	
+research/experiments/resched/25.hsv2rgb/t1.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/base.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/c1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	0	12	-	-	-	-	-	skip	official: Invalid operand as the second ALU input.
+research/experiments/resched/27.dram-ul-16-1024/c2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	0	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/resched/27.dram-ul-16-1024/c3.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	12	12	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/d11.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	10	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/27.dram-ul-16-1024/d3.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	0	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/27.dram-ul-16-1024/d5.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	10	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/27.dram-ul-16-1024/d6.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	10	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/27.dram-ul-16-1024/t1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	12	12	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/t2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	asm_fail 134	ok	0	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/27.dram-ul-16-1024/v_bar.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/v_noimm.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/v_t1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	12	12	85400	0	0	0	-	match	
+research/experiments/resched/27.dram-ul-16-1024/v_t2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	12	12	85400	0	0	0	-	match	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/best.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	29	29	79256	0	0	0	-	match	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/c1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	asm_fail 134	ok	20	28	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/h1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	23	23	79256	0	0	0	-	match	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	emu_fail 134	unsupported	29	-	-	-	-	-	-	skip	official: [runtime error exception] : Invalid block float format. The exponent of 2th element is not equal to the common exponent 134.; rust: UNSUPPORTED line 163849: runtime error: invalid block float in the vector input: the exponent of element 0 is not the common exponent 135 (bfn/bfe missing?)
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r2.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	asm_fail 134	unsupported	3	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `lm0` and `in_lm0`.; rust: UNSUPPORTED line 163847: assembler error: LM0 is read at two different addresses (`gbfn $lm0v $t` and `gmwrite $lm88v $ly4`)
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r3.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	emu_fail 134	unsupported	29	-	-	-	-	-	-	skip	official: [runtime error exception] : Invalid block float format. The exponent of 2th element is not equal to the common exponent 135.; rust: UNSUPPORTED line 163849: runtime error: invalid block float in a matrix row: the exponent of element 1 is not the common exponent 135 (bfn/bfe missing?)
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/t2.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	1	1	79256	0	0	0	-	match	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/v3.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	ok	ok	29	29	79256	0	0	0	-	match	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/v4.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	asm_fail 134	ok	20	28	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/48.matmul/base.vsm	standalone	-	ok	ok	61	61	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/best.vsm	standalone	-	ok	ok	58	58	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/c1.vsm	standalone	-	asm_fail 134	unsupported	17	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `l1bm_emit_bmode` and `l1bm_collect_bmode`.; rust: UNSUPPORTED line 18: assembler error: `l1bmm $llb384 $lls96v` and `l1bmd $aluf $lb4096` are both in the l1bm group
+research/experiments/resched/48.matmul/c2.vsm	standalone	-	asm_fail 134	unsupported	23	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `l2bm` and `l2bmdars(lwrite or bdmode)`.; rust: UNSUPPORTED line 24: assembler error: `l2bmd $lb1024 $lc256` and `l2bmdars $lc0@.0 $dar0` are both in the l2bm group
+research/experiments/resched/48.matmul/c3.vsm	standalone	-	asm_fail 134	ok	20	59	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/resched/48.matmul/c4.vsm	standalone	-	asm_fail 134	ok	20	59	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/48.matmul/c5.vsm	standalone	-	ok	ok	59	59	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/c6.vsm	standalone	-	ok	ok	58	58	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/c7_nonop.vsm	standalone	-	asm_fail 134	ok	48	57	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/48.matmul/p1.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/sh1.vsm	standalone	-	ok	ok	60	60	77208	0	0	0	-	match	
+research/experiments/resched/48.matmul/t1.vsm	standalone	-	asm_fail 134	unsupported	60	-	-	-	-	-	-	skip	official: Group ids or l2bm ids of operands are invalid.; rust: UNSUPPORTED line 61: unsupported: MV instruction `mvp/n8192 $p0@0 $d0`
+research/experiments/resched/48.matmul/t2.vsm	standalone	-	ok	ok	59	59	77208	0	0	0	-	match	
+research/experiments/resched/5.abs/base.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	13	13	79848	0	0	0	-	match	
+research/experiments/resched/5.abs/probe1.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	10	10	79848	0	0	0	-	match	
+research/experiments/resched/5.abs/probe2.vsm	solution	problems/challenge/5.abs/testcase.vsm	ok	ok	9	9	79848	0	0	0	-	match	
+research/experiments/resched/6.fadd-mul/dbg.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	ok	ok	0	0	81048	0	0	0	-	match	
+research/experiments/resched/6.fadd-mul/ktest.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	ok	ok	7	7	81048	0	0	0	-	match	
+research/experiments/resched/6.subrow-vec/best.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	22	22	78744	0	0	0	-	match	
+research/experiments/resched/6.subrow-vec/cand22.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	22	22	78744	0	0	0	-	match	
+research/experiments/resched/6.subrow-vec/cand23.vsm	solution	problems/6.subrow-vec/testcase.vsm	ok	ok	23	23	78744	0	0	0	-	match	
+research/experiments/resched/8.sumcol/base.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	8	8	77216	0	0	0	-	match	
+research/experiments/resched/8.sumcol/best.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	6	6	77216	0	0	0	-	match	
+research/experiments/resched/8.sumcol/c5bar.vsm	solution	problems/8.sumcol/testcase.vsm	asm_fail 134	ok	0	5	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/8.sumcol/c5t.vsm	solution	problems/8.sumcol/testcase.vsm	asm_fail 134	ok	0	5	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/8.sumcol/c6a.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	6	6	77216	0	0	0	-	match	
+research/experiments/resched/8.sumcol/c6b.vsm	solution	problems/8.sumcol/testcase.vsm	asm_fail 134	ok	0	6	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/8.sumcol/c6bar.vsm	solution	problems/8.sumcol/testcase.vsm	asm_fail 134	ok	0	6	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/8.sumcol/c7a.vsm	solution	problems/8.sumcol/testcase.vsm	ok	ok	7	7	77216	0	0	0	-	match	
+research/experiments/resched/challenge-mid/14.mat-sq/base.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	ok	ok	10	10	78104	0	0	0	-	match	
+research/experiments/resched/challenge-mid/18.inversion-small/base.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	ok	ok	9	9	77271	0	0	0	-	match	
+research/experiments/resched/challenge-mid/21.hello-world/base.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	ok	ok	9	9	77210	0	0	0	-	match	
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/base.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	ok	ok	9	9	93568	0	0	0	-	match	
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/c8a.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	ok	ok	8	8	93568	0	0	0	-	match	
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/full.vsm	testcase	-	ok	ok	0	0	93568	0	0	0	-	match	
+research/experiments/resched/challenge-mid/9.transpose-addr/base.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+research/experiments/resched/challenge-mid/9.transpose-addr/dirty10.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	ok	ok	10	10	77208	0	0	0	-	match	
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/a1.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	asm_fail 134	ok	1	5	-	-	-	-	-	skip	official: L2B id must not be set.
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/a2.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	asm_fail 134	ok	1	4	-	-	-	-	-	skip	official: L2B id must not be set.
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/d0.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+research/experiments/resched/dar-sweep/18.dram-ul-256-16/a1.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	asm_fail 134	ok	3	6	-	-	-	-	-	skip	official: L2B id must not be set.
+research/experiments/resched/dar-sweep/18.dram-ul-256-16/a2.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	5	5	79256	0	0	0	-	match	
+research/experiments/resched/dram-sweep/17.dram-dl-256-16/base.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	ok	ok	5	5	79224	0	0	0	-	match	
+research/experiments/resched/dram-sweep/17.dram-dl-256-16/c4_nonop.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	asm_fail 134	ok	0	4	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/18.dram-ul-256-16/base.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	ok	ok	6	6	79256	0	0	0	-	match	
+research/experiments/resched/dram-sweep/18.dram-ul-256-16/c5_onenop.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	asm_fail 134	ok	0	5	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/19.dram-dl-256-16p/base.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	ok	ok	19	19	78744	0	0	0	-	match	
+research/experiments/resched/dram-sweep/20.dram-ul-256-16p/base.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	ok	ok	10	10	79256	0	0	0	-	match	
+research/experiments/resched/dram-sweep/20.dram-ul-256-16p/c9_nomvwait.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	asm_fail 134	ok	0	9	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/21.dram-dl-256-16-l2b/base.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	ok	ok	12	12	79000	0	0	0	-	match	
+research/experiments/resched/dram-sweep/22.dram-dl-1024-16/base.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	ok	ok	8	8	85272	0	0	0	-	match	
+research/experiments/resched/dram-sweep/23.dram-dl-256-1024/base.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	ok	ok	68	68	208088	0	0	0	-	match	
+research/experiments/resched/dram-sweep/24.dram-dl-16/base.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	4	4	77264	0	0	0	-	match	
+research/experiments/resched/dram-sweep/24.dram-dl-16/best.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	3	3	77264	0	0	0	-	match	
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	3	3	77264	0	0	0	-	match	
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3_bad16.vsm	solution	problems/24.dram-dl-16/testcase.vsm	asm_fail 134	ok	0	3	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3m.vsm	solution	problems/24.dram-dl-16/testcase.vsm	ok	ok	3	3	77264	0	0	0	-	match	
+research/experiments/resched/dram-sweep/25.dram-ul-16/base.vsm	solution	problems/25.dram-ul-16/testcase.vsm	ok	ok	4	4	77216	0	0	0	-	match	
+research/experiments/resched/dram-sweep/25.dram-ul-16/c3_nonop.vsm	solution	problems/25.dram-ul-16/testcase.vsm	asm_fail 134	ok	0	3	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/26.dram-dl-16-1024/base.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	ok	ok	39	39	93512	0	0	0	-	match	
+research/experiments/resched/dram-sweep/27.dram-ul-16-1024/base.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	ok	ok	13	13	85400	0	0	0	-	match	
+research/experiments/resched/dram-sweep/28.dram-dl-16-16/base.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	ok	ok	7	7	77208	504	0	0	L1BM,L2BM,LM0	MISMATCH	first L1BM n0c0b0 0x0010 official=4280800042838000 rust=42c1800042c38000
+research/experiments/resched/dram-sweep/29.dram-ul-16-16/base.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	ok	ok	8	8	77336	0	0	0	-	match	
+research/experiments/resched/dram-sweep/29.dram-ul-16-16/c7_flat_mvr.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	asm_fail 134	ok	0	7	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/dram-sweep/30.dram-dl-256/base.vsm	solution	problems/30.dram-dl-256/testcase.vsm	ok	ok	10	10	77304	0	0	0	-	match	
+research/experiments/resched/dram-sweep/31.dram-ul-256/base.vsm	solution	problems/31.dram-ul-256/testcase.vsm	ok	ok	7	7	77336	0	0	0	-	match	
+research/experiments/resched/dram-sweep/31.dram-ul-256/c6_onenop.vsm	solution	problems/31.dram-ul-256/testcase.vsm	asm_fail 134	ok	0	6	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/matmul-sweep/37/best.vsm	standalone	-	ok	ok	13	13	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/37/c1.vsm	standalone	-	ok	ok	14	14	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/37/c2.vsm	standalone	-	ok	unsupported	14	-	-	-	-	-	-	skip	rust: UNSUPPORTED line 7: runtime error: reading $lbi failed: the previous step had no PE-to-L1BM transfer
+research/experiments/resched/matmul-sweep/37/c3.vsm	standalone	-	ok	ok	14	14	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/37/h13.vsm	standalone	-	ok	ok	13	13	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/38/best.vsm	standalone	-	ok	ok	15	15	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/38/h15.vsm	standalone	-	ok	ok	15	15	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/42/best.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/42/h9.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/44/best.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/44/h10.vsm	standalone	-	ok	ok	10	10	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/44/h11.vsm	standalone	-	ok	ok	11	11	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/45/best.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/45/h9.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/46/best.vsm	standalone	-	ok	ok	21	21	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/46/n1.vsm	standalone	-	asm_fail 134	ok	20	21	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/matmul-sweep/46/n2.vsm	standalone	-	asm_fail 134	ok	20	21	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/matmul-sweep/46/n3.vsm	standalone	-	asm_fail 134	ok	20	21	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/matmul-sweep/46/r21.vsm	standalone	-	ok	ok	21	21	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/47/b2.vsm	standalone	-	asm_fail 134	ok	10	12	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/resched/matmul-sweep/47/b3.vsm	standalone	-	asm_fail 134	ok	10	13	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::PortConflictError'
+research/experiments/resched/matmul-sweep/47/best.vsm	standalone	-	ok	ok	14	14	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/47/d3.vsm	standalone	-	ok	ok	14	14	77208	0	0	0	-	match	
+research/experiments/resched/matmul-sweep/48/s1.vsm	standalone	-	asm_fail 134	ok	20	60	-	-	-	-	-	skip	official: terminate called after throwing an instance of 'grape_pfn::hazard_checker::gpfn3::DataRaceError'
+research/experiments/resched/mnist-small/1.a-b/base.vsm	solution	problems/1.a-b/testcase.vsm	ok	ok	3	3	79224	0	0	0	-	match	
+research/experiments/resched/mnist-small/15.onehot-mini/base.vsm	solution	problems/15.onehot-mini/testcase.vsm	ok	ok	7	7	77432	0	0	0	-	match	
+research/experiments/resched/mnist-small/2.fmul7/base.vsm	solution	problems/2.fmul7/testcase.vsm	ok	ok	5	5	85336	0	0	0	-	match	
+research/experiments/resched/mnist-small/2.fmul7/f4_immlm0.vsm	solution	problems/2.fmul7/testcase.vsm	asm_fail 134	unsupported	0	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `immediate` and `lm0`.; rust: UNSUPPORTED line 32771: assembler error: LM0 is accessed in the same step as `imm ui"0x40E00000" $t`
+research/experiments/resched/mnist-small/7.sumcol-mini/base.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/7.sumcol-mini/s3_twolm0.vsm	solution	problems/7.sumcol-mini/testcase.vsm	asm_fail 134	unsupported	1	-	-	-	-	-	-	skip	official: Instruction field conflict detected between `lm0` and `in_lm0`.; rust: UNSUPPORTED line 36: assembler error: LM0 is read at two different addresses (`fvadd $lm4v $lm8v $nowrite` and `fvadd $lm4v $lm8v $nowrite`)
+research/experiments/resched/mnist-small/7.sumcol-mini/s4_l1bm.vsm	solution	problems/7.sumcol-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/base.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	6	6	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/best.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	5	5	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/c4a.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/c4b.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	4	4	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/c5a.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	5	5	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/p1.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	3	3	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/p2.vsm	solution	problems/9.sumrow-mini/testcase.vsm	ok	ok	3	3	77208	0	0	0	-	match	
+research/experiments/resched/mnist-small/9.sumrow-mini/tc_tight.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/22.bit-reverse/c9a.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	ok	ok	9	9	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/22.bit-reverse/tc0.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/22.bit-reverse/tc1.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/22.bit-reverse/tc2.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/22.bit-reverse/tc3.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+research/experiments/resched/small-alu/24.log2/d7.vsm	solution	problems/challenge/24.log2/testcase.vsm	ok	ok	7	7	78168	0	0	0	-	match	
+research/experiments/resched/small-alu/24.log2/tc0.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+research/experiments/resched/small-alu/24.log2/tc1.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+research/experiments/resched/small-alu/24.log2/tc2.vsm	testcase	-	ok	ok	0	0	78168	0	0	0	-	match	
+research/experiments/resched/small-alu/7.mul2/d9.vsm	solution	problems/challenge/7.mul2/testcase.vsm	ok	ok	9	9	80088	0	0	0	-	match	
+research/experiments/superopt/best/93w_9b36e271ad.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/twoblock/base93.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/twoblock/const/del_18b_fold32_at_L2.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/t1_L17_host_immT.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/twoblock/const/t1b_L21_host_immT.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/twoblock/const/t2_imax_25_28_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/t3_imin_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/t4_w25eq8_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/v1_32both_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/v2_56at25_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/v3_32at16_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/experiments/twoblock/const/v4_32at16_keep.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+research/experiments/twoblock/const/v5_32at25only_del18.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/preliminary/fizzbuzz-delivery/vsm/aluf_92.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+research/preliminary/fizzbuzz-delivery/vsm/delivery_tail.vsm	standalone	-	ok	ok	8	8	77208	0	0	0	-	match	
+research/preliminary/fizzbuzz-delivery/vsm/mvp16384.vsm	standalone	-	ok	ok	1	1	77208	0	0	0	-	match	
+research/preliminary/fizzbuzz-delivery/vsm/nine_word.vsm	standalone	-	ok	ok	9	9	77208	0	0	0	-	match	
+research/preliminary/fizzbuzz-delivery/vsm/one_l2bmd.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+solutions/00_baseline_93.vsm	standalone	-	ok	ok	93	93	77208	0	0	0	-	match	
+solutions/01_nearmiss_92.vsm	standalone	-	ok	ok	92	92	77208	0	0	0	-	match	
+solutions/02_fable_47.vsm	standalone	-	ok	ok	47	47	77208	0	0	0	-	match	
+testcases/add_colvec.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/div_row.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+testcases/dram_dl_1024_16.vsm	testcase	-	ok	ok	0	0	85272	0	0	0	-	match	
+testcases/dram_dl_16.vsm	testcase	-	ok	ok	0	0	77264	0	0	0	-	match	
+testcases/dram_dl_16_1024.vsm	testcase	-	ok	ok	0	0	93512	0	0	0	-	match	
+testcases/dram_dl_16_16.vsm	testcase	-	ok	ok	0	0	77208	0	0	0	-	match	
+testcases/dram_dl_256.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+testcases/dram_dl_256_1024.vsm	testcase	-	ok	ok	0	0	208088	0	0	0	-	match	
+testcases/dram_dl_256_16.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/dram_dl_256_16_l2b.vsm	testcase	-	ok	ok	0	0	79000	0	0	0	-	match	
+testcases/dram_dl_256_16p.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+testcases/dram_ul_16.vsm	testcase	-	ok	ok	0	0	77216	0	0	0	-	match	
+testcases/dram_ul_16_1024.vsm	testcase	-	ok	ok	0	0	85400	0	0	0	-	match	
+testcases/dram_ul_16_16.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+testcases/dram_ul_256.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+testcases/dram_ul_256_16.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+testcases/dram_ul_256_16p.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+testcases/exp.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/gather_sum.vsm	testcase	-	ok	ok	0	0	77209	0	0	0	-	match	
+testcases/mat_sub.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/matmul_notr_pkg_lm_256_16_16.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/matmul_tra_pkg_lmdram_16_256_1024.vsm	testcase	-	ok	ok	0	0	85400	0	0	0	-	match	
+testcases/matmul_tra_pkg_lmdram_16_256_16.vsm	testcase	-	ok	ok	0	0	77336	0	0	0	-	match	
+testcases/matmul_trb_pkg_lm_256_16_16.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/matmul_trb_pkg_lmdram_256_1024_16.vsm	testcase	-	ok	ok	0	0	79256	0	0	0	-	match	
+testcases/max_row.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+testcases/mul_const.vsm	testcase	-	ok	ok	0	0	85336	0	0	0	-	match	
+testcases/onehot.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+testcases/relu.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/relu_grad.vsm	testcase	-	ok	ok	0	0	79224	0	0	0	-	match	
+testcases/sub_rowvec.vsm	testcase	-	ok	ok	0	0	78744	0	0	0	-	match	
+testcases/sum_col.vsm	testcase	-	ok	ok	0	0	77216	0	0	0	-	match	
+testcases/sum_row.vsm	testcase	-	ok	ok	0	0	77304	0	0	0	-	match	
+viz/core/benchmarks/mnist_train_step.vsm	standalone	-	ok	ok	1395	1395	77208	0	0	0	-	match	

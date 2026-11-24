@@ -1,0 +1,41 @@
+# Every d get form of SDM 3.4.3 on distinct data. test_golden.py compares the Rust side
+# (golden_dump) with dget_forms.official.dmp, captured from the official emulator with
+#   python mncore/tools/golden/run_official.py mncore/tools/golden/testdata/dget_forms.vsm --probe none
+d set $lm0n0c0b0m0p0 4 0000000100000002FFFFFFFFFFFFFFFF00000003000000040000000500000006
+d set $ln0n0c0b0m0p1 2 11111111222222223333333344444444
+d set $m20n0c0b0m0p0 2 77777777888888889999999900000000
+d set $lm30n0c0b0m0p0 1 aaaaaaaabbbbbbbb
+d set $lr0n0c0b0m0p2 1 0123456789abcdef
+d set $tn0c0b0m0p0 2 11111111111111112222222222222222
+d set $lltn0c0b0m0p0 1 33333333333333334444444444444444
+d set $lb0n0c0b0 6 000000000000000a000000000000000b000000000000000c000000000000000d000000000000000e000000000000000f
+d set $lc0n0c0 4 00000000000000a000000000000000b000000000000000c000000000000000d0
+lpassa $lm0v $lr0v
+iadd $lm0 $ln0 $ls0
+nop/3
+d get $lm0n0c0b0m0p0 4
+d get $lm1n0c0b0m0p0 1
+d get $lm3n0c0b0m0p0 1
+d get $llm0n0c0b0m0p0 2
+d get $llm2n0c0b0m0p0 1
+d getf $m0n0c0b0m0p0 5
+d getf $m20n0c0b0m0p0 3
+d geth $r1n0c0b0m0p0 2
+d getf $lm0n0c0b0m0p0 2
+d geth $llm0n0c0b0m0p0 1
+d getd $lln0n0c0b0m0p1 1
+d get $lr0n0c0b0m0 4
+d get $ls0n0c0b0m0p0 2
+d get $ltn0c0b0m0p0 4
+d get $lltn0c0b0m0p0 4
+d get $tn0c0b0m0p0 2
+d getf $lltn0c0b0m0p0 1
+d get $omr0n0c0b0m0p0 2
+d get $omr17n0c0b0m0p0 2
+d get $lb0n0c0b0 6
+d get $llb0n0c0b0 2
+d getd $llb1n0c0b0 1
+d get $lc0n0c0 4
+d get $d16n0 2
+d get $d16 1
+d get $lm30n0c0b0m0p0 1

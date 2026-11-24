@@ -1,0 +1,88 @@
+DEBUG-LM0(n0c0b0m0p0,0):(f:0, i:{{0x0,0x1},{0x0,0x2}}, v:0x100000002) #d get $lm0n0c0b0m0p0 4
+DEBUG-LM0(n0c0b0m0p0,2):(f:-inf, i:{{0xFFFF,0xFFFF},{0xFFFF,0xFFFF}}, v:0xFFFFFFFFFFFFFFFF) #d get $lm0n0c0b0m0p0 4
+DEBUG-LM0(n0c0b0m0p0,4):(f:0, i:{{0x0,0x3},{0x0,0x4}}, v:0x300000004) #d get $lm0n0c0b0m0p0 4
+DEBUG-LM0(n0c0b0m0p0,6):(f:0, i:{{0x0,0x5},{0x0,0x6}}, v:0x500000006) #d get $lm0n0c0b0m0p0 4
+DEBUG-LM0(n0c0b0m0p0,1):(f:0, i:{{0x0,0x1},{0x0,0x2}}, v:0x100000002) #d get $lm1n0c0b0m0p0 1
+DEBUG-LM0(n0c0b0m0p0,3):(f:-inf, i:{{0xFFFF,0xFFFF},{0xFFFF,0xFFFF}}, v:0xFFFFFFFFFFFFFFFF) #d get $lm3n0c0b0m0p0 1
+DEBUG-LM0(n0c0b0m0p0,0):{(f:0, i:{{0x0,0x1},{0x0,0x2}}, v:0x100000002), (f:-INF, i:{{0xFFFF,0xFFFF},{0xFFFF,0xFFFF}}, v:0xFFFFFFFFFFFFFFFF)} #d get $llm0n0c0b0m0p0 2
+DEBUG-LM0(n0c0b0m0p0,4):{(f:0, i:{{0x0,0x3},{0x0,0x4}}, v:0x300000004), (f:0, i:{{0x0,0x5},{0x0,0x6}}, v:0x500000006)} #d get $llm0n0c0b0m0p0 2
+DEBUG-LM0(n0c0b0m0p0,2):{(f:-inf, i:{{0xFFFF,0xFFFF},{0xFFFF,0xFFFF}}, v:0xFFFFFFFFFFFFFFFF), (f:0, i:{{0x0,0x3},{0x0,0x4}}, v:0x300000004)} #d get $llm2n0c0b0m0p0 1
+DEBUG-LM0(n0c0b0m0p0,0):(0) (0x00000001) #d getf $m0n0c0b0m0p0 5
+DEBUG-LM0(n0c0b0m0p0,1):(0) (0x00000002) #d getf $m0n0c0b0m0p0 5
+DEBUG-LM0(n0c0b0m0p0,2):(-inf) (0xffffffff) #d getf $m0n0c0b0m0p0 5
+DEBUG-LM0(n0c0b0m0p0,3):(-inf) (0xffffffff) #d getf $m0n0c0b0m0p0 5
+DEBUG-LM0(n0c0b0m0p0,4):(0) (0x00000003) #d getf $m0n0c0b0m0p0 5
+DEBUG-LM0(n0c0b0m0p0,20):(5.01922e+33) (0x77777777) #d getf $m20n0c0b0m0p0 3
+DEBUG-LM0(n0c0b0m0p0,21):(-1.58819e-23) (0x99999999) #d getf $m20n0c0b0m0p0 3
+DEBUG-LM0(n0c0b0m0p0,22):(0) (0x00000000) #d getf $m20n0c0b0m0p0 3
+DEBUG-GREG0(n0c0b0m0p0,1):(0, 0) (0x0000, 0x0002) #d geth $r1n0c0b0m0p0 2
+DEBUG-GREG0(n0c0b0m0p0,2):(-inf, -inf) (0xffff, 0xffff) #d geth $r1n0c0b0m0p0 2
+DEBUG-LM0(n0c0b0m0p0,0):(0, 0) (0x00000001, 0x00000002) #d getf $lm0n0c0b0m0p0 2
+DEBUG-LM0(n0c0b0m0p0,2):(-inf, -inf) (0xffffffff, 0xffffffff) #d getf $lm0n0c0b0m0p0 2
+DEBUG-LM0(n0c0b0m0p0,0):{(0, 0, 0, 0) (0x0000, 0x0001, 0x0000, 0x0002), (-inf, -inf, -inf, -inf) (0xffff, 0xffff, 0xffff, 0xffff)} #d geth $llm0n0c0b0m0p0 1
+DEBUG-LM1(n0c0b0m0p1,0):{(1.80108e-226) (0x1111111122222222), (4.66726e-62) (0x3333333344444444)} #d getd $lln0n0c0b0m0p1 1
+DEBUG-GREG0(n0c0b0m0p0,0):(f:0, i:{{0x0,0x1},{0x0,0x2}}, v:0x100000002) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p0,2):(f:-inf, i:{{0xFFFF,0xFFFF},{0xFFFF,0xFFFF}}, v:0xFFFFFFFFFFFFFFFF) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p0,4):(f:0, i:{{0x0,0x3},{0x0,0x4}}, v:0x300000004) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p0,6):(f:0, i:{{0x0,0x5},{0x0,0x6}}, v:0x500000006) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p1,0):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p1,2):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p1,4):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p1,6):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p2,0):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p2,2):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p2,4):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p2,6):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p3,0):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p3,2):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p3,4):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG0(n0c0b0m0p3,6):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $lr0n0c0b0m0 4
+DEBUG-GREG1(n0c0b0m0p0,0):(f:0, i:{{0x0,0x1},{0x0,0x2}}, v:0x100000002) #d get $ls0n0c0b0m0p0 2
+DEBUG-GREG1(n0c0b0m0p0,2):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $ls0n0c0b0m0p0 2
+DEBUG-TREG(n0c0b0m0p0,0):(f:4.66726e-62, i:{{0x3333,0x3333},{0x3333,0x3333}}, v:0x3333333333333333) #d get $ltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,1):(f:2.90436e-144, i:{{0x2222,0x2222},{0x2222,0x2222}}, v:0x2222222222222222) #d get $ltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,2):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $ltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,3):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $ltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,0):{(f:4.66726e-62, i:{{0x3333,0x3333},{0x3333,0x3333}}, v:0x3333333333333333), (f:7.47708E+20, i:{{0x4444,0x4444},{0x4444,0x4444}}, v:0x4444444444444444)} #d get $lltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,1):{(f:2.90436e-144, i:{{0x2222,0x2222},{0x2222,0x2222}}, v:0x2222222222222222), (f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0)} #d get $lltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,2):{(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0), (f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0)} #d get $lltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,3):{(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0), (f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0)} #d get $lltn0c0b0m0p0 4
+DEBUG-TREG(n0c0b0m0p0,0):(f:4.66726e-62, i:{{0x3333,0x3333},{0x3333,0x3333}}, v:0x3333333333333333) #d get $ltn0c0b0m0p0 2
+DEBUG-TREG(n0c0b0m0p0,1):(f:2.90436e-144, i:{{0x2222,0x2222},{0x2222,0x2222}}, v:0x2222222222222222) #d get $ltn0c0b0m0p0 2
+DEBUG-TREG(n0c0b0m0p0,0):{(4.17233e-08, 4.17233e-08) (0x33333333, 0x33333333), (785.067, 785.067) (0x44444444, 0x44444444)} #d getf $lltn0c0b0m0p0 1
+DEBUG-OMR(n0c0b0m0p0,0):Mask{15} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,1):Mask{0} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,0):Mask{15} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,1):Mask{0} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,0):Mask{15} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,1):Mask{0} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,0):Mask{15} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,1):Mask{0} #d get $omr0n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,17):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,18):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,17):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,18):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,17):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,18):Mask{15} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,17):Mask{15} #d get $omr17n0c0b0m0p0 2
+DEBUG-OMR(n0c0b0m0p0,18):Mask{0} #d get $omr17n0c0b0m0p0 2
+DEBUG-L1BM(n0c0b0,0):(f:0, i:{{0x0,0x0},{0x0,0xA}}, v:0xA) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,1):(f:0, i:{{0x0,0x0},{0x0,0xB}}, v:0xB) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,2):(f:0, i:{{0x0,0x0},{0x0,0xC}}, v:0xC) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,3):(f:0, i:{{0x0,0x0},{0x0,0xD}}, v:0xD) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,4):(f:0, i:{{0x0,0x0},{0x0,0xE}}, v:0xE) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,5):(f:0, i:{{0x0,0x0},{0x0,0xF}}, v:0xF) #d get $lb0n0c0b0 6
+DEBUG-L1BM(n0c0b0,0):{(f:0, i:{{0x0,0x0},{0x0,0xA}}, v:0xA), (f:0, i:{{0x0,0x0},{0x0,0xE}}, v:0xE)} #d get $llb0n0c0b0 2
+DEBUG-L1BM(n0c0b0,1):{(f:0, i:{{0x0,0x0},{0x0,0xB}}, v:0xB), (f:0, i:{{0x0,0x0},{0x0,0xF}}, v:0xF)} #d get $llb0n0c0b0 2
+DEBUG-L1BM(n0c0b0,1):{(0) (0x000000000000000b), (0) (0x000000000000000f)} #d getd $llb1n0c0b0 1
+DEBUG-L2BM(n0c0,0):(f:0, i:{{0x0,0x0},{0x0,0xA0}}, v:0xA0) #d get $lc0n0c0 4
+DEBUG-L2BM(n0c0,1):(f:0, i:{{0x0,0x0},{0x0,0xB0}}, v:0xB0) #d get $lc0n0c0 4
+DEBUG-L2BM(n0c0,2):(f:0, i:{{0x0,0x0},{0x0,0xC0}}, v:0xC0) #d get $lc0n0c0 4
+DEBUG-L2BM(n0c0,3):(f:0, i:{{0x0,0x0},{0x0,0xD0}}, v:0xD0) #d get $lc0n0c0 4
+DEBUG-DRAM(n0,16):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16n0 2
+DEBUG-DRAM(n0,17):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16n0 2
+DEBUG-DRAM(n0,16):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16 1
+DEBUG-DRAM(n1,16):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16 1
+DEBUG-DRAM(n2,16):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16 1
+DEBUG-DRAM(n3,16):(f:0, i:{{0x0,0x0},{0x0,0x0}}, v:0x0) #d get $d16 1
+DEBUG-LM0(n0c0b0m0p0,30):(f:-3.72066e-103, i:{{0xAAAA,0xAAAA},{0xBBBB,0xBBBB}}, v:0xAAAAAAAABBBBBBBB) #d get $lm30n0c0b0m0p0 1
