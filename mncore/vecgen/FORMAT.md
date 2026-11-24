@@ -11,10 +11,20 @@
 
 ```
 cd mncore/vecgen
-cargo run --release -- <unit|all> --n <count> --seed <s>      # 生成
+cargo run --release -- <unit|all> --n <count> --seed <s>      # 生成（期待値は Sim）
+cargo run --release -- <unit|all> --official-expect           # disputed の行の期待値を公式の出力に置き換える
 cargo run --release -- <unit|all> --check-official [--sample K|all]
 cargo run --release -- fixed [--rows 50]                      # vectors_fixed を作り直す
 cargo run --release -- list <unit|all>                        # ファイルの一覧
+```
+
+RTL の基準にするベクタは、生成のあとに `--official-expect` をかけたもの（下の「公式エミュレータとの照合で分かったこと」）。手順は次のとおり。
+
+```
+cargo run --release -- all --n 1000 --seed 1
+cargo run --release -- all --official-expect
+cargo run --release -- all --check-official --sample all     # 不一致 0 を確かめる
+cargo run --release -- fixed
 ```
 
 | オプション | 既定 | 意味 |
@@ -25,6 +35,7 @@ cargo run --release -- list <unit|all>                        # ファイルの�
 | `--only TEXT` | なし | ファイル名に TEXT を含むものだけを処理する |
 | `--sample K` | 256 | 照合する行数（ファイルごと）。半分は境界値の行から選ぶ。`all` なら全行 |
 | `--work DIR` | `vecgen/target/official/<unit>` | 照合で作る VSM、asm、dump、CSV、不一致の一覧（`<op>.mismatch.txt`）の置き場所 |
+| `--official-expect` | | `disputed=` の付いたファイルの全行を公式エミュレータで実行し、結果が違う行の期待値（区切りの右側の列）を公式の出力で置き換えて書き戻す（`--out` があればそこへ）。入力列は変えない |
 
 照合は `scripts/run_official.sh` を WSL の bash で実行する（Windows では `wsl -d Ubuntu -- bash ...` を内部で呼ぶ）。
 公式ツールの場所は `MNCORE_EMU_DIR`（既定は `~/wgkz/mncore/judge/judge-py/mncore2_emuenv`）、WSL の配布名は `VECGEN_WSL_DISTRO`（既定 `Ubuntu`）、並列数は `VECGEN_JOBS`（既定 8）で変えられる。
@@ -51,8 +62,9 @@ cargo run --release -- list <unit|all>                        # ファイルの�
 | `op` | VSM のオペコード（`fp` では演算の名前） |
 | `sdm` | `yes`: SDM に書かれた形。`no`: アセンブラもエミュレータも受理するが、SDM には書かれていない形（`u` を付けられないはずの命令の `u` 付き、単精度の出力丸め `fv*r` など） |
 | `seed`、`edge`、`rows` | 乱数の種、境界値の行数、全行数 |
-| `disputed` | 公式エミュレータとの照合で不一致がある（後述）。値は理由の短い名前（複数なら `+` でつなぐ） |
-| `excluded` | `vectors_fixed` だけ。`disputed` の理由で該当行を除いた |
+| `disputed` | Sim と公式エミュレータが食い違う行を含むファイル（後述）。値は理由の短い名前（複数なら `+` でつなぐ）。`--official-expect` の後も残す（元が disputed だった印） |
+| `expect` | `official`: 食い違う行の期待値を公式エミュレータの出力に置き換えた（`--official-expect`）。ない場合、期待値はすべて Sim の値 |
+| `replaced` | 期待値を公式の出力に置き換えた行の数（全体のファイルだけ。`vectors_fixed` では省く） |
 
 機械語の欄（`dmode`、`aluop`、`is_unsigned`、`iselb` など）は、`assemble3 --print-csv` の同名の欄の値（2 進）である。
 `--check-official` は、各命令をアセンブルした CSV の欄がヘッダおよび行の制御ビットと一致するかも確かめる。
@@ -211,8 +223,10 @@ cols: x0 x1 ... x(N-1) | z
 ## 公式エミュレータとの照合で分かったこと
 
 `--check-official --sample all` で全ファイルの全行を照合した。結果は報告書 `mncore/status/WP-03.md` にある。
-Sim と公式エミュレータが食い違った行は、**値を Sim のまま残し**、ヘッダに `disputed=<理由>` を付けた（契約 §1: 勝手にどちらかに合わせない）。
-`vectors_fixed` には食い違う行を入れていない（そのファイルのヘッダには `excluded=<理由>` がある）。
+Sim と公式エミュレータが食い違うファイルには、生成の時点でヘッダに `disputed=<理由>` を付ける（期待値は Sim の値）。
+lead の判断（2026-11-24、案 b）により **RTL は公式エミュレータに合わせる**。そのため、`--official-expect` で食い違う行の期待値を公式の出力に置き換え、
+ヘッダに `expect=official` と `replaced=<行数>` を付ける（`disputed=` は元が食い違っていた印として残す）。
+置き換えた後のベクタは、全ファイルの全行が公式と一致する。Sim の修正案は報告書に記す（submodule は変更しない）。
 
 | 理由 | 対象 | 内容 |
 | --- | --- | --- |
@@ -221,5 +235,5 @@ Sim と公式エミュレータが食い違った行は、**値を Sim のまま
 | `fvr_flags` | `mau/fv*r.vec`（SDM にない単精度の出力丸め）の全行 | マスクフラグが違う。公式は半精度 2 個の結果に bit 3、bit 2 を 1 ビットずつ（bit 1、0 は 0）、Sim は 1 要素に 2 ビットずつ。z は一致する |
 | `round_twice` | 出力丸め付きで加数のある形: `mau` の `dvfmaur`、`dvfmadr`、`dvaddr`、`fvfmar`、`fvaddr`、`hvfmar`、`hvaddr`、`fp` の `fma_dr`、`add_dr`、`fma_fr`、`add_fr`、`fma_hr`、`add_hr` | 縮減後の精度でちょうど同点になる値に、ごく小さい加数が付く場合だけ違う（全行の照合で 10 行）。公式は、もとの出力精度の最下位ビットより 2 ビット下（h では単精度の 6 ビット下）までを残して小さい加数を捨ててから、縮減後の精度に丸める（調べた範囲）。Sim は SDM 4.3 どおり 1 回だけ丸める。印はファイル単位 |
 
-`vectors_fixed` からは、`r_round` と `fvr_flags` のファイル（全行）、`ext_mul` の該当行、`fp` の `round_twice` のファイルで「もとの出力精度での結果が縮減後の精度の同点から 1 ulp 以内」の行を除いた。
-そのうえで `vectors_fixed` の全行（13,550 行）を公式エミュレータで照合し、すべて一致した。
+`vectors_fixed` は `--official-expect` の後のファイルから選ぶので、食い違っていたファイルの行も含む（期待値は公式の出力。ヘッダに `disputed=` と `expect=official` がある）。
+`--official-expect` をかけていないファイル（`expect=official` がないもの）から作る場合は、従来どおり食い違う行（`r_round` と `fvr_flags` のファイルの全行、`ext_mul` の該当行、`fp` の `round_twice` で「もとの出力精度での結果が縮減後の精度の同点から 1 ulp 以内」の行）を除き、ヘッダに `excluded=<理由>` を付ける。

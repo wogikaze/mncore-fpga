@@ -6,6 +6,9 @@
 //! vecgen <unit|all> --check-official [--sample K|all] [--in DIR] [--work DIR] [--only TEXT]
 //!     Run up to K rows of every file (default 256) as VSM programs on the official
 //!     assembler and emulator (WSL) and compare results and instruction fields.
+//! vecgen <unit|all> --official-expect [--in DIR] [--out DIR] [--work DIR] [--only TEXT]
+//!     Run every row of the files marked `disputed` on the official tools and replace the
+//!     expected values of the rows where the emulator differs from the simulator.
 //! vecgen fixed [--rows R] [--in DIR] [--out DIR]
 //!     Copy R rows (default 50) of every file the SDM documents to mncore/sim/vectors_fixed,
 //!     leaving out rows of known disagreements with the official emulator (FORMAT.md).
@@ -64,6 +67,7 @@ struct Args {
     work: Option<PathBuf>,
     only: Option<String>,
     check: bool,
+    official_expect: bool,
     sample: Option<usize>,
     rows: usize,
 }
@@ -80,6 +84,7 @@ fn parse_args() -> Result<Args, String> {
         work: None,
         only: None,
         check: false,
+        official_expect: false,
         sample: Some(256),
         rows: 50,
     };
@@ -94,6 +99,7 @@ fn parse_args() -> Result<Args, String> {
             "--work" => a.work = Some(PathBuf::from(val("--work")?)),
             "--only" => a.only = Some(val("--only")?),
             "--check-official" => a.check = true,
+            "--official-expect" => a.official_expect = true,
             "--sample" => {
                 let v = val("--sample")?;
                 a.sample = if v == "all" { None } else { Some(v.parse().map_err(|_| "bad --sample")?) };
@@ -237,12 +243,23 @@ fn cmd_check_rrn(a: &Args, input: &std::path::Path) -> Result<bool, String> {
     Ok(n_bad == 0)
 }
 
-fn cmd_check(a: &Args, units: &[&str]) -> Result<bool, String> {
+/// `--check-official` (`replace == false`): run sampled rows on the official tools and compare.
+/// `--official-expect` (`replace == true`): run every row of the files marked `disputed` and
+/// replace the expected columns of the rows where the official emulator differs, so that the
+/// files follow the official emulator (the lead's decision for the WP03 disagreements). The
+/// header keeps `disputed=` and gets `expect=official` and `replaced=<rows replaced>`.
+fn cmd_check(a: &Args, units: &[&str], replace: bool) -> Result<bool, String> {
     let input = a.input.clone().unwrap_or_else(|| repo_mncore().join("sim").join("vectors"));
+    let out_dir = a.out.clone().unwrap_or_else(|| input.clone());
     let mut all_ok = true;
     for unit in units {
         if *unit == "rrn" {
-            all_ok &= cmd_check_rrn(a, &input)?;
+            if replace {
+                // No reduction file disagrees with the emulator (none is marked disputed).
+                println!("rrn: no files marked disputed");
+            } else {
+                all_ok &= cmd_check_rrn(a, &input)?;
+            }
             continue;
         }
         let t0 = Instant::now();
@@ -259,37 +276,49 @@ fn cmd_check(a: &Args, units: &[&str]) -> Result<bool, String> {
             if f.get("op") != t.get("op") || f.cols_in.len() != t.cols_in.len() || f.cols_out.len() != t.cols_out.len() {
                 return Err(format!("{}: header does not match the definition of {}", path.display(), s.stem()));
             }
-            let idx = sample_rows(&f, a.sample, &format!("{unit}/{}", s.stem()));
+            if replace && f.get("disputed").is_none() {
+                continue;
+            }
+            let sample = if replace { None } else { a.sample };
+            let idx = sample_rows(&f, sample, &format!("{unit}/{}", s.stem()));
             let rows: Vec<&Vec<u128>> = idx.iter().map(|&i| &f.rows[i].0).collect();
             let plan = s.plan(&rows);
             jobs.push(official::Job { name: s.stem().replace('.', "_"), blocks: plan.blocks.clone() });
             checks.push((s, f, idx, plan));
         }
         if jobs.is_empty() {
-            println!("{unit}: no vector files in {}", input.join(unit).display());
+            if replace {
+                println!("{unit}: no files marked disputed in {}", input.join(unit).display());
+            } else {
+                println!("{unit}: no vector files in {}", input.join(unit).display());
+            }
             continue;
         }
         let work = work_dir(a, unit);
         let results = official::run_jobs(&work, &jobs)?;
         let (mut n_rows, mut n_bad, mut n_files_bad, mut n_field_bad, mut n_insn) = (0, 0, 0, 0, 0);
-        for ((s, f, idx, plan), res) in checks.iter().zip(results) {
+        let mut n_failed = 0;
+        let n_files = checks.len();
+        for ((s, mut f, idx, plan), res) in checks.into_iter().zip(results) {
             let stem = s.stem();
             let mut bad = 0;
             match &res.outs {
                 Err(e) => {
                     println!("  {unit}/{stem}: {e}");
                     bad = idx.len();
+                    n_failed += 1;
                 }
                 Ok(outs) => {
                     let rows: Vec<&Vec<u128>> = idx.iter().map(|&i| &f.rows[i].0).collect();
-                    let got = s.outputs(&rows, plan, outs);
+                    let got = s.outputs(&rows, &plan, outs);
                     let mut log = String::new();
+                    let mut changes = Vec::new();
                     for (k, &i) in idx.iter().enumerate() {
                         if got[k] != f.rows[i].1 {
                             bad += 1;
                             let official = f.format_row(&(f.rows[i].0.clone(), got[k].clone()));
                             log += &format!("line {}\n  vec:      {}\n  official: {}\n", i + 2, f.format_row(&f.rows[i]), official);
-                            if bad <= 3 {
+                            if bad <= 3 && !replace {
                                 println!(
                                     "  MISMATCH {unit}/{stem} line {}:\n    vec:      {}\n    official: {}",
                                     i + 2,
@@ -297,11 +326,22 @@ fn cmd_check(a: &Args, units: &[&str]) -> Result<bool, String> {
                                     official
                                 );
                             }
+                            changes.push((i, got[k].clone()));
                         }
                     }
                     if bad > 0 {
                         let p = work.join(format!("{}.mismatch.txt", stem.replace('.', "_")));
                         let _ = std::fs::write(&p, format!("{}\n{log}", f.header()));
+                    }
+                    if replace {
+                        let before: usize = f.get("replaced").and_then(|v| v.parse().ok()).unwrap_or(0);
+                        for (i, o) in changes {
+                            f.rows[i].1 = o;
+                        }
+                        f.set("expect", "official");
+                        f.set("replaced", before + bad);
+                        let path = out_dir.join(unit).join(format!("{stem}.vec"));
+                        f.write(&path).map_err(|e| format!("{}: {e}", path.display()))?;
                     }
                 }
             }
@@ -337,10 +377,20 @@ fn cmd_check(a: &Args, units: &[&str]) -> Result<bool, String> {
                 n_files_bad += 1;
             }
         }
+        if replace {
+            println!(
+                "{unit}: official-expect of {n_files} disputed files, {n_rows} rows: {n_bad} rows replaced in {n_files_bad} files; \
+                 {n_failed} files without an official result, {n_field_bad} field mismatches ({:.1} s)",
+                t0.elapsed().as_secs_f64()
+            );
+            if n_failed > 0 || n_field_bad > 0 {
+                all_ok = false;
+            }
+            continue;
+        }
         println!(
-            "{unit}: official check of {} files, {n_rows} rows: {n_bad} mismatching rows in {n_files_bad} files; \
+            "{unit}: official check of {n_files} files, {n_rows} rows: {n_bad} mismatching rows in {n_files_bad} files; \
              {n_insn} instructions, {n_field_bad} field mismatches ({:.1} s)",
-            checks.len(),
             t0.elapsed().as_secs_f64()
         );
         if n_bad > 0 || n_field_bad > 0 {
@@ -369,11 +419,15 @@ fn cmd_fixed(a: &Args) -> Result<(), String> {
             }
             let path = input.join(unit).join(format!("{stem}.vec"));
             let Ok(mut f) = VecFile::read(&path) else { continue };
-            // Rows affected by a known disagreement with the official emulator are left out.
+            // Rows affected by a known disagreement with the official emulator are left out,
+            // unless the file already takes those expected values from the emulator
+            // (`--official-expect`): then every row follows the emulator.
             let spec = unit_specs.iter().find(|s| s.stem() == stem);
+            let official = f.get("expect") == Some("official");
             let edge: usize = f.get("edge").and_then(|v| v.parse().ok()).unwrap_or(0);
-            let ok: Vec<usize> =
-                (0..f.rows.len()).filter(|&i| spec.is_none_or(|s| !s.row_disputed(&f.rows[i].0))).collect();
+            let ok: Vec<usize> = (0..f.rows.len())
+                .filter(|&i| official || spec.is_none_or(|s| !s.row_disputed(&f.rows[i].0)))
+                .collect();
             if ok.is_empty() {
                 continue;
             }
@@ -385,7 +439,10 @@ fn cmd_fixed(a: &Args) -> Result<(), String> {
             f.rows = idx.iter().map(|&i| g.rows[i].clone()).collect();
             f.set("edge", n_edge);
             f.set("rows", f.rows.len());
-            if let Some(d) = f.get("disputed").map(String::from) {
+            if official {
+                // The count of replaced rows belongs to the whole file, not to the sample.
+                f.meta.retain(|(k, _)| k != "replaced");
+            } else if let Some(d) = f.get("disputed").map(String::from) {
                 f.meta.retain(|(k, _)| k != "disputed");
                 f.set("excluded", d);
             }
@@ -412,8 +469,10 @@ fn run() -> Result<bool, String> {
         return Ok(true);
     }
     let units = units_of(&a.cmd)?;
-    if a.check {
-        cmd_check(&a, &units)
+    if a.official_expect {
+        cmd_check(&a, &units, true)
+    } else if a.check {
+        cmd_check(&a, &units, false)
     } else {
         cmd_generate(&a, &units)?;
         Ok(true)
