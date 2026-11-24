@@ -1,0 +1,1232 @@
+# MN-Core 2 PE 命令語 flat 形式（j 行、426bit）のフィールド定義。WP01 が管理する。
+#
+# 出所: assemble3 --instruction-mode flat --disable-packer --print-csv（judge 同梱の 2024 年配布版、revision e0d90436755d1303e5577ea6e17c6611ab88f300）。
+#   j 行の CSV は 110 列あり、列を順に連結すると j 語にビット単位で一致する。
+#   CSV のヘッダ（95 名）は auto_stride（i 語、292bit）の並びで、flat の j 行とは列の数も順序も違う。
+#   各列の名前は、両モードで受理されたコーパスの 7,843 語で auto_stride の名前付き列と値が全語一致することと、プローブで決めた。
+#   cycle1〜3 のアドレス欄（csv_name: null）と rsv_* は flat にしかない。
+# 参照: Scrapbox https://scrapbox.io/mncore/機械語 （観測の記録）、SDM（third_party/mncore/docs/mncore_llm、節番号で参照）。
+#
+# 規約（契約 06-contracts.md §2）
+#   - pos: 'j ' に続くビット列の左端を 0 とする。Verilog では input [425:0] jw とし、jw[425-pos] が pos。
+#   - フィールド値は左端（小さい pos）が MSB。値 v の bit k は pos + width - 1 - k にある。
+#   - name: CSV 名の '.' と '/' を '_' にしたもの。cycle1〜3 のアドレス欄は cycle0 の名前に _c1/_c2/_c3 を付ける。
+#     ただし CSV で同名の 2 列（l1bm.mabadr/opcode）は、エミュレータの解釈に合わせて l1bm_mabadr と l1bm_opcode に分けた。
+#   - enum の val は width 桁の 2 進文字列。enum_when があれば、その条件が成り立つ語でだけ enum が意味を持つ。
+#     imm_layout の欄は imm の語（aluop=11111）では即値ペイロードで、enum は当てはまらない。
+#   - group: ll / mrc / trc / rfc0 / rfc1 / lm0 / lm1 / mauc / aluc / rsv / l1bm / l2bm / wd / addr_c1..3
+#   - addr: アドレス欄の印（unit: rfc0/rfc1/lm0/lm1、port: w/r/rw、cycle: 0..3）。
+# 意味が未確定の欄は UNKNOWN.md にまとめた。
+
+schema: mnisa-1
+kind: j
+width: 426
+assembler: "assemble3 2024-08-26 (judge v20240826) revision e0d90436755d1303e5577ea6e17c6611ab88f300"
+references:
+  scrapbox: "https://scrapbox.io/mncore/機械語"
+  sdm: "third_party/mncore/docs/mncore_llm"
+groups:
+  ll: "命令語先頭の制御（nop / noforward）"
+  mrc: "マスク制御（書き込みマスク、ゼロフラッシュ、$omr）"
+  trc: "T レジスタの書き込み"
+  rfc0: "GRF0 の制御と cycle0 アドレス"
+  rfc1: "GRF1 の制御と cycle0 アドレス"
+  lm0: "LM0 の制御と cycle0 アドレス"
+  lm1: "LM1 の制御と cycle0 アドレス"
+  mauc: "MAU（積和演算器）と行列レジスタの制御"
+  aluc: "ALU の制御"
+  rsv: "予約（flat だけにある 4bit）"
+  l1bm: "L1BM 命令式（PE⇔L1BM、L2BM→L1BM の書き込み側）"
+  l2bm: "L2BM 命令式（L1BM⇔L2BM、DAR）"
+  wd: "wait（MV 命令の完了待ち）"
+  addr_c1: "cycle1 の PE アドレス"
+  addr_c2: "cycle2 の PE アドレス"
+  addr_c3: "cycle3 の PE アドレス"
+fields:
+  - name: ll
+    pos: 0
+    width: 2
+    group: ll
+    csv_col: 0
+    csv_name: "ll"
+    desc: "命令語の先頭 2bit。語全体の実行形態を決める。nop だけの語は 00、通常は 01、noforward を含む語は 11。"
+    ref: ["SDM 3.6.5", "SDM 3.6.6"]
+    enum:
+      - {val: "00", name: nop, desc: "nop。エミュレータは他の欄に何が入っていても書き込みもフォワーディングの更新もしない"}
+      - {val: "01", name: normal, desc: "通常の PE 命令語（assemble3 既定の --ll-mode cold）"}
+      - {val: "10", name: invalid, desc: "エミュレータが不正値として停止する（inst.ll == undefined）"}
+      - {val: "11", name: noforward, desc: "書き込みは行うが、フォワーディングレジスタと $lbi を更新しない。assemble3 --ll-mode hot も 11 を出す"}
+    notes: "エミュレータで確認: ipassa $lr2 $lr16 の ll を 11 にすると $lr16 は書かれ $aluf は更新されない。00 にすると $lr16 も書かれない。10 は停止。assemble3 の --ll-mode（cold=01 / hot=11 / mix）が実機で何を意味するかは未確認（UNKNOWN.md）。"
+  - name: pe_mrc_imr
+    pos: 2
+    width: 5
+    group: mrc
+    csv_col: 1
+    csv_name: "pe.mrc.imr"
+    desc: "書き込みマスクの選択。1xxxx は直接指定（/xxxx の 4bit）、0nnnn はマスクレジスタ $imr<n>（n=1..15）、00000 はマスクなし。"
+    ref: ["SDM 3.6.2", "SDM 3.6.2.1", "SDM 3.6.2.2", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+    notes: "書き込み先の /マスク（target_*）とオペコード側の /マスク（zero）で同じ欄を使う。"
+  - name: pe_mrc_wl
+    pos: 7
+    width: 1
+    group: mrc
+    csv_col: 2
+    csv_name: "pe.mrc.wl"
+    desc: "マスクの語長。1 は 2 長語マスク（/ll0101 など）。"
+    ref: ["SDM 3.6.2"]
+    enum:
+      - {val: "0", name: long, desc: "長語単位のマスク"}
+      - {val: "1", name: dlong, desc: "2 長語単位のマスク（/ll…）"}
+  - name: pe_mrc_target_rf0
+    pos: 8
+    width: 1
+    group: mrc
+    csv_col: 3
+    csv_name: "pe.mrc.target_rf0"
+    desc: "書き込みマスク imr を GRF0（$lr）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_target_rf1
+    pos: 9
+    width: 1
+    group: mrc
+    csv_col: 4
+    csv_name: "pe.mrc.target_rf1"
+    desc: "書き込みマスク imr を GRF1（$ls）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_target_tr
+    pos: 10
+    width: 1
+    group: mrc
+    csv_col: 5
+    csv_name: "pe.mrc.target_tr"
+    desc: "書き込みマスク imr を T レジスタ（$t）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_target_lm0
+    pos: 11
+    width: 1
+    group: mrc
+    csv_col: 6
+    csv_name: "pe.mrc.target_lm0"
+    desc: "書き込みマスク imr を LM0（$lm）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_target_lm1
+    pos: 12
+    width: 1
+    group: mrc
+    csv_col: 7
+    csv_name: "pe.mrc.target_lm1"
+    desc: "書き込みマスク imr を LM1（$ln）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_target_mr
+    pos: 13
+    width: 1
+    group: mrc
+    csv_col: 8
+    csv_name: "pe.mrc.target_mr"
+    desc: "書き込みマスク imr を マスクレジスタ（$omr）への書き込みに適用する。"
+    ref: ["SDM 3.6.2.1", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_zero
+    pos: 14
+    width: 1
+    group: mrc
+    csv_col: 9
+    csv_name: "pe.mrc.zero"
+    desc: "ゼロフラッシュマスクを有効にする（オペコード側の /マスク。例: lpassa/0101）。マスクは imr。"
+    ref: ["SDM 3.6.2.2", "Scrapbox 機械語「書き込みマスクとゼロフラッシュ」"]
+  - name: pe_mrc_zero_sel
+    pos: 15
+    width: 2
+    group: mrc
+    csv_col: 10
+    csv_name: "pe.mrc.zero_sel"
+    desc: "ゼロフラッシュを適用する演算器の出力。符号は isel と同じ（00 MAU、01 ALU、10 L1BM、11 行列読み出し）。"
+    ref: ["SDM 3.6.2.2"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+    notes: "プローブ: fvadd/0101 → 00、lpassa/0101 → 01、l1bmd/0101・l1bmp/0101 → 10、dmread/0101 → 11。異なる演算器に別々の /マスクを付けると assemble3 は拒否する（conflict mr zero_sel）。"
+  - name: pe_mrc_omr
+    pos: 17
+    width: 4
+    group: mrc
+    csv_col: 11
+    csv_name: "pe.mrc.omr"
+    desc: "書き込むマスクレジスタの番号（出力 $omr<n>、n=1..15）。0 は書かない。"
+    ref: ["SDM 3.6.1.13", "SDM 3.6.12.1", "SDM 3.6.9.26"]
+  - name: pe_mrc_ifsel
+    pos: 21
+    width: 1
+    group: mrc
+    csv_col: 12
+    csv_name: "pe.mrc.ifsel"
+    desc: "$omr に書くフラグの出所。0 は ALU 命令式、1 は MAU 命令式。"
+    ref: ["SDM 3.6.12.1", "SDM 3.6.9.26"]
+    enum:
+      - {val: "0", name: alu, desc: "ALU 命令式のフラグ"}
+      - {val: "1", name: mau, desc: "MAU 命令式のフラグ"}
+    notes: "コーパスの命令行を 1 行ずつアセンブルして、$omr に書く 471 行すべてで「MAU 命令式が書くなら 1」が成り立つ。同じ語で ALU と MAU の両方から $omr へ書くと assemble3 は拒否する（out_maskreg の衝突）。"
+  - name: pe_trc_write
+    pos: 22
+    width: 1
+    group: trc
+    csv_col: 13
+    csv_name: "pe.trc.write"
+    desc: "T レジスタへの書き込みを有効にする。"
+    ref: ["SDM 3.6.1.12"]
+  - name: pe_trc_isel
+    pos: 23
+    width: 2
+    group: trc
+    csv_col: 14
+    csv_name: "pe.trc.isel"
+    desc: "T レジスタに書くデータの選択。"
+    ref: ["SDM 3.6.1.12", "Scrapbox 機械語「ALU結果の出力先」"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+  - name: pe_rfc0_write
+    pos: 25
+    width: 1
+    group: rfc0
+    csv_col: 15
+    csv_name: "pe.rfc0.write"
+    desc: "GRF0（$lr / $r / $llr） への書き込みを有効にする。"
+    ref: ["SDM 3.6.1.10"]
+  - name: pe_rfc0_isel
+    pos: 26
+    width: 2
+    group: rfc0
+    csv_col: 16
+    csv_name: "pe.rfc0.isel"
+    desc: "GRF0（$lr / $r / $llr） に書くデータの選択。"
+    ref: ["SDM 3.6.1.10", "Scrapbox 機械語「ALU結果の出力先」"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+  - name: pe_rfc0_wadr
+    pos: 28
+    width: 9
+    group: rfc0
+    csv_col: 17
+    csv_name: "pe.rfc0.wadr"
+    addr: {unit: rfc0, port: w, cycle: 0}
+    desc: "cycle0 の書き込みアドレス（単語単位、0..511）。"
+    ref: ["SDM 3.6.1.10", "Scrapbox 機械語「flat PEアドレスの位置」"]
+    notes: "auto_stride の wadr と違い、flat では単語単位。書き込みがない語でも値が入ることがある（assemble3 は未使用のアドレス欄にも値を置く）。"
+  - name: pe_rfc0_wwl
+    pos: 37
+    width: 2
+    group: rfc0
+    csv_col: 18
+    csv_name: "pe.rfc0.wwl"
+    desc: "書き込みの語長。"
+    ref: ["SDM 3.6.1.10", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+    notes: "CSV ヘッダ（auto_stride 順）では wadri の後にある。flat の j 行では wadr の直後で、rwl・radr が続く。"
+  - name: pe_rfc0_rwl
+    pos: 39
+    width: 2
+    group: rfc0
+    csv_col: 19
+    csv_name: "pe.rfc0.rwl"
+    desc: "読み出しの語長。"
+    ref: ["SDM 3.6.1.10", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+  - name: pe_rfc0_radr
+    pos: 41
+    width: 9
+    group: rfc0
+    csv_col: 20
+    csv_name: "pe.rfc0.radr"
+    addr: {unit: rfc0, port: r, cycle: 0}
+    desc: "cycle0 の読み出しアドレス（単語単位、0..511）。"
+    ref: ["SDM 3.6.1.10", "Scrapbox 機械語「flat PEアドレスの位置」"]
+  - name: pe_rfc1_write
+    pos: 50
+    width: 1
+    group: rfc1
+    csv_col: 21
+    csv_name: "pe.rfc1.write"
+    desc: "GRF1（$ls / $s / $lls） への書き込みを有効にする。"
+    ref: ["SDM 3.6.1.11"]
+  - name: pe_rfc1_isel
+    pos: 51
+    width: 2
+    group: rfc1
+    csv_col: 22
+    csv_name: "pe.rfc1.isel"
+    desc: "GRF1（$ls / $s / $lls） に書くデータの選択。"
+    ref: ["SDM 3.6.1.11", "Scrapbox 機械語「ALU結果の出力先」"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+  - name: pe_rfc1_wadr
+    pos: 53
+    width: 9
+    group: rfc1
+    csv_col: 23
+    csv_name: "pe.rfc1.wadr"
+    addr: {unit: rfc1, port: w, cycle: 0}
+    desc: "cycle0 の書き込みアドレス（単語単位、0..511）。"
+    ref: ["SDM 3.6.1.11", "Scrapbox 機械語「flat PEアドレスの位置」"]
+    notes: "auto_stride の wadr と違い、flat では単語単位。書き込みがない語でも値が入ることがある（assemble3 は未使用のアドレス欄にも値を置く）。"
+  - name: pe_rfc1_wwl
+    pos: 62
+    width: 2
+    group: rfc1
+    csv_col: 24
+    csv_name: "pe.rfc1.wwl"
+    desc: "書き込みの語長。"
+    ref: ["SDM 3.6.1.11", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+    notes: "CSV ヘッダ（auto_stride 順）では wadri の後にある。flat の j 行では wadr の直後で、rwl・radr が続く。"
+  - name: pe_rfc1_rwl
+    pos: 64
+    width: 2
+    group: rfc1
+    csv_col: 25
+    csv_name: "pe.rfc1.rwl"
+    desc: "読み出しの語長。"
+    ref: ["SDM 3.6.1.11", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+  - name: pe_rfc1_radr
+    pos: 66
+    width: 9
+    group: rfc1
+    csv_col: 26
+    csv_name: "pe.rfc1.radr"
+    addr: {unit: rfc1, port: r, cycle: 0}
+    desc: "cycle0 の読み出しアドレス（単語単位、0..511）。"
+    ref: ["SDM 3.6.1.11", "Scrapbox 機械語「flat PEアドレスの位置」"]
+  - name: pe_lm0_write
+    pos: 75
+    width: 1
+    group: lm0
+    csv_col: 27
+    csv_name: "pe.lm0.write"
+    desc: "LM0（$lm / $m / $llm）への書き込みを有効にする。"
+    ref: ["SDM 3.6.1.6", "SDM 3.6.1.7"]
+    notes: "aluop=11111（imm）のときは即値ペイロードの bit20 として再利用される（imm_layout）。"
+  - name: pe_lm0_isel
+    pos: 76
+    width: 2
+    group: lm0
+    csv_col: 28
+    csv_name: "pe.lm0.isel"
+    desc: "LM0 に書くデータの選択。"
+    ref: ["SDM 3.6.1.6"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+    notes: "imm のときは即値ペイロードの bit19..18。"
+  - name: pe_lm0_adr
+    pos: 78
+    width: 12
+    group: lm0
+    csv_col: 29
+    csv_name: "pe.lm0.adr"
+    addr: {unit: lm0, port: rw, cycle: 0}
+    desc: "cycle0 の LM0 アドレス（単語単位、0..4095）。読み出しと書き込みで共通。"
+    ref: ["SDM 3.6.1.6", "Scrapbox 機械語「flat PEアドレスの位置」"]
+    notes: "imm のときは即値ペイロードの bit11..0（cycle1〜3 の LM0 アドレス欄にも同じ値が複製される）。"
+  - name: pe_lm0_tregadr
+    pos: 90
+    width: 1
+    group: lm0
+    csv_col: 30
+    csv_name: "pe.lm0.tregadr"
+    desc: "T レジスタ間接参照（$lmt…）。各サイクルで T の値をアドレスに加える。"
+    ref: ["SDM 3.6.1.6"]
+    notes: "imm のときは即値ペイロードの bit17。"
+  - name: pe_lm0_maadj
+    pos: 91
+    width: 1
+    group: lm0
+    csv_col: 31
+    csv_name: "pe.lm0.maadj"
+    desc: "MAB 内アドレス修飾（…j<madpe>）を有効にする。madpe 以下の PE でアドレスを 1 語（アクセス語長）進める。"
+    ref: ["SDM 3.6.1.6"]
+    notes: "imm のときは即値ペイロードの bit16。"
+  - name: pe_lm0_madpe
+    pos: 92
+    width: 2
+    group: lm0
+    csv_col: 32
+    csv_name: "pe.lm0.madpe"
+    desc: "MAB 内アドレス修飾の PE 番号（j<madpe>）。"
+    ref: ["SDM 3.6.1.6", "SDM 3.6.1.7"]
+    notes: "maadj=0・write=1・madpe=11 は LM0 ベースアドレスレジスタ（$mb）への書き込み（プローブ: lpassa $lr0 $mb）。imm のときは即値ペイロードの bit15..14。"
+  - name: pe_lm0_wl
+    pos: 94
+    width: 2
+    group: lm0
+    csv_col: 33
+    csv_name: "pe.lm0.wl"
+    desc: "LM0 アクセスの語長。"
+    ref: ["SDM 3.6.1.6", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+    notes: "imm のときは即値ペイロードの bit13..12（11 も現れる）。"
+  - name: pe_lm1_write
+    pos: 96
+    width: 1
+    group: lm1
+    csv_col: 34
+    csv_name: "pe.lm1.write"
+    desc: "LM1（$ln / $n / $lln）への書き込みを有効にする。"
+    ref: ["SDM 3.6.1.8", "SDM 3.6.1.9"]
+  - name: pe_lm1_isel
+    pos: 97
+    width: 2
+    group: lm1
+    csv_col: 35
+    csv_name: "pe.lm1.isel"
+    desc: "LM1 に書くデータの選択。"
+    ref: ["SDM 3.6.1.8"]
+    enum:
+      - {val: "00", name: mau, desc: "MAU の演算結果"}
+      - {val: "01", name: alu, desc: "ALU の演算結果"}
+      - {val: "10", name: l1bm, desc: "L1BM→PE 転送のデータ"}
+      - {val: "11", name: mread, desc: "行列レジスタの読み出し（転置読み出し）"}
+  - name: pe_lm1_adr
+    pos: 99
+    width: 12
+    group: lm1
+    csv_col: 36
+    csv_name: "pe.lm1.adr"
+    addr: {unit: lm1, port: rw, cycle: 0}
+    desc: "cycle0 の LM1 アドレス（単語単位、0..4095）。読み出しと書き込みで共通。"
+    ref: ["SDM 3.6.1.8", "Scrapbox 機械語「flat PEアドレスの位置」"]
+  - name: pe_lm1_maadj
+    pos: 111
+    width: 1
+    group: lm1
+    csv_col: 37
+    csv_name: "pe.lm1.maadj"
+    desc: "MAB 内アドレス修飾（…j<madpe>）を有効にする。"
+    ref: ["SDM 3.6.1.8"]
+    notes: "LM1 には T 間接参照がない。"
+  - name: pe_lm1_madpe
+    pos: 112
+    width: 2
+    group: lm1
+    csv_col: 38
+    csv_name: "pe.lm1.madpe"
+    desc: "MAB 内アドレス修飾の PE 番号（j<madpe>）。"
+    ref: ["SDM 3.6.1.8", "SDM 3.6.1.9"]
+    notes: "maadj=0・write=1・madpe=11 は LM1 ベースアドレスレジスタ（$nb）への書き込み（プローブ: lpassa $lr0 $nb）。"
+  - name: pe_lm1_wl
+    pos: 114
+    width: 2
+    group: lm1
+    csv_col: 39
+    csv_name: "pe.lm1.wl"
+    desc: "LM1 アクセスの語長。"
+    ref: ["SDM 3.6.1.8", "SDM 1.3"]
+    enum:
+      - {val: "00", name: word, desc: "単語（32bit）"}
+      - {val: "01", name: long, desc: "長語（64bit）"}
+      - {val: "10", name: dlong, desc: "2 長語（128bit）"}
+  - name: pe_mauc_dmode
+    pos: 116
+    width: 2
+    group: mauc
+    csv_col: 40
+    csv_name: "pe.mauc.dmode"
+    desc: "MAU の演算精度。"
+    ref: ["SDM 3.6.9", "Scrapbox 機械語「MAU命令の制御組合せ」"]
+    enum:
+      - {val: "00", name: d, desc: "倍精度"}
+      - {val: "01", name: f, desc: "単精度"}
+      - {val: "10", name: h, desc: "半精度"}
+      - {val: "11", name: g, desc: "疑似単精度"}
+  - name: pe_mauc_enfma
+    pos: 118
+    width: 1
+    group: mauc
+    csv_col: 41
+    csv_name: "pe.mauc.enfma"
+    desc: "MAU の積和演算を有効にする（MAU 演算命令式を含む語で 1）。"
+    ref: ["SDM 3.6.9"]
+  - name: pe_mauc_mmode
+    pos: 119
+    width: 1
+    group: mauc
+    csv_col: 42
+    csv_name: "pe.mauc.mmode"
+    desc: "1 は行列ベクトル演算（?mfma / ?mmul）、0 はベクトル演算。"
+    ref: ["SDM 3.6.9", "SDM 3.6.9.2"]
+  - name: pe_mauc_round_out
+    pos: 120
+    width: 1
+    group: mauc
+    csv_col: 43
+    csv_name: "pe.mauc.round_out"
+    desc: "出力の精度縮減（命令名の r 接尾辞。例: fvfmar）。"
+    ref: ["SDM 3.6.9.25"]
+  - name: pe_mauc_mw
+    pos: 121
+    width: 1
+    group: mauc
+    csv_col: 44
+    csv_name: "pe.mauc.mw"
+    desc: "行列レジスタへの書き込み（?mwrite）。"
+    ref: ["SDM 3.6.10"]
+  - name: pe_mauc_ma
+    pos: 122
+    width: 4
+    group: mauc
+    csv_col: 45
+    csv_name: "pe.mauc.ma"
+    desc: "行列レジスタの書き込み位置（$lx<n> / $ly<n> の n。0..15）。"
+    ref: ["SDM 3.6.10", "SDM 3.6.1.14"]
+    notes: "観測値は 0000 / 0100 / 1000 / 1100 / 1110（hmwrite … $lx14）。"
+  - name: pe_mauc_signa
+    pos: 126
+    width: 1
+    group: mauc
+    csv_col: 46
+    csv_name: "pe.mauc.signa"
+    desc: "入力 A の符号反転（-$…）。"
+    ref: ["SDM 3.6.9.22"]
+    notes: "flat ではこの位置（pos 126）。CSV ヘッダの並び（signa, signb, signc）とは異なる。"
+  - name: pe_mauc_signc
+    pos: 127
+    width: 1
+    group: mauc
+    csv_col: 47
+    csv_name: "pe.mauc.signc"
+    desc: "入力 C の符号反転。"
+    ref: ["SDM 3.6.9.22"]
+  - name: pe_mauc_passa
+    pos: 128
+    width: 1
+    group: mauc
+    csv_col: 48
+    csv_name: "pe.mauc.passa"
+    desc: "乗算を通さず A をそのまま加算器へ渡す（?vadd / ?vpassa で 1）。"
+    ref: ["SDM 3.6.9.12", "SDM 3.6.9.13"]
+  - name: pe_mauc_zeroc
+    pos: 129
+    width: 1
+    group: mauc
+    csv_col: 49
+    csv_name: "pe.mauc.zeroc"
+    desc: "加算側の入力 C を 0 にする（?mul / ?vpassa で 1）。"
+    ref: ["SDM 3.6.9.3", "SDM 3.6.9.11"]
+  - name: pe_mauc_mdw_side
+    pos: 130
+    width: 1
+    group: mauc
+    csv_col: 50
+    csv_name: "pe.mauc.mdw/side"
+    desc: "倍精度 MAU 命令の d/u 指定（dvfmad などで 1）。半精度行列書き込みの 2 長語指定（hmwrite … $llx）でも 1。"
+    ref: ["SDM 3.6.9.2", "SDM 3.6.9.10", "SDM 3.6.10.3"]
+    notes: "正確な意味は未確定（UNKNOWN.md）。"
+  - name: pe_mauc_readh
+    pos: 131
+    width: 1
+    group: mauc
+    csv_col: 51
+    csv_name: "pe.mauc.readh"
+    desc: "行列レジスタの X / Y の役割の選択。1 は X を書き込み・読み出し側、Y を行列積の側にする（と解釈できる）。"
+    ref: ["SDM 3.6.10", "SDM 3.6.11", "SDM 3.6.9.2"]
+    notes: "観測則（コーパスの命令行 620 行で例外なし）: ?mwrite があれば書き込み先が $lx のとき 1。なければ ?mmul / ?mfma が $ly を使うとき 1。なければ ?mread の読み出し元が $lx のとき 1。ハードウェア上の意味は未確定（UNKNOWN.md）。"
+  - name: pe_mauc_exta
+    pos: 132
+    width: 1
+    group: mauc
+    csv_col: 52
+    csv_name: "pe.mauc.exta"
+    desc: "入力 A の精度拡張（e 接尾辞）。"
+    ref: ["SDM 3.6.9.23"]
+  - name: pe_mauc_extb
+    pos: 133
+    width: 1
+    group: mauc
+    csv_col: 53
+    csv_name: "pe.mauc.extb"
+    desc: "入力 B の精度拡張。"
+    ref: ["SDM 3.6.9.23"]
+  - name: pe_mauc_extc
+    pos: 134
+    width: 1
+    group: mauc
+    csv_col: 54
+    csv_name: "pe.mauc.extc"
+    desc: "入力 C の精度拡張。"
+    ref: ["SDM 3.6.9.23"]
+  - name: pe_mauc_signb
+    pos: 135
+    width: 1
+    group: mauc
+    csv_col: 55
+    csv_name: "pe.mauc.signb"
+    desc: "入力 B の符号反転。"
+    ref: ["SDM 3.6.9.22"]
+    notes: "flat では MAUC の isel の直前（pos 135）にある。"
+  - name: pe_mauc_isela
+    pos: 136
+    width: 3
+    group: mauc
+    csv_col: 56
+    csv_name: "pe.mauc.isela"
+    desc: "MAU 入力 A の選択。"
+    ref: ["SDM 3.6.9", "Scrapbox 機械語「MAU入力セレクタ」"]
+    enum:
+      - {val: "000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "010", name: t, desc: "$t（T レジスタ）"}
+      - {val: "011", name: lm, desc: "$lm（LM0）"}
+      - {val: "100", name: ln, desc: "$ln（LM1）"}
+      - {val: "101", name: mauf, desc: "$mauf"}
+      - {val: "110", name: aluf, desc: "$aluf"}
+      - {val: "111", name: lbf, desc: "$lbf。MAU を使わない語でも 111"}
+  - name: pe_mauc_iselb
+    pos: 139
+    width: 3
+    group: mauc
+    csv_col: 57
+    csv_name: "pe.mauc.iselb"
+    desc: "MAU 入力 B の選択。"
+    ref: ["SDM 3.6.9", "Scrapbox 機械語「MAU入力セレクタ」"]
+    enum:
+      - {val: "000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "010", name: t, desc: "$t（T レジスタ）"}
+      - {val: "011", name: lm, desc: "$lm（LM0）"}
+      - {val: "100", name: ln, desc: "$ln（LM1）"}
+      - {val: "101", name: mauf, desc: "$mauf"}
+      - {val: "110", name: aluf, desc: "$aluf"}
+      - {val: "111", name: lbf, desc: "$lbf。MAU を使わない語でも 111"}
+  - name: pe_mauc_iselc
+    pos: 142
+    width: 3
+    group: mauc
+    csv_col: 58
+    csv_name: "pe.mauc.iselc"
+    desc: "MAU 入力 C の選択。"
+    ref: ["SDM 3.6.9", "Scrapbox 機械語「MAU入力セレクタ」"]
+    enum:
+      - {val: "000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "010", name: t, desc: "$t（T レジスタ）"}
+      - {val: "011", name: lm, desc: "$lm（LM0）"}
+      - {val: "100", name: ln, desc: "$ln（LM1）"}
+      - {val: "101", name: mauf, desc: "$mauf"}
+      - {val: "110", name: aluf, desc: "$aluf"}
+      - {val: "111", name: lbf, desc: "$lbf。MAU を使わない語でも 111"}
+  - name: pe_aluc_dmode
+    pos: 145
+    width: 2
+    group: aluc
+    csv_col: 59
+    csv_name: "pe.aluc.dmode"
+    desc: "ALU の演算精度。整数（l / i / s）と浮動小数点（d / f / h）は同じ符号で、aluop などで区別する。"
+    ref: ["SDM 3.6.12", "SDM 1.3", "Scrapbox 機械語「ALUC配置」"]
+    enum:
+      - {val: "00", name: dl, desc: "倍精度 / 64bit 整数（d, l）"}
+      - {val: "01", name: fi, desc: "単精度 / 32bit 整数（f, i）"}
+      - {val: "10", name: hs, desc: "半精度 / 16bit 整数（h, s）"}
+      - {val: "11", name: g, desc: "疑似単精度（gbfn）。ALU を使わない語（nop など）でも 11"}
+    notes: "imm のときは即値ペイロードの bit31..30。"
+  - name: pe_aluc_aluop
+    pos: 147
+    width: 5
+    group: aluc
+    csv_col: 60
+    csv_name: "pe.aluc.aluop"
+    desc: "ALU の演算種別。"
+    ref: ["SDM 3.6.12", "Scrapbox 機械語「ALU opcode観測一覧」", "Scrapbox 機械語「多重化されるALU命令」"]
+    enum:
+      - {val: "00000", name: add, desc: "ladd / iadd / sadd（SDM 3.6.12.16）"}
+      - {val: "00001", name: sub, desc: "lsub / isub / ssub（3.6.12.16）"}
+      - {val: "00010", name: inc, desc: "linc / iinc / sinc（3.6.12.6）"}
+      - {val: "00011", name: dec, desc: "ldec / idec / sdec（3.6.12.6）"}
+      - {val: "00100", name: not, desc: "lnot / inot / snot（3.6.12.7）"}
+      - {val: "00101", name: and, desc: "land / iand / sand（3.6.12.15）"}
+      - {val: "00110", name: or, desc: "lor / ior / sor（3.6.12.15）"}
+      - {val: "00111", name: xor, desc: "lxor / ixor / sxor（3.6.12.15）"}
+      - {val: "01000", name: imax, desc: "lmax / imax / smax（3.6.12.13）"}
+      - {val: "01001", name: imin, desc: "lmin / imin / smin（3.6.12.13）"}
+      - {val: "01010", name: passa, desc: "dpassa / fpassa / hpassa / lpassa / ipassa / spassa（3.6.12.5）"}
+      - {val: "01011", name: lsl, desc: "llsl / ilsl / slsl（3.6.12.17）"}
+      - {val: "01100", name: lsr, desc: "llsr / ilsr / slsr（3.6.12.17）"}
+      - {val: "01101", name: bsl, desc: "lbsl / ibsl / sbsl（3.6.12.17）"}
+      - {val: "01110", name: bsr, desc: "lbsr / ibsr / sbsr（3.6.12.17）"}
+      - {val: "01111", name: lnot, desc: "llnot / ilnot / slnot（3.6.12.8）"}
+      - {val: "10000", name: rsqrt, desc: "drsqrt / frsqrt / hrsqrt（3.6.12.9）"}
+      - {val: "10001", name: msl, desc: "msl（3.6.12.4）"}
+      - {val: "10010", name: msr, desc: "msr（3.6.12.4）"}
+      - {val: "10011", name: packbit, desc: "?packbit（3.6.12.14）"}
+      - {val: "10100", name: relu, desc: "?relu / ?relu0（3.6.12.18）"}
+      - {val: "10101", name: relu1, desc: "?relu1（3.6.12.18）"}
+      - {val: "10110", name: relu2, desc: "?relu2（3.6.12.18）"}
+      - {val: "10111", name: relu3, desc: "?relu3（3.6.12.18）"}
+      - {val: "11000", name: lrelud, desc: "?lrelud（3.6.12.18）"}
+      - {val: "11001", name: lreluo, desc: "?lreluo（3.6.12.18）"}
+      - {val: "11010", name: ilrelud, desc: "?ilrelud（3.6.12.18）"}
+      - {val: "11011", name: fmax, desc: "dmax / fmax / hmax（3.6.12.13）"}
+      - {val: "11100", name: fmin, desc: "dmin / fmin / hmin（3.6.12.13）"}
+      - {val: "11101", name: zero_bfe, desc: "zero（3.6.12.2）、hbfe/6..9（3.6.12.12）。dmode・is_unsigned・isel で区別"}
+      - {val: "11110", name: floor_ftoi_bfn, desc: "?floor（3.6.12.10）、?ftoi（3.6.12.11）、?bfn（3.6.12.12）。dmode と iselb で区別"}
+      - {val: "11111", name: imm, desc: "imm / immu（3.6.12.3）。即値ペイロードがほかの欄を再利用する（imm_layout）"}
+    notes: "ALU を使わない語では 00000（dmode=11、isela=1000 と組み合わせる）。"
+  - name: pe_aluc_is_unsigned
+    pos: 152
+    width: 1
+    group: aluc
+    csv_col: 61
+    csv_name: "pe.aluc.is_unsigned"
+    desc: "符号なし（u 派生命令、immu）。zero でも 1。"
+    ref: ["SDM 3.6.12", "SDM 3.6.12.3"]
+  - name: pe_aluc_rounda
+    pos: 153
+    width: 1
+    group: aluc
+    csv_col: 62
+    csv_name: "pe.aluc.rounda"
+    desc: "入力 A の単精度→半精度の精度縮減（r 接尾辞）。"
+    ref: ["SDM 3.6.12.19", "Scrapbox 機械語「ALU入力ごとの精度縮減」"]
+    notes: "imm のときは即値ペイロードの bit29。"
+  - name: pe_aluc_roundb
+    pos: 154
+    width: 1
+    group: aluc
+    csv_col: 63
+    csv_name: "pe.aluc.roundb"
+    desc: "入力 B の精度縮減。"
+    ref: ["SDM 3.6.12.19"]
+    notes: "imm のときは即値ペイロードの bit28。"
+  - name: pe_aluc_isela
+    pos: 155
+    width: 4
+    group: aluc
+    csv_col: 64
+    csv_name: "pe.aluc.isela"
+    desc: "ALU 入力 A の選択。"
+    ref: ["SDM 3.6.1.20", "Scrapbox 機械語「ALU入力セレクタ」"]
+    enum:
+      - {val: "0000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "0001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "0010", name: t, desc: "$t"}
+      - {val: "0011", name: lm, desc: "$lm（LM0）"}
+      - {val: "0100", name: ln, desc: "$ln（LM1）"}
+      - {val: "0101", name: peid, desc: "$peid"}
+      - {val: "0110", name: l1bid, desc: "$l1bid"}
+      - {val: "0111", name: l2bid, desc: "$l2bid"}
+      - {val: "1000", name: msb1, desc: "$msb1。ALU を使わない語（nop、L1BM のみの語など）でも 1000"}
+      - {val: "1001", name: subpeid, desc: "$subpeid"}
+      - {val: "1010", name: mabid, desc: "$mabid"}
+      - {val: "1011", name: mauf, desc: "$mauf"}
+      - {val: "1100", name: aluf, desc: "$aluf"}
+      - {val: "1101", name: lbf, desc: "$lbf"}
+      - {val: "1110", name: mreadf, desc: "$mreadf"}
+    notes: "1111 はエミュレータが不正値として拒否する（Scrapbox）。imm のときは即値ペイロードの bit27..24。zero は 0101 を使う。"
+  - name: pe_aluc_iselb
+    pos: 159
+    width: 3
+    group: aluc
+    csv_col: 65
+    csv_name: "pe.aluc.iselb"
+    desc: "ALU 入力 B の選択。"
+    ref: ["SDM 3.6.1.20", "Scrapbox 機械語「ALU入力セレクタ」"]
+    enum:
+      - {val: "000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "010", name: t, desc: "$t（T レジスタ）"}
+      - {val: "011", name: lm, desc: "$lm（LM0）"}
+      - {val: "100", name: ln, desc: "$ln（LM1）"}
+      - {val: "101", name: mauf, desc: "$mauf"}
+      - {val: "110", name: aluf, desc: "$aluf"}
+      - {val: "111", name: lbf, desc: "$lbf"}
+    notes: "aluop=11110 では floor（110）/ ftoi（111）/ bfn（000）の区別に、hbfn/n・hbfe/n では 9-n を入れる。imm のときは即値ペイロードの bit23..21。"
+  - name: rsv_162
+    pos: 162
+    width: 2
+    group: rsv
+    csv_col: 66
+    csv_name: null
+    desc: "予約。assemble3 が 0 以外を出すことはない（コーパス全語とプローブ）。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」（162..165 の補助欄）"]
+    notes: "CSV では独立した 2bit 列。auto_stride には対応する欄がない。エミュレータは 1 を立てても結果を変えなかった（lpassa / fvadd / iadd / l1bmp で確認）。UNKNOWN.md。"
+  - name: rsv_164
+    pos: 164
+    width: 2
+    group: rsv
+    csv_col: 67
+    csv_name: null
+    desc: "予約。assemble3 が 0 以外を出すことはない（コーパス全語とプローブ）。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」（162..165 の補助欄）"]
+    notes: "CSV では独立した 2bit 列。auto_stride には対応する欄がない。エミュレータは 1 を立てても結果を変えなかった（lpassa / fvadd / iadd / l1bmp で確認）。UNKNOWN.md。"
+  - name: l1bm_bmode
+    pos: 166
+    width: 2
+    group: l1bm
+    csv_col: 68
+    csv_name: "l1bm.bmode"
+    desc: "L1BM 命令式の種別。"
+    ref: ["SDM 3.6.8", "Scrapbox 機械語「L1BMとL2BMの追加制御組合せ」"]
+    enum:
+      - {val: "00", name: pe, desc: "PE 放送（l1bmp）"}
+      - {val: "01", name: m16x1, desc: "16x1（l1bmm / l1bmm@ / l1bmr…）"}
+      - {val: "10", name: m4x4, desc: "4x4（l1bmm4 / l1bmm4@ / l1bmr4…）"}
+      - {val: "11", name: dist, desc: "分配・結合（l1bmd）"}
+  - name: l1bm_lwrite
+    pos: 168
+    width: 1
+    group: l1bm
+    csv_col: 69
+    csv_name: "l1bm.lwrite"
+    desc: "PE→L1BM 方向の書き込み（L1BM が書き込み先）。"
+    ref: ["SDM 3.6.8"]
+  - name: l1bm_rmode
+    pos: 169
+    width: 1
+    group: l1bm
+    csv_col: 70
+    csv_name: "l1bm.rmode"
+    desc: "縮約（l1bmr… / l1bmr4…）。"
+    ref: ["SDM 3.6.8.12", "SDM 3.6.8.18"]
+  - name: l1bm_me
+    pos: 170
+    width: 1
+    group: l1bm
+    csv_col: 71
+    csv_name: "l1bm.me"
+    desc: "L1BM 命令式を含む語で 1（L1BM の動作を有効にする欄と推定）。"
+    ref: ["SDM 3.6.8"]
+  - name: l1bm_ladr
+    pos: 171
+    width: 13
+    group: l1bm
+    csv_col: 72
+    csv_name: "l1bm.ladr"
+    desc: "L1BM アドレス（長語単位、0..8191）。PE⇔L1BM 転送で使う。"
+    ref: ["SDM 3.6.8", "SDM 3.6.1.5"]
+    notes: "l1bmd+<n> では値が変わる（l1bmd+1 $lr0 $lb0 → 60、l1bmd+3 → 52）。UNKNOWN.md。"
+  - name: l1bm_dmode
+    pos: 184
+    width: 1
+    group: l1bm
+    csv_col: 73
+    csv_name: "l1bm.dmode"
+    desc: "L1BM 縮約の精度。0 は倍精度（d / l）、1 は単精度・半精度（f / i / h / s）。"
+    ref: ["SDM 3.6.8.4", "SDM 3.6.8.5"]
+  - name: l1bm_ext
+    pos: 185
+    width: 1
+    group: l1bm
+    csv_col: 74
+    csv_name: "l1bm.ext"
+    desc: "L1BM 縮約の入力精度拡張（h / s の縮約で 1）。"
+    ref: ["SDM 3.6.8.4"]
+  - name: l1bm_round_out
+    pos: 186
+    width: 1
+    group: l1bm
+    csv_col: 75
+    csv_name: "l1bm.round_out"
+    desc: "L1BM 縮約結果の精度縮減（h の浮動小数点縮約で 1）。"
+    ref: ["SDM 3.6.8.5"]
+  - name: l1bm_mabadr
+    pos: 187
+    width: 4
+    group: l1bm
+    csv_col: 76
+    csv_name: "l1bm.mabadr/opcode"
+    desc: "MAB 番号（l1bmm@<n> / l1bmm4@<n>）。"
+    ref: ["SDM 3.6.8.10", "Scrapbox 機械語「新旧アセンブラで変わった点」"]
+    notes: "2024 年版 assemble3 は MAB 番号と縮約 opcode のどちらでも同じ値を l1bm_mabadr と l1bm_opcode の両方に書く。2024 年版エミュレータは 187..190 を MAB 番号として使い、191..194 を見ない（プローブ: l1bmm@2 の 191..194 だけを変えても結果は同じ、187..190 を変えると MAB が変わる）。"
+  - name: l1bm_opcode
+    pos: 191
+    width: 4
+    group: l1bm
+    csv_col: 77
+    csv_name: "l1bm.mabadr/opcode"
+    desc: "L1BM 縮約の演算（rrn_opcode）。"
+    ref: ["SDM 3.5.5", "SDM 3.6.8.12"]
+    enum_when: {field: l1bm_rmode, val: "1"}
+    enum:
+      - {val: "0000", name: fadd, desc: "fadd（浮動小数点加算）。縮約でない転送でも 0000"}
+      - {val: "0001", name: max, desc: "max"}
+      - {val: "0010", name: min, desc: "min"}
+      - {val: "1000", name: iadd, desc: "iadd（整数加算）"}
+      - {val: "1001", name: band, desc: "band（ビット論理積）"}
+      - {val: "1010", name: and, desc: "and（論理積）"}
+      - {val: "1100", name: bor, desc: "bor（ビット論理和）"}
+      - {val: "1101", name: or, desc: "or（論理和）"}
+    notes: "2024 年版エミュレータは 191..194 を縮約 opcode として使い、187..190 を見ない（プローブ: l1bmrsbor の 191..194 を変えると結果が変わる）。精度は dmode / ext / round_out で表す。"
+  - name: l1bm_isel
+    pos: 195
+    width: 3
+    group: l1bm
+    csv_col: 78
+    csv_name: "l1bm.isel"
+    desc: "PE→L1BM 転送で読み出す PE 側のデータ。"
+    ref: ["SDM 3.6.8"]
+    enum:
+      - {val: "000", name: lr, desc: "$lr（GRF0）"}
+      - {val: "001", name: ls, desc: "$ls（GRF1）"}
+      - {val: "010", name: t, desc: "$t（T レジスタ）"}
+      - {val: "011", name: lm, desc: "$lm（LM0）"}
+      - {val: "100", name: ln, desc: "$ln（LM1）"}
+      - {val: "101", name: mauf, desc: "$mauf"}
+      - {val: "110", name: aluf, desc: "$aluf"}
+      - {val: "111", name: none, desc: "PE→L1BM 転送なし（既定値）"}
+  - name: l1bm_wl
+    pos: 198
+    width: 1
+    group: l1bm
+    csv_col: 79
+    csv_name: "l1bm.wl"
+    desc: "PE 側オペランドの語長。0 は長語、1 は 2 長語（$llb …）。"
+    ref: ["SDM 3.6.8.3"]
+    enum:
+      - {val: "0", name: long, desc: "長語"}
+      - {val: "1", name: dlong, desc: "2 長語"}
+  - name: l1bm_gwrite
+    pos: 199
+    width: 1
+    group: l1bm
+    csv_col: 80
+    csv_name: "l1bm.gwrite"
+    desc: "L2BM→L1BM 方向の書き込み（l2bmb / l2bmb2 / l2bmd $lc… $lb…）。"
+    ref: ["SDM 3.6.7"]
+  - name: l1bm_gadr
+    pos: 200
+    width: 10
+    group: l1bm
+    csv_col: 81
+    csv_name: "l1bm.gadr"
+    desc: "L1BM⇔L2BM 転送の L1BM アドレス。ソースの $lb<addr> を 8 で割った値（プローブ: $lb32 → 4）。"
+    ref: ["SDM 3.6.7", "SDM 3.6.1.4"]
+  - name: l2bm_lwrite
+    pos: 210
+    width: 1
+    group: l2bm
+    csv_col: 82
+    csv_name: "l2bm.lwrite"
+    desc: "L1BM→L2BM 方向の書き込み（L2BM が書き込み先）。"
+    ref: ["SDM 3.6.7"]
+  - name: l2bm_bdmode
+    pos: 211
+    width: 2
+    group: l2bm
+    csv_col: 83
+    csv_name: "l2bm.bdmode"
+    desc: "L2BM 命令式の種別。"
+    ref: ["SDM 3.6.7", "Scrapbox 機械語「L1BMとL2BMの追加制御組合せ」"]
+    enum:
+      - {val: "00", name: dist, desc: "分配・結合（l2bmd）"}
+      - {val: "01", name: bcast, desc: "放送・縮約・個別転送（l2bmb / l2bmr… / l2bm@）"}
+      - {val: "10", name: bcast2, desc: "分配放送・結合縮約（l2bmb2 / l2bmr2…）"}
+  - name: l2bm_ladr
+    pos: 213
+    width: 11
+    group: l2bm
+    csv_col: 84
+    csv_name: "l2bm.ladr"
+    desc: "L2BM アドレス。ソースの $lc<addr> を 16 で割った値（プローブ: $lc64 → 4）。"
+    ref: ["SDM 3.6.7", "SDM 3.6.1.1"]
+    notes: "l2bmdars では DAR へ送るアドレスもこの欄に入る（l2bmdars $lc1024@.0 → 64）。"
+  - name: l2bm_l1adr
+    pos: 224
+    width: 3
+    group: l2bm
+    csv_col: 85
+    csv_name: "l2bm.l1adr"
+    desc: "L1B 番号（l2bm@<n>、L1B 集合指定の l1badr）。"
+    ref: ["SDM 3.6.7.1", "SDM 3.6.7.5"]
+  - name: l2bm_immode
+    pos: 227
+    width: 3
+    group: l2bm
+    csv_col: 86
+    csv_name: "l2bm.immode"
+    desc: "L1B 集合指定のマスク（immode）。111 は全 L1B。"
+    ref: ["SDM 3.6.7.1"]
+    notes: "L1B b が対象になる条件は b & (7 ^ immode) == l1adr & (7 ^ immode)。コーパスでは 000 と 111 だけが現れる。"
+  - name: l2bm_dmode
+    pos: 230
+    width: 2
+    group: l2bm
+    csv_col: 87
+    csv_name: "l2bm.dmode"
+    desc: "L2BM 縮約の精度。"
+    ref: ["SDM 3.5.5", "SDM 3.6.7.6"]
+    enum:
+      - {val: "00", name: dl, desc: "倍精度 / 64bit 整数（d, l）。縮約でない転送でも 00"}
+      - {val: "01", name: fi, desc: "単精度 / 32bit 整数（f, i）"}
+      - {val: "10", name: hs, desc: "半精度 / 16bit 整数（h, s）"}
+      - {val: "11", name: none, desc: "L2BM 命令式なし（既定値）"}
+  - name: l2bm_opcode
+    pos: 232
+    width: 4
+    group: l2bm
+    csv_col: 88
+    csv_name: "l2bm.opcode"
+    desc: "L2BM 縮約の演算（rrn_opcode）。"
+    ref: ["SDM 3.5.5", "SDM 3.6.7.6"]
+    enum:
+      - {val: "0000", name: fadd, desc: "fadd（浮動小数点加算）。縮約でない転送でも 0000"}
+      - {val: "0001", name: max, desc: "max"}
+      - {val: "0010", name: min, desc: "min"}
+      - {val: "1000", name: iadd, desc: "iadd（整数加算）"}
+      - {val: "1001", name: band, desc: "band（ビット論理積）"}
+      - {val: "1010", name: and, desc: "and（論理積）"}
+      - {val: "1100", name: bor, desc: "bor（ビット論理和）"}
+      - {val: "1101", name: or, desc: "or（論理和）"}
+    notes: "縮約でない転送（l2bmd、l2bm@）でも 1100 が入る。"
+  - name: l2bm_darsend
+    pos: 236
+    width: 1
+    group: l2bm
+    csv_col: 89
+    csv_name: "l2bm.darsend"
+    desc: "DAR への送出（l2bmdars）。"
+    ref: ["SDM 3.6.7.10", "SDM 3.6.1.3"]
+  - name: l2bm_darwrite
+    pos: 237
+    width: 1
+    group: l2bm
+    csv_col: 90
+    csv_name: "l2bm.darwrite"
+    desc: "DAR への書き込み（l2bmdarw）。"
+    ref: ["SDM 3.6.7.10", "SDM 3.6.1.3"]
+  - name: wd
+    pos: 238
+    width: 8
+    group: wd
+    csv_col: 91
+    csv_name: "wd"
+    desc: "wait する MV 命令のタグ（wait i<hex>）。00000000 は待たない。"
+    ref: ["SDM 1.2", "SDM 3.2.3", "Scrapbox 機械語「priorityとwait」"]
+    notes: "MV 命令の mvid と同じ符号。wait i00 は assemble3 が拒否する。"
+  - name: pe_rfc0_wadr_c1
+    pos: 246
+    width: 9
+    group: addr_c1
+    csv_col: 92
+    csv_name: null
+    addr: {unit: rfc0, port: w, cycle: 1}
+    desc: "cycle1 の GRF0 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc0_radr_c1
+    pos: 255
+    width: 9
+    group: addr_c1
+    csv_col: 93
+    csv_name: null
+    addr: {unit: rfc0, port: r, cycle: 1}
+    desc: "cycle1 の GRF0 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_wadr_c1
+    pos: 264
+    width: 9
+    group: addr_c1
+    csv_col: 94
+    csv_name: null
+    addr: {unit: rfc1, port: w, cycle: 1}
+    desc: "cycle1 の GRF1 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_radr_c1
+    pos: 273
+    width: 9
+    group: addr_c1
+    csv_col: 95
+    csv_name: null
+    addr: {unit: rfc1, port: r, cycle: 1}
+    desc: "cycle1 の GRF1 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_lm0_adr_c1
+    pos: 282
+    width: 12
+    group: addr_c1
+    csv_col: 96
+    csv_name: null
+    addr: {unit: lm0, port: rw, cycle: 1}
+    desc: "cycle1 の LM0 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。 imm のときは即値ペイロードの bit11..0 の複製。"
+  - name: pe_lm1_adr_c1
+    pos: 294
+    width: 12
+    group: addr_c1
+    csv_col: 97
+    csv_name: null
+    addr: {unit: lm1, port: rw, cycle: 1}
+    desc: "cycle1 の LM1 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc0_wadr_c2
+    pos: 306
+    width: 9
+    group: addr_c2
+    csv_col: 98
+    csv_name: null
+    addr: {unit: rfc0, port: w, cycle: 2}
+    desc: "cycle2 の GRF0 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc0_radr_c2
+    pos: 315
+    width: 9
+    group: addr_c2
+    csv_col: 99
+    csv_name: null
+    addr: {unit: rfc0, port: r, cycle: 2}
+    desc: "cycle2 の GRF0 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_wadr_c2
+    pos: 324
+    width: 9
+    group: addr_c2
+    csv_col: 100
+    csv_name: null
+    addr: {unit: rfc1, port: w, cycle: 2}
+    desc: "cycle2 の GRF1 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_radr_c2
+    pos: 333
+    width: 9
+    group: addr_c2
+    csv_col: 101
+    csv_name: null
+    addr: {unit: rfc1, port: r, cycle: 2}
+    desc: "cycle2 の GRF1 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_lm0_adr_c2
+    pos: 342
+    width: 12
+    group: addr_c2
+    csv_col: 102
+    csv_name: null
+    addr: {unit: lm0, port: rw, cycle: 2}
+    desc: "cycle2 の LM0 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。 imm のときは即値ペイロードの bit11..0 の複製。"
+  - name: pe_lm1_adr_c2
+    pos: 354
+    width: 12
+    group: addr_c2
+    csv_col: 103
+    csv_name: null
+    addr: {unit: lm1, port: rw, cycle: 2}
+    desc: "cycle2 の LM1 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc0_wadr_c3
+    pos: 366
+    width: 9
+    group: addr_c3
+    csv_col: 104
+    csv_name: null
+    addr: {unit: rfc0, port: w, cycle: 3}
+    desc: "cycle3 の GRF0 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc0_radr_c3
+    pos: 375
+    width: 9
+    group: addr_c3
+    csv_col: 105
+    csv_name: null
+    addr: {unit: rfc0, port: r, cycle: 3}
+    desc: "cycle3 の GRF0 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_wadr_c3
+    pos: 384
+    width: 9
+    group: addr_c3
+    csv_col: 106
+    csv_name: null
+    addr: {unit: rfc1, port: w, cycle: 3}
+    desc: "cycle3 の GRF1 書き込みアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_rfc1_radr_c3
+    pos: 393
+    width: 9
+    group: addr_c3
+    csv_col: 107
+    csv_name: null
+    addr: {unit: rfc1, port: r, cycle: 3}
+    desc: "cycle3 の GRF1 読み出しアドレス。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+  - name: pe_lm0_adr_c3
+    pos: 402
+    width: 12
+    group: addr_c3
+    csv_col: 108
+    csv_name: null
+    addr: {unit: lm0, port: rw, cycle: 3}
+    desc: "cycle3 の LM0 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。 imm のときは即値ペイロードの bit11..0 の複製。"
+  - name: pe_lm1_adr_c3
+    pos: 414
+    width: 12
+    group: addr_c3
+    csv_col: 109
+    csv_name: null
+    addr: {unit: lm1, port: rw, cycle: 3}
+    desc: "cycle3 の LM1 アドレス（読み書き共通）。単語単位。"
+    ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+    notes: "flat の明示アドレス（単語単位）。ソースが auto_stride 形式（v / v<adri>）でも、assemble3 が各サイクルのアドレスに展開して書く。"
+cycle_addr:
+  desc: "4 サイクル分のアドレス欄（cycle0..3 の順）。flat では各サイクルのアドレスを直接持つ（単語単位）。"
+  ref: ["Scrapbox 機械語「flat PEアドレスの位置」", "SDM 3.6.1.6"]
+  rfc0_w: [pe_rfc0_wadr, pe_rfc0_wadr_c1, pe_rfc0_wadr_c2, pe_rfc0_wadr_c3]
+  rfc0_r: [pe_rfc0_radr, pe_rfc0_radr_c1, pe_rfc0_radr_c2, pe_rfc0_radr_c3]
+  rfc1_w: [pe_rfc1_wadr, pe_rfc1_wadr_c1, pe_rfc1_wadr_c2, pe_rfc1_wadr_c3]
+  rfc1_r: [pe_rfc1_radr, pe_rfc1_radr_c1, pe_rfc1_radr_c2, pe_rfc1_radr_c3]
+  lm0: [pe_lm0_adr, pe_lm0_adr_c1, pe_lm0_adr_c2, pe_lm0_adr_c3]
+  lm1: [pe_lm1_adr, pe_lm1_adr_c1, pe_lm1_adr_c2, pe_lm1_adr_c3]
+imm_layout:
+  desc: "aluop=11111（imm / immu）のとき、32bit の即値ペイロードは専用の欄を持たず、ALUC と LM0 の欄を再利用する。各区間で、ペイロードの上位 bit が小さい pos に入る。"
+  ref: ["SDM 3.6.12.3", "Scrapbox 機械語「即値32ビットとimmu」"]
+  when: {field: "pe_aluc_aluop", val: "11111"}
+  unsigned_flag: "pe_aluc_is_unsigned"
+  segments:
+    - {bits: [31, 30], pos: [145, 146], fields: [pe_aluc_dmode]}
+    - {bits: [29, 28], pos: [153, 154], fields: [pe_aluc_rounda, pe_aluc_roundb]}
+    - {bits: [27, 24], pos: [155, 158], fields: [pe_aluc_isela]}
+    - {bits: [23, 21], pos: [159, 161], fields: [pe_aluc_iselb]}
+    - {bits: [20, 18], pos: [75, 77], fields: [pe_lm0_write, pe_lm0_isel]}
+    - {bits: [17, 12], pos: [90, 95], fields: [pe_lm0_tregadr, pe_lm0_maadj, pe_lm0_madpe, pe_lm0_wl]}
+    - {bits: [11, 0], pos: [78, 89], fields: [pe_lm0_adr], replicas: [[282, 293], [342, 353], [402, 413]]}
+  notes: "is_unsigned=0（imm）は 4 単語に x,x,x,x、1（immu）は x,0,x,0 を書く（Scrapbox）。半精度リテラルは同じ半語を 2 つ並べた 32bit になる。replicas は cycle1〜3 の LM0 アドレス欄（pe_lm0_adr_c1..c3）への複製で、assemble3 は常に同じ値を書く。imm の語では LM0 は使えない（assemble3: 'immop can't output to LM0'、同じ語の他の命令式が LM0 を使うと 'field conflict between immediate and lm0'）。したがって imm の語の pe_lm0_* は LM0 の制御として解釈しない。"
