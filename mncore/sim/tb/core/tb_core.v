@@ -4,8 +4,11 @@
 //
 // The script is what mncore/sim/regress/run.py (or gen_fixed.py) makes from an assembled
 // program, the same sequence as `mnhost.py run` on the board (PROTOCOL.md section 6):
-//   C                                  clear the PE state: GRF0/GRF1/LM0/LM1/T = 0, OMR 1..15 = 0,
-//                                      $mb = $nb = 0 (the official emulator starts from zeros)
+//   C                                  reset the core for 16 clocks, like the RESET command: mn_core
+//                                      then clears the PE state (GRF0/GRF1/LM0/LM1/T, OMR, $mb/$nb
+//                                      = 0, the official emulator's initial state); the following
+//                                      commands wait for it (mw_ready / mr_ready)
+//   Z                                  clear the PE state through the host ports instead (WR_MEM)
 //   I <entry> <448-bit hex>            write an instruction memory entry (lanes 0..6, space 0)
 //   W <space> <loc> <addr> <mask> <data>   WR_MEM of one long word (hex fields)
 //   R <tag> <space> <loc> <addr> <n>   RD_MEM of n long words; prints "D <tag> <space> <addr> <value>"
@@ -16,7 +19,14 @@
 //   E                                  end
 //   # ...                              comment
 // All numbers are hex. The last line is PASS (no failed check, no port error) or FAIL.
+// Compile with -DTB_FPALU=0 / -DTB_MAU=0 for the reduced cores (mncore/sim/regress/run.py --define).
 `timescale 1ns/1ps
+`ifndef TB_FPALU
+`define TB_FPALU 1
+`endif
+`ifndef TB_MAU
+`define TB_MAU 1
+`endif
 module tb_core;
     localparam IMEM_AW = 9, LM_AW = 9, GRF_AW = 8;
 
@@ -48,7 +58,8 @@ module tb_core;
     wire [31:0] core_steps;
     wire [16:0] core_trap;
 
-    mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW)) dut (
+    mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW),
+              .FPALU(`TB_FPALU), .MAU(`TB_MAU)) dut (
         .clk(clk), .rst(rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),
         .mw_loc(mw_loc), .mw_addr(mw_addr), .mw_data(mw_data), .mw_mask(mw_mask),
@@ -132,6 +143,12 @@ module tb_core;
                     "#": rc = $fgets(line, fd);
                     "E": done_scr = 1'b1;
                     "C": begin
+                        @(negedge clk);
+                        rst = 1'b1;
+                        repeat (16) @(negedge clk);
+                        rst = 1'b0;
+                    end
+                    "Z": begin
                         for (i = 0; i < (1 << GRF_AW); i = i + 1) begin
                             mem_write(8'h03, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
                             mem_write(8'h04, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;

@@ -305,6 +305,8 @@ TESTS = [
       note="a write stopped by the mask is range checked too (contract 06 section 3)"),
     T("e_range_tind", ERR_PRE + ['imm i"0x800" $t', "nop/2", "lpassa $lmt0v $lr96v"],
       status=(RANGE, last_word), note="T-indirect address 2048 words"),
+    T("e_range_before_unsup", ERR_PRE + ["msl $lm1024v $lr96v"], status=(RANGE, last_word),
+      note="an unsupported word that also accesses out of range stops with E_RANGE (contract 06 section 3)"),
     T("e_decode", ERR_PRE + ["lpassa $lr0v $lr96v"], status=(DECODE, 0), patch=ll10),
 ]
 
@@ -470,7 +472,12 @@ def main(argv=None) -> int:
         # one script per test for debugging (not committed): vvp sim.vvp +script=<this>
         (BUILD / f"{n}.scr").write_text(scr + "E\n", encoding="utf-8", newline="\n")
     if not only:
-        allscr = "".join(scr for _, scr in scripts) + "E\n"
+        # a RUN right after reset waits for the clear of the PE state (mn_core CLEAR), then runs
+        # entry 0 of the last test (ERR_PRE: iadd ... $lr64v) on the cleared state
+        tail = ["# RUN during the clear after reset", "C", "X 0 1", "K 0 0",
+                "Q 3 0 0 0000000000000000", "Q 3 0 20 0000000000000000", "Q 1 0 1ff 0000000000000000",
+                "Q 5 0 7 0000000000000000"]
+        allscr = "".join(scr for _, scr in scripts) + "\n".join(tail) + "\nE\n"
         (FIXED / "all.scr").write_text(allscr, encoding="utf-8", newline="\n")
         print(f"wrote {len(scripts)} tests to {FIXED.relative_to(ROOT)}/ (all.scr)")
     return 0 if ok else 1

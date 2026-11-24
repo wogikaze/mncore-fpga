@@ -45,8 +45,9 @@
 // after the range check, contract 06 section 3): decoder errors (err_field), cls_bad of
 // mn_alu_cls (rounda / roundb / dmode), msl / msr and bfn / bfe (they need the other PEs of
 // the MAB: aluop), matrix MAU (mmode), ?mwrite (mw), L1BM (l1bm_bmode) and L2BM
-// (l2bm_lwrite) expressions. Such a word is not executed: after the start clock mn_pe_lsu
-// gets the word with ll = 00, so its EXEC phase writes nothing.
+// (l2bm_lwrite) expressions, and with FPALU = 0 / MAU = 0 the instructions of the unit left
+// out (aluop / enfma). Such a word is not executed: after the start clock mn_pe_lsu gets the
+// word with ll = 00, so its EXEC phase writes nothing.
 // isel = 11 (matrix read) writes 0 and $lbf reads 0 (the matrix register and L1BM are empty).
 //
 // Host port: mn_pe_lsu's (WR_MEM / RD_MEM; PROTOCOL.md spaces 1..5, 0x10 OMR, 0x11 BAR),
@@ -55,11 +56,13 @@
 module mn_pe_core #(
     parameter LM_AW  = 9,   // LM0/LM1 depth = 2**LM_AW long words (contract LM_DEPTH; chip 11)
     parameter GRF_AW = 8,   // GRF0/GRF1 depth = 2**GRF_AW long words
-    parameter POS_N  = 0,   // chip coordinates of this PE (contract 06 section 3): group 0..3
-    parameter POS_C  = 0,   //   L2B 0..1
-    parameter POS_B  = 0,   //   L1B 0..7
-    parameter POS_M  = 0,   //   MAB 0..15
-    parameter POS_P  = 0    //   PE 0..3 in the MAB
+    parameter FPALU  = 1,   // 0: no FP-side ALU (mn_fp_alu); its instructions are unsupported
+    parameter MAU    = 1,   // 0: no MAU (mn_mau_vec); its instructions are unsupported
+    parameter integer POS_N = 0,   // chip coordinates of this PE (contract 06 section 3): group 0..3
+    parameter integer POS_C = 0,   //   L2B 0..1
+    parameter integer POS_B = 0,   //   L1B 0..7
+    parameter integer POS_M = 0,   //   MAB 0..15
+    parameter integer POS_P = 0    //   PE 0..3 in the MAB
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -127,10 +130,13 @@ module mn_pe_core #(
 
     // ------------------------------------------------------------------ classification
     wire cls_int, cls_fp, cls_xpe, cls_none, cls_bad;   // mn_alu_cls inside mn_alu_int
-    wire cls_bf;                                        // bfn / bfe (mn_fp_alu)
-    wire alu_act = cls_int | (cls_fp & ~cls_bf);        // the ALU runs this step
+    // bfn / bfe (the same decode as mn_fp_alu's cls_bf)
+    wire cls_bf  = (alu_aluop == 5'b11101) | ((alu_aluop == 5'b11110) & (alu_iselb[2:1] != 2'b11));
+    wire fp_here = (FPALU != 0);
+    wire alu_act = cls_int | (fp_here & cls_fp & ~cls_bf);   // the ALU runs this step
     wire alu_int = cls_int;                             // 1: mn_alu_int, 0: mn_fp_alu
-    wire mau_act = mau_enfma & ~mau_mmode;              // MAU vector instruction
+    wire mau_vec = mau_enfma & ~mau_mmode;              // MAU vector instruction
+    wire mau_act = (MAU != 0) & mau_vec;
     wire op_zero = (alu_aluop == 5'b11101) & alu_uns & (alu_isela == 4'b0101);
     // ALU instructions with a second input (viz/core vsm.rs ALU_OPS): add sub and or xor
     // max min lsl lsr bsl bsr packbit relu* lrelud lreluo ilrelud fmax fmin
@@ -153,18 +159,22 @@ module mn_pe_core #(
     wire u_mat = mau_enfma & mau_mmode;
     wire u_l1  = d_grp[MN_J_GRP_L1BM];
     wire u_l2  = d_grp[MN_J_GRP_L2BM];
-    wire unsup = u_der | cls_bad | u_xpe | u_mat | mau_mw | u_l1 | u_l2;
+    wire u_nfp = ~fp_here & cls_fp & ~cls_bf;           // FPALU = 0
+    wire u_nma = (MAU == 0) & mau_vec;                  // MAU = 0
+    wire unsup = u_der | cls_bad | u_xpe | u_mat | mau_mw | u_l1 | u_l2 | u_nfp | u_nma;
     localparam [31:0] F_ROUNDA = MN_J_PE_ALUC_ROUNDA_IDX, F_ROUNDB = MN_J_PE_ALUC_ROUNDB_IDX;
     localparam [31:0] F_ADMODE = MN_J_PE_ALUC_DMODE_IDX, F_ALUOP = MN_J_PE_ALUC_ALUOP_IDX;
     localparam [31:0] F_MMODE = MN_J_PE_MAUC_MMODE_IDX, F_MW = MN_J_PE_MAUC_MW_IDX;
     localparam [31:0] F_L1BM = MN_J_L1BM_BMODE_IDX, F_L2BM = MN_J_L2BM_LWRITE_IDX;
+    localparam [31:0] F_ENFMA = MN_J_PE_MAUC_ENFMA_IDX;
     wire [6:0] ufield = u_der   ? d_err_field :
                         cls_bad ? ((alu_rounda & (alu_dmode != 2'b10)) ? F_ROUNDA[6:0] :
                                    (alu_roundb & (alu_dmode != 2'b10)) ? F_ROUNDB[6:0] : F_ADMODE[6:0]) :
-                        u_xpe   ? F_ALUOP[6:0] :
+                        (u_xpe | u_nfp) ? F_ALUOP[6:0] :
                         u_mat   ? F_MMODE[6:0] :
                         mau_mw  ? F_MW[6:0] :
-                        u_l1    ? F_L1BM[6:0] : F_L2BM[6:0];
+                        u_l1    ? F_L1BM[6:0] :
+                        u_l2    ? F_L2BM[6:0] : F_ENFMA[6:0];
 
     // ------------------------------------------------------------------ rd_use
     // memories read as an operand, {LM1, LM0, GRF1, GRF0}; selector values 0..4 are
@@ -215,14 +225,14 @@ module mn_pe_core #(
     wire [127:0] aluf_rd, mauf_rd;
 
     // fixed operands: chip coordinates (contract 06 section 3, viz/core read_alu_input)
-    localparam [5:0] V_PEID  = POS_M * 4 + POS_P;
-    localparam [5:0] V_L1BID = POS_B;
-    localparam [5:0] V_L2BID = POS_N * 2 + POS_C;
-    localparam [5:0] V_SUBPE = POS_P;
-    localparam [5:0] V_MABID = POS_M;
-    wire [5:0] fid = (gcode == 4'd5) ? V_PEID : (gcode == 4'd6) ? V_L1BID :
-                     (gcode == 4'd7) ? V_L2BID : (gcode == 4'd9) ? V_SUBPE :
-                     (gcode == 4'd10) ? V_MABID : 6'd0;
+    localparam [31:0] V_PEID  = POS_M * 4 + POS_P;
+    localparam [31:0] V_L1BID = POS_B;
+    localparam [31:0] V_L2BID = POS_N * 2 + POS_C;
+    localparam [31:0] V_SUBPE = POS_P;
+    localparam [31:0] V_MABID = POS_M;
+    wire [5:0] fid = (gcode == 4'd5) ? V_PEID[5:0] : (gcode == 4'd6) ? V_L1BID[5:0] :
+                     (gcode == 4'd7) ? V_L2BID[5:0] : (gcode == 4'd9) ? V_SUBPE[5:0] :
+                     (gcode == 4'd10) ? V_MABID[5:0] : 6'd0;
     wire       fmsb = (gcode == 4'd8);
     // lane width from the ALU dmode: 00 64 bits, 10 16 bits, 01 / 11 32 bits
     wire [63:0] flane = (alu_dmode == 2'b00) ? {fmsb, 57'd0, fid} :
@@ -259,6 +269,7 @@ module mn_pe_core #(
     wire alu_iv = iss_on & alu_act & ~alu_isd;
     wire mau_iv = iss_on & mau_act & ~mau_isd;
     wire int_ir, fp_ir, mau_ir;
+    wire mau_got;   // a MAU result arrives (one per cycle of the step)
     wire alu_ir = alu_int ? int_ir : fp_ir;
     wire alu_acc = alu_iv & alu_ir;
     wire mau_acc = mau_iv & mau_ir;
@@ -284,34 +295,61 @@ module mn_pe_core #(
         .out_valid(int_ov), .out_ready(alu_pop & alu_int), .z(int_z), .flags(int_f), .out_err(int_err)
     );
 
-    mn_fp_alu #(.RND(1)) u_fpalu (
-        .clk(clk), .rst(rst),
-        .in_valid(alu_iv & ~alu_int), .in_ready(fp_ir),
-        .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
-        .pe_aluc_rounda(alu_rounda), .pe_aluc_roundb(alu_roundb), .pe_aluc_isela(alu_isela),
-        .pe_aluc_iselb(alu_iselb), .x(px), .y(py), .cls_bf(cls_bf),
-        .out_valid(fp_ov), .out_ready(alu_pop & ~alu_int), .z(fp_z), .flags(fp_f), .out_err(fp_err)
-    );
+    generate
+        if (FPALU != 0) begin : g_fpalu
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire fp_clsbf;   // the same decode as cls_bf above
+            /* verilator lint_on UNUSEDSIGNAL */
+            mn_fp_alu #(.RND(1)) u_fpalu (
+                .clk(clk), .rst(rst),
+                .in_valid(alu_iv & ~alu_int), .in_ready(fp_ir),
+                .pe_aluc_dmode(alu_dmode), .pe_aluc_aluop(alu_aluop), .pe_aluc_is_unsigned(alu_uns),
+                .pe_aluc_rounda(alu_rounda), .pe_aluc_roundb(alu_roundb), .pe_aluc_isela(alu_isela),
+                .pe_aluc_iselb(alu_iselb), .x(px), .y(py), .cls_bf(fp_clsbf),
+                .out_valid(fp_ov), .out_ready(alu_pop & ~alu_int), .z(fp_z), .flags(fp_f), .out_err(fp_err)
+            );
+        end else begin : g_nofpalu
+            assign fp_ir  = 1'b1;
+            assign fp_ov  = 1'b0;
+            assign fp_z   = 128'd0;
+            assign fp_f   = 4'd0;
+            assign fp_err = 1'b0;
+        end
+    endgenerate
 
-    wire         mau_ov;
-    wire [127:0] mau_z;
-    wire [3:0]   mau_f;
-    wire [1:0]   mau_tag;
-    localparam [1:0] PE_SUB = POS_P;
-    mn_mau_vec #(.TAGW(2)) u_mau (
-        .clk(clk), .rst(rst), .in_valid(mau_iv), .in_ready(mau_ir),
-        .dmode(mau_dmode), .round_out(mau_round_out), .passa(mau_passa), .zeroc(mau_zeroc),
-        .mdw_side(mau_mdw_side), .signa(mau_signa), .signb(mau_signb), .signc(mau_signc),
-        .exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(PE_SUB),
-        .a_bus(pa), .b_bus(pb), .c_bus(pc), .in_tag(iss_c),
-        .out_valid(mau_ov), .z_bus(mau_z), .flags(mau_f), .out_tag(mau_tag)
-    );
-
-    // MAU results of the step, by cycle (mn_mau_vec has no output stall)
+    // MAU and its results of the step, by cycle (mn_mau_vec has no output stall)
     wire [131:0] maub_rd;
-    mn_ram_lut #(.W(132), .AW(2), .NR(1)) u_maub (
-        .clk(clk), .we(mau_ov), .waddr(mau_tag), .wdata({mau_f, mau_z}),
-        .raddr(coll_c), .rdata(maub_rd));
+    generate
+        if (MAU != 0) begin : g_mau
+            wire         mau_ov;
+            wire [127:0] mau_z;
+            wire [3:0]   mau_f;
+            wire [1:0]   mau_tag;
+            localparam [31:0] PE_SUB32 = POS_P;
+            localparam [1:0]  PE_SUB = PE_SUB32[1:0];
+            mn_mau_vec #(.TAGW(2)) u_mau (
+                .clk(clk), .rst(rst), .in_valid(mau_iv), .in_ready(mau_ir),
+                .dmode(mau_dmode), .round_out(mau_round_out), .passa(mau_passa), .zeroc(mau_zeroc),
+                .mdw_side(mau_mdw_side), .signa(mau_signa), .signb(mau_signb), .signc(mau_signc),
+                .exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(PE_SUB),
+                .a_bus(pa), .b_bus(pb), .c_bus(pc), .in_tag(iss_c),
+                .out_valid(mau_ov), .z_bus(mau_z), .flags(mau_f), .out_tag(mau_tag)
+            );
+            mn_ram_lut #(.W(132), .AW(2), .NR(1)) u_maub (
+                .clk(clk), .we(mau_ov), .waddr(mau_tag), .wdata({mau_f, mau_z}),
+                .raddr(coll_c), .rdata(maub_rd));
+            assign mau_got = mau_ov;
+        end else begin : g_nomau
+            assign mau_ir  = 1'b1;
+            assign mau_got = 1'b0;
+            assign maub_rd = 132'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // MAU = 0: the MAU fields and port registers have no reader (removed in synthesis)
+            wire unused_mau = ^{mau_dmode, mau_round_out, mau_mdw_side, mau_signa, mau_signb, mau_signc,
+                                mau_exta, mau_extb, mau_extc, pa, pb, pc, mau_iv};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
 
     // ------------------------------------------------------------------ collect
     wire alu_rdy = ~alu_act | alu_ov;
@@ -326,9 +364,18 @@ module mn_pe_core #(
     mn_ram_lut #(.W(128), .AW(2), .NR(1)) u_aluf (
         .clk(clk), .we(fwd_on & alu_act), .waddr(coll_c), .wdata(aluf_wd),
         .raddr(iss_c), .rdata(aluf_rd));
-    mn_ram_lut #(.W(128), .AW(2), .NR(1)) u_mauf (
-        .clk(clk), .we(fwd_on & mau_act), .waddr(coll_c), .wdata(mauf_wd),
-        .raddr(iss_c), .rdata(mauf_rd));
+    generate
+        if (MAU != 0) begin : g_mauf
+            mn_ram_lut #(.W(128), .AW(2), .NR(1)) u_mauf (
+                .clk(clk), .we(fwd_on & mau_act), .waddr(coll_c), .wdata(mauf_wd),
+                .raddr(iss_c), .rdata(mauf_rd));
+        end else begin : g_nomauf
+            assign mauf_rd = 128'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire unused_mauf = ^mauf_wd;
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
 
     // ------------------------------------------------------------------ local memories
     // the word for mn_pe_lsu: imr = 0 in the start clock (check every enabled write), then the
@@ -337,7 +384,7 @@ module mn_pe_core #(
     wire [425:0] jw_nul = {2'b00, jw[423:0]};
     wire [425:0] jw_lsu = (ph == P_IDLE) ? jw_chk : (unsup_q ? jw_nul : jw);
     wire         lsu_busy, lsu_unsup;
-    localparam [1:0] SUBPE = POS_P;
+    localparam [1:0] SUBPE = V_SUBPE[1:0];
     mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) u_mem (
         .clk(clk), .rst(rst), .subpe(SUBPE),
         .start(go), .idle(lsu_idle), .jw(jw_lsu), .rd_use(rd_use), .busy(lsu_busy),
@@ -398,7 +445,7 @@ module mn_pe_core #(
                     mau_isd <= mau_isd | mau_acc;
                 end
                 // collect
-                if (mau_ov) mau_cnt <= mau_cnt + 3'd1;
+                if (mau_got) mau_cnt <= mau_cnt + 3'd1;
                 if (acc) coll_c <= coll_c + 2'd1;
                 // end of the step
                 if (lsu_done) begin

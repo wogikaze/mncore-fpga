@@ -305,10 +305,11 @@ def official_stage(rows, jobs: int, force: bool, log):
 
 
 # --------------------------------------------------------------------------------------- rtl
-def compile_tb(log) -> Path:
+def compile_tb(log, defines=()) -> Path:
     files, cfg = simrun.parse_files("core")
-    vvp = BUILD / "sim.vvp"
+    vvp = BUILD / ("sim" + "".join(f"_{d.replace('=', '')}" for d in defines) + ".vvp")
     cmd = ["iverilog", "-g2012", "-Wall", "-Wno-timescale", "-o", str(vvp)]
+    cmd += [f"-D{d}" for d in defines]
     cmd += [f"-I{d}" for d in cfg["incdir"]] + ["-s", cfg["top"]] + files
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     if r.returncode != 0:
@@ -453,6 +454,8 @@ def main(argv=None) -> int:
     ap.add_argument("--table", help="also write the results table here (TSV)")
     ap.add_argument("--keep", action="store_true", help="keep the simulator output (build/<name>/rtl.out)")
     ap.add_argument("--vvp", help="use this compiled tb_core instead of compiling one (e.g. a mutated RTL)")
+    ap.add_argument("--define", action="append", default=[],
+                    help="iverilog define for tb_core, e.g. TB_FPALU=0 or TB_MAU=0 (reduced cores)")
     a = ap.parse_args(argv)
 
     def log(s):
@@ -469,7 +472,7 @@ def main(argv=None) -> int:
     log(f"[regress] {len(rows)} programs with pe1 = yes")
     if not a.skip_official:
         official_stage(rows, a.official_jobs, a.force_official, log)
-    vvp = Path(a.vvp).resolve() if a.vvp else compile_tb(log)
+    vvp = Path(a.vvp).resolve() if a.vvp else compile_tb(log, a.define)
     t0 = time.time()
     results = []
     with cf.ThreadPoolExecutor(max_workers=a.jobs) as ex:
@@ -483,7 +486,8 @@ def main(argv=None) -> int:
     results.sort(key=lambda r: r["path"])
     cols = ["path", "kind", "groups", "words", "steps", "clocks", "compared", "result", "detail"]
     text = "\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
-    (BUILD / "results.tsv").write_text(text, encoding="utf-8", newline="\n")
+    tag = "".join(f"_{d.replace('=', '')}" for d in a.define)
+    (BUILD / f"results{tag}.tsv").write_text(text, encoding="utf-8", newline="\n")
     if a.table:
         Path(a.table).write_text(text, encoding="utf-8", newline="\n")
 

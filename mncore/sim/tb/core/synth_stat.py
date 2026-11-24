@@ -68,16 +68,19 @@ def main(argv=None) -> int:
     ap.add_argument("--top", default="mn_core")
     ap.add_argument("--default-synth", action="store_true", help="without -nowidelut")
     ap.add_argument("--flat", action="store_true", help="flatten (totals only, like a real build)")
+    ap.add_argument("--param", action="append", default=[], help="top parameter K=V (e.g. FPALU=0)")
     a = ap.parse_args(argv)
     files, cfg = simrun.parse_files("core")
     rtl = [f for f in files if not Path(f).name.startswith("tb_")]
     inc = " ".join(f"-I{d}" for d in cfg["incdir"])
     reads = " ".join(f"read_verilog {inc} {f};" for f in rtl)
+    chp = "".join(f" chparam -set {kv.split('=', 1)[0]} {kv.split('=', 1)[1]} {a.top};" for kv in a.param)
     opts = "-noiopads" + ("" if a.default_synth else " -nowidelut") + ("" if a.flat else " -noflatten")
-    script = f"{reads} synth_gowin -family gw2a -top {a.top} {opts}; stat"
+    script = f"{reads}{chp} synth_gowin -family gw2a -top {a.top} {opts}; stat"
     build = HERE / "build"
     build.mkdir(exist_ok=True)
-    tag = ("default" if a.default_synth else "nowidelut") + ("_flat" if a.flat else "")
+    tag = ("default" if a.default_synth else "nowidelut") + ("_flat" if a.flat else "") + \
+        "".join(f"_{kv.replace('=', '')}" for kv in a.param)
     log = build / f"synth_{a.top}_{tag}.log"
     r = subprocess.run(["yosys", "-p", script], cwd=ROOT, capture_output=True, text=True)
     log.write_text(r.stdout + r.stderr, encoding="utf-8")
