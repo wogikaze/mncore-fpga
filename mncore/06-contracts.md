@@ -136,10 +136,16 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 
 ## 7. ホストとの通信（UART）
 
-- BL616 経由の USB-UART。初期は 1 Mbps、8N1。WP04 が上限を測る。
+- BL616 経由の USB-UART。初期は 1 Mbps、8N1。運用は 2 Mbps を推奨（上限 3 Mbaud。BL616 は実際 3.076M で動くので `SET_BAUD` で合わせる）。
+- ピンは `uart_tx` = 69（FPGA → BL616）、`uart_rx` = 70。
+- **確定仕様は `mncore/rtl/board/PROTOCOL.md`（版 1）。** コマンド番号、空間 ID、エラー応答はそちらが正。
+- 空間 ID: 0 IMEM、1 LM0、2 LM1、3 GRF0、4 GRF1、5 T、6 L1BM、7 L2BM、8 PDM、9 DRAM、15 TEST。
+- 位置の符号化: `loc = n<<10 | c<<9 | b<<6 | m<<2 | p`。
+- 命令メモリのエントリ: 448bit。`[447:446]` が種類（01 = j、10 = m）、`[425:0]` が jw（m は下位 82bit）。
+- BL616 の制約: 読み出しは約 70 KiB/s が上限。未受信の応答を 6300 バイト以下に保つ。PC から Ctrl-X / Ctrl-C を単独で送らない（BL616 のシェルに入り、`mnhost.py bridge reboot` が要る）。
 - フレーム: `0xA5 | cmd u8 | len u16le | payload | crc8`
 - コマンド:
-  - `PING`
+  - `PING`、`INFO`（0x02）、`SET_BAUD`（0x09）
   - `WR_IMEM(addr, words)`
   - `WR_MEM(space, loc, addr, data)`
   - `RD_MEM(space, loc, addr, n)`
