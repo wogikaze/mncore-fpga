@@ -1,0 +1,9 @@
+# WP12: FMA core (mn_fp_fma) and the r-option rounding (mn_fp_f2h) against the fp vectors.
+# Vectors: mncore/sim/vectors/fp if generated (vecgen fp, then --official-expect), else vectors_fixed/fp.
+top: tb_fpu_fp
+rtl_top: mn_fp_fma
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/sim/tb/fpu_fp/tb_fpu_fp.sv
