@@ -1,0 +1,16 @@
+# WP14: PE local memories (LM0/LM1/GRF0/GRF1/T, masks, addresses)
+# The test records are generated: run  python mncore/sim/tb/pemem/gen_tests.py  once first
+# (official assemble3 + emulator in WSL) -> mncore/sim/tb/pemem/build/tests.hex
+top: tb_pemem
+rtl_top: mn_pe_mem
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/pe/mn_pe_rduse.v
+mncore/sim/tb/pemem/tb_pemem_slowstore.v
+mncore/sim/tb/pemem/tb_pemem_drv.v
+mncore/sim/tb/pemem/tb_pemem.v
