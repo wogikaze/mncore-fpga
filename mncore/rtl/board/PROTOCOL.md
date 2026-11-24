@@ -230,3 +230,5 @@ FPGA 側の誤り計数が 0 のままでも、ブリッジ側でデータが落
 
 - PC が読んでいないのに FPGA が送り続けると、BL616 の FPGA→PC 中継が止まり、`bridge reboot` まで戻らない。FPGA は要求への応答以外を一方的に送り続けない。
 - `bridge reboot` は FPGA を Flash の内容で読み直す。SRAM に書いたデザインは書き直すこと。
+
+- 設計固有の空間 ID: 0x10 OMR、0x11 BAR（`` / ``）（WP14）。
