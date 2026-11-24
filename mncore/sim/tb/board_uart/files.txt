@@ -1,0 +1,8 @@
+# WP04: UART transmitter / receiver unit test
+top: tb_board_uart
+rtl_top: brd_uart_rx
+mncore/rtl/board/brd_ram_1r1w.v
+mncore/rtl/board/brd_fifo.v
+mncore/rtl/board/brd_uart_rx.v
+mncore/rtl/board/brd_uart_tx.v
+mncore/sim/tb/board_uart/tb_board_uart.v

@@ -1,0 +1,27 @@
+// Tang Nano 20K (GW2AR-LV18QN88C8/I7) pins for brd_board_test.
+//
+// UART to the on-board BL616 USB-UART bridge.  Source: Sipeed official example
+//   https://github.com/sipeed/TangNano-20K-example/blob/d8e3cfb86ac19966244cc99d12c1da84d7ba4199/uart/src/top.cst
+//     IO_LOC "uart_rx" 70;   IO_LOC "uart_tx" 69;   IO_LOC "clk" 4;   IO_LOC "rst" 88;
+//   and picorv32/src/fpga_project.cst in the same repository (ser_tx on 69).
+// uart_tx is an FPGA output (to the BL616 RX), uart_rx is an FPGA input (from the BL616 TX).
+// Clock (27 MHz), button and LED pins follow init/tangnano20k.cst.
+
+IO_LOC  "clk" 4;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+CLOCK_LOC "clk" BUFG;
+
+IO_LOC  "btn_rst" 88;
+IO_PORT "btn_rst" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "uart_rx" 70;
+IO_PORT "uart_rx" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_LOC  "uart_tx" 69;
+IO_PORT "uart_tx" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[0]" 15;
+IO_LOC "led[1]" 16;
+IO_LOC "led[2]" 17;
+IO_LOC "led[3]" 18;
+IO_LOC "led[4]" 19;
+IO_LOC "led[5]" 20;
