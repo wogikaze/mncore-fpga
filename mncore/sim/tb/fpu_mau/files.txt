@@ -1,0 +1,10 @@
+# WP12: MAU vector instructions (mn_mau_vec on mn_fp_fma) against the mau vectors.
+# Vectors: mncore/sim/vectors/mau if generated (vecgen mau, then --official-expect), else vectors_fixed/mau.
+top: tb_fpu_mau
+rtl_top: mn_mau_vec
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/sim/tb/fpu_mau/tb_fpu_mau.sv
