@@ -1,0 +1,9 @@
+# WP11: integer ALU. Vectors: mncore/sim/vectors (vecgen alu + fpalu, --official-expect) or vectors_fixed
+top: tb_alu
+rtl_top: mn_alu_int
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/sim/tb/alu/tb_alu_run.v
+mncore/sim/tb/alu/tb_alu.v
