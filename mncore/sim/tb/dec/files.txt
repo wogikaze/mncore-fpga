@@ -1,0 +1,9 @@
+# WP10 RTL decoder. Vectors: python mncore/sim/tb/dec/gen_vectors.py (full set; the committed small
+# set in mncore/sim/vectors_fixed/dec is used when the full set is absent).
+top: tb_dec
+rtl_top: mn_dec_harness
+incdir: mncore/rtl/dec
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/dec/mn_dec_m.v
+mncore/sim/tb/dec/mn_dec_harness.v
+mncore/sim/tb/dec/tb_dec.v
