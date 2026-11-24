@@ -19,7 +19,8 @@
 //   d {4{p0}}, dr {p0,p0,0,0}, f {p0,p0,p1,p1}, fr {p0,p1,0,0}, h/hr {p0,p1,p2,p3}.
 //
 // The lanes of a slot go through one shared mn_fp_fma, one lane per clock (w1: element
-// selection, w2: extension / rounding and the options, then the FMA); a new slot is
+// selection, w2: extension / rounding and the options, unpacked for the FMA (UNP = 1, WP35:
+// the format is selected once here), then the FMA); a new slot is
 // accepted while the last lane of the previous one issues (in_ready), so the throughput is
 // one lane per clock (d: 1 slot, f: 1/2, h: 1/4 per clock). Results come out in order, as a
 // one-clock out_valid pulse with out_tag, 18 + lanes - 1 clock edges after the edge that
@@ -114,8 +115,9 @@ module mn_mau_vec #(
             lane16 = bus[127 - 16 * l -: 16];
         end
     endfunction
-    // exact widening (exponent 0 stays zero, all ones stays infinity)
-    function [63:0] s2d;
+    // unpacked operands for the FMA: {sign, exponent [62:52] in its format, significand left-
+    // aligned in [51:0]}. Exact widening keeps exponent 0 zero and all ones infinity.
+    function [63:0] s2d;   // single -> double (= unpacked double)
         input [31:0] x;
         begin
             s2d = {x[31],
@@ -123,12 +125,24 @@ module mn_mau_vec #(
                    x[22:0], 29'd0};
         end
     endfunction
-    function [31:0] h2s;
+    function [63:0] h2s;   // half -> single, unpacked
         input [15:0] x;
         begin
-            h2s = {x[15],
+            h2s = {x[15], 3'd0,
                    (x[14:9] == 6'd0) ? 8'd0 : (x[14:9] == 6'h3f) ? 8'hff : {2'd0, x[14:9]} + 8'd96,
-                   x[8:0], 14'd0};
+                   x[8:0], 43'd0};
+        end
+    endfunction
+    function [63:0] ups;   // single, unpacked
+        input [31:0] x;
+        begin
+            ups = {x[31], 3'd0, x[30:23], x[22:0], 29'd0};
+        end
+    endfunction
+    function [63:0] uph;   // half, unpacked
+        input [15:0] x;
+        begin
+            uph = {x[15], 5'd0, x[14:9], x[8:0], 43'd0};
         end
     endfunction
 
@@ -166,21 +180,21 @@ module mn_mau_vec #(
     end
 
     // ---------------------------------------------------------------- w2: operands
-    // a and b in the operation format, c in double (d) or single (f, h); options applied
+    // a and b in the operation format, c in double (d) or single (f, h), unpacked; options applied
     wire [15:0] ra_h, rb_h;
     mn_fp_f2h u_ra (.x(ra1[31:0]), .h(ra_h));
     mn_fp_f2h u_rb (.x(rb1[31:0]), .h(rb_h));
     wire [63:0] a_cv = md1 ? (ea1 ? s2d(ra1[31:0]) : ra1) :
-                       mf1 ? {32'd0, ea1 ? h2s(ra1[15:0]) : ra1[31:0]} :
-                             {48'd0, ea1 ? ra_h : ra1[15:0]};
+                       mf1 ? (ea1 ? h2s(ra1[15:0]) : ups(ra1[31:0])) :
+                             uph(ea1 ? ra_h : ra1[15:0]);
     wire [63:0] b_cv = md1 ? (eb1 ? s2d(rb1[31:0]) : rb1) :
-                       mf1 ? {32'd0, eb1 ? h2s(rb1[15:0]) : rb1[31:0]} :
-                             {48'd0, eb1 ? rb_h : rb1[15:0]};
+                       mf1 ? (eb1 ? h2s(rb1[15:0]) : ups(rb1[31:0])) :
+                             uph(eb1 ? rb_h : rb1[15:0]);
     wire [63:0] c_cv = md1 ? (ec1 ? s2d(rc1[31:0]) : rc1) :
-                       {32'd0, ec1 ? h2s(rc1[15:0]) : rc1[31:0]};
-    wire [63:0] sgn_ab = md1 ? {1'b1, 63'd0} : mf1 ? {32'd0, 1'b1, 31'd0} : {48'd0, 1'b1, 15'd0};
-    wire [63:0] sgn_c  = md1 ? {1'b1, 63'd0} : {32'd0, 1'b1, 31'd0};
-    wire [63:0] one_ab = md1 ? 64'h3ff0_0000_0000_0000 : mf1 ? 64'h3f80_0000 : 64'h3e00;
+                       (ec1 ? h2s(rc1[15:0]) : ups(rc1[31:0]));
+    wire [63:0] sgn_ab = {1'b1, 63'd0};
+    wire [63:0] sgn_c  = {1'b1, 63'd0};
+    wire [63:0] one_ab = {1'b0, md1 ? 11'd1023 : mf1 ? 11'd127 : 11'd31, 52'd0};
 
     reg            v2, rnd2, lst2;
     reg [1:0]      dm2, ln2;
@@ -203,7 +217,7 @@ module mn_mau_vec #(
     wire                fo_v;
     wire [63:0]         fo_z;
     wire [TAGW+5:0]     fo_t;
-    mn_fp_fma #(.TAGW(TAGW + 6)) u_fma (
+    mn_fp_fma #(.TAGW(TAGW + 6), .UNP(1)) u_fma (
         .clk(clk), .rst(rst), .in_valid(v2), .prec(dm2), .rnd(rnd2),
         .a(fa2), .b(fb2), .c(fc2), .in_tag({tag2, dm2, rnd2, lst2, ln2}),
         .out_valid(fo_v), .z(fo_z), .out_tag(fo_t));

@@ -15,11 +15,17 @@
 //
 // The payload is buffered in pbuf (2**PBUF_AW bytes) and only executed after the CRC matched, so a corrupted
 // frame never writes memory.  The same buffer holds response bodies (RD_MEM data, INFO, STATUS).
+//
+// Area (WP35): the counters are only as wide as the values they can take (word counters PBUF_AW - 2 bits,
+// byte counters PBUF_AW + 1, the long-word address 24 bits plus a flag for the bits above), comparisons with
+// constants are written as logic (yosys would make a carry chain of each), the up-counters that run until they
+// reach a constant compare for equality, and the response bodies are selected by byte index from the fields.
+// The behaviour at the pins is the same as before (PROTOCOL.md version 1).
 module brd_host_if #(
     parameter CLK_HZ        = 27000000,
     parameter BAUD          = 1000000,     // reset baud rate (must be < 8 Mbaud for the divider formula)
     parameter DIVW          = 24,
-    parameter PBUF_AW       = 11,          // payload buffer = 2**PBUF_AW bytes (<= 15)
+    parameter PBUF_AW       = 11,          // payload buffer = 2**PBUF_AW bytes (7 .. 15)
     parameter RXF_AW        = 11,          // UART receive FIFO depth (log2 bytes)
     parameter TXF_AW        = 11,          // UART transmit FIFO depth (log2 bytes)
     parameter TIMEOUT_CYC   = CLK_HZ / 50, // inter-byte timeout inside a frame (20 ms)
@@ -111,7 +117,14 @@ module brd_host_if #(
     localparam integer DIV_INIT_I = (CLK_HZ / BAUD) * 256 + ((CLK_HZ % BAUD) * 256 + BAUD / 2) / BAUD;
     localparam [31:0] DIV_INIT32 = DIV_INIT_I;
     localparam [DIVW-1:0] DIV_INIT = DIV_INIT32[DIVW-1:0];
-    localparam [31:0] DIV_MIN = 32'd1024;   // 4 clocks per bit
+    // DIV_MIN = 1024 (4 clocks per bit): SET_BAUD rejects values below it
+
+    // counter widths (WP35)
+    localparam integer NWW = PBUF_AW - 2;   // words of a frame: up to 2**PBUF_AW / 8
+    localparam integer BLW = PBUF_AW + 1;   // bytes of a response body: up to 2**PBUF_AW
+    localparam integer GIW = 7;             // generated body byte index: up to INFO_LEN = 88
+    localparam [15:0] PBUF_LOW  = PBUF_U16 - 16'd1;                 // bits below 2**PBUF_AW
+    localparam [15:0] NMAX_LOW  = (16'd1 << (PBUF_AW - 3)) - 16'd1; // bits below 2**(PBUF_AW - 3)
 
     // states
     localparam [4:0] S_RIDLE = 5'd0,  S_RCMD = 5'd1,  S_RLEN0 = 5'd2,  S_RLEN1 = 5'd3,
@@ -170,22 +183,25 @@ module brd_host_if #(
     reg [5:0]  m56;          // WR_IMEM: payload bytes after the header, modulo 56
     reg [TMW-1:0] tmo;
 
-    reg [15:0] wi;           // word index in WR_MEM / WR_IMEM / RD_MEM
-    reg [15:0] nwords;
-    reg [15:0] ptr;          // pbuf byte pointer (read for writes, write for reads)
+    reg [NWW-1:0] wi;        // word index in WR_MEM / WR_IMEM / RD_MEM (also the E_RANGE index)
+    reg [NWW-1:0] nwords;
+    reg [PBUF_AW-1:0] ptr;   // pbuf byte pointer (read for writes, write for reads)
     reg [2:0]  kk;           // byte within the 64-bit word
     reg [2:0]  lane;         // WR_IMEM lane 0..6
     reg        is_imem;
-    reg [31:0] cur_addr;     // long-word address of the current word
+    // long-word address of the current word: ca, and ca_hi = bits 31..24 of the frame's address are not 0.
+    // A word is only sent while the address is below 2**23 (ca_hi = 0, ca[23] = 0); the address grows by 1 or 2
+    // per word, so ca never wraps before the command stops.
+    reg [23:0] ca;
+    reg        ca_hi;
     reg [63:0] wsr;          // assembled write word / read word shift register
 
     reg [7:0]  rstatus;
-    reg [15:0] blen;
-    reg [15:0] bi;
+    reg [BLW-1:0] blen;
+    reg [BLW-1:0] bi;
     reg [1:0]  gkind;
-    reg [15:0] gi;
-    reg [15:0] glen;
-    reg [31:0] errinfo;
+    reg [GIW-1:0] gi;
+    reg [GIW-1:0] glen;
 
     reg [DIVW-1:0] div_prev;
     reg [DIVW-1:0] div_new;
@@ -211,7 +227,21 @@ module brd_host_if #(
     assign rx_ready = rx_state;
     wire        rx_fire = rx_valid && rx_ready;
 
-    wire        addr_ok = (cur_addr[31:23] == 9'd0);
+    wire        addr_ok = ~ca_hi & ~ca[23];
+
+    // comparisons with constants, as logic
+    wire        idx_hdr  = (idx[15:4] == 12'd0) & ~(idx[3] & (idx[2] | idx[1]));   // idx < 10
+    wire        idx_pbuf = ((idx >> PBUF_AW) == 16'd0);                          // idx < 2**PBUF_AW
+    wire        len_big  = ((len >> (PBUF_AW + 1)) != 16'd0) |                   // len > 2**PBUF_AW
+                           (len[PBUF_AW] & ((len & PBUF_LOW) != 16'd0));
+    wire        n_big    = ((h_n >> (PBUF_AW - 2)) != 16'd0) |                   // h_n * 8 > 2**PBUF_AW
+                           (h_n[PBUF_AW-3] & ((h_n & NMAX_LOW) != 16'd0));
+    wire        div_bad  = ((h_u32_0 >> 10) == 32'd0) |                          // < DIV_MIN or too wide
+                           ((h_u32_0 >> DIVW) != 32'd0);
+    // words of WR_MEM ((len - 8) / 8) and WR_IMEM ((len - 2) / 8), with len <= 2**PBUF_AW
+    /* verilator lint_off UNUSEDSIGNAL */   // bits 2..0 are below the word
+    wire [PBUF_AW:0] nw_sub = len[PBUF_AW:0] - {{(PBUF_AW-3){1'b0}}, (cmd == C_WR_MEM), 1'b0, (cmd != C_WR_MEM), 1'b0};
+    /* verilator lint_on UNUSEDSIGNAL */
 
     // ------------------------------------------------------------------ payload buffer
     wire                pb_we;
@@ -222,14 +252,14 @@ module brd_host_if #(
     wire [7:0]          pb_rdata;
     reg  [7:0]          gen_byte;
 
-    assign pb_we    = ((st == S_RPAY) && rx_fire && ({1'b0, idx} < PBUF_BYTES)) ||
+    assign pb_we    = ((st == S_RPAY) && rx_fire && idx_pbuf) ||
                       (st == S_RST8) || (st == S_GEN);
     assign pb_waddr = (st == S_RPAY) ? idx[PBUF_AW-1:0] :
-                      (st == S_RST8) ? ptr[PBUF_AW-1:0] : gi[PBUF_AW-1:0];
+                      (st == S_RST8) ? ptr : {{(PBUF_AW-GIW){1'b0}}, gi};
     assign pb_wdata = (st == S_RPAY) ? rx_data :
                       (st == S_RST8) ? wsr[7:0] : gen_byte;
     assign pb_re    = (st == S_WRD) || (st == S_TBF);
-    assign pb_raddr = (st == S_WRD) ? ptr[PBUF_AW-1:0] : bi[PBUF_AW-1:0];
+    assign pb_raddr = (st == S_WRD) ? ptr : bi[PBUF_AW-1:0];
 
     brd_ram_1r1w #(.W(8), .AW(PBUF_AW)) u_pbuf (
         .clk(clk), .we(pb_we), .waddr(pb_waddr), .wdata(pb_wdata),
@@ -237,28 +267,29 @@ module brd_host_if #(
     );
 
     // ------------------------------------------------------------------ generated response bodies
+    // INFO: constant except div (bytes 8..11); STATUS: the registers and the core's stop record;
+    // the E_RANGE body: the word index. Byte gi of the body (little endian fields).
     wire [31:0]  div32 = {{(32-DIVW){1'b0}}, div};
-    wire [703:0] info_vec = {TXF_U16, RXF_U16, SPACE_DEPTH, INFO_FLAGS, TOPO, IMEM_DEPTH,
-                             div32, CLK_U32, PBUF_U16, DESIGN_ID, PROTO_VER};
+    localparam [703:0] INFO_C = {TXF_U16, RXF_U16, SPACE_DEPTH, INFO_FLAGS, TOPO, IMEM_DEPTH,
+                                 32'd0, CLK_U32, PBUF_U16, DESIGN_ID, PROTO_VER};
     wire [7:0]   hflags   = {6'd0, baud_pending, probation};
     wire [215:0] stat_vec = {hflags, div32, rx_meas, cnt_tmo, cnt_ovr, cnt_frame, cnt_crc,
                              core_steps, core_info, core_pc, core_reason, {7'd0, core_busy}};
-    // byte gi of each body = low byte of the shifted vector (the upper bits are intentionally unused)
-    /* verilator lint_off UNUSEDSIGNAL */
-    wire [703:0] info_sh  = info_vec >> {gi[6:0], 3'b000};
-    wire [215:0] stat_sh  = stat_vec >> {gi[4:0], 3'b000};
-    wire [31:0]  err_sh   = errinfo >> {gi[1:0], 3'b000};
-    /* verilator lint_on UNUSEDSIGNAL */
+    wire [7:0]   info_b = (gi[6:2] == 5'd2) ? div32[{gi[1:0], 3'b000} +: 8] : INFO_C[{gi, 3'b000} +: 8];
+    wire [7:0]   stat_b = stat_vec[{gi[4:0], 3'b000} +: 8];
+    wire [15:0]  wi16   = {{(16-NWW){1'b0}}, wi};
+    wire [7:0]   err_b  = gi[1] ? 8'd0 : gi[0] ? wi16[15:8] : wi16[7:0];
     always @(*) begin
         case (gkind)
-            G_INFO:   gen_byte = info_sh[7:0];
-            G_STATUS: gen_byte = stat_sh[7:0];
-            default:  gen_byte = err_sh[7:0];
+            G_INFO:   gen_byte = info_b;
+            G_STATUS: gen_byte = stat_b;
+            default:  gen_byte = err_b;
         endcase
     end
 
     // ------------------------------------------------------------------ transmit side
-    wire [15:0] rlen = blen + 16'd1;
+    wire [BLW-1:0] rlen_b = blen + 1'b1;   // blen <= 2**PBUF_AW, so no carry out
+    wire [15:0]    rlen   = {{(16-BLW){1'b0}}, rlen_b};
     assign tx_valid = (st == S_TA5) || (st == S_TCMD) || (st == S_TLEN0) || (st == S_TLEN1) ||
                       (st == S_TSTAT) || (st == S_TBP) || (st == S_TCRC);
     assign tx_data  = (st == S_TA5)   ? SYNC :
@@ -277,18 +308,27 @@ module brd_host_if #(
     assign mw_valid = (st == S_WREQ) && addr_ok;
     assign mw_space = is_imem ? 8'h00 : h_space;
     assign mw_loc   = is_imem ? 16'h0000 : h_loc;
-    assign mw_addr  = cur_addr[22:0];
+    assign mw_addr  = ca[22:0];
     assign mw_data  = wsr;
     assign mw_mask  = is_imem ? 8'hFF : h_mask;
 
     assign mr_valid = (st == S_RREQ) && addr_ok;
     assign mr_space = h_space;
     assign mr_loc   = h_loc;
-    assign mr_addr  = cur_addr[22:0];
+    assign mr_addr  = ca[22:0];
+
+    // next word address: + 2 after lane 6 of a WR_IMEM entry (lane 7 is not used), else + 1
+    wire [23:0] ca_next = ca + {22'd0, is_imem & (lane == 3'd6), ~(is_imem & (lane == 3'd6))};
+    // shared incrementers
+    wire [15:0]    idx_next = idx + 1'b1;
+    wire [NWW-1:0] wi_next = wi + 1'b1;
+    wire [GIW-1:0] gi_next = gi + 1'b1;
+    wire [BLW-1:0] bi_next = bi + 1'b1;
 
     assign dbg_probation = probation;
 
     // ------------------------------------------------------------------ main FSM
+    integer hb;
     always @(posedge clk) begin
         if (rst) begin
             st           <= S_RIDLE;
@@ -299,21 +339,21 @@ module brd_host_if #(
             hdr          <= 80'd0;
             m56          <= 6'd0;
             tmo          <= {TMW{1'b0}};
-            wi           <= 16'd0;
-            nwords       <= 16'd0;
-            ptr          <= 16'd0;
+            wi           <= {NWW{1'b0}};
+            nwords       <= {NWW{1'b0}};
+            ptr          <= {PBUF_AW{1'b0}};
             kk           <= 3'd0;
             lane         <= 3'd0;
             is_imem      <= 1'b0;
-            cur_addr     <= 32'd0;
+            ca           <= 24'd0;
+            ca_hi        <= 1'b0;
             wsr          <= 64'd0;
             rstatus      <= 8'd0;
-            blen         <= 16'd0;
-            bi           <= 16'd0;
+            blen         <= {BLW{1'b0}};
+            bi           <= {BLW{1'b0}};
             gkind        <= G_INFO;
-            gi           <= 16'd0;
-            glen         <= 16'd0;
-            errinfo      <= 32'd0;
+            gi           <= {GIW{1'b0}};
+            glen         <= {GIW{1'b0}};
             div          <= DIV_INIT;
             div_prev     <= DIV_INIT;
             div_new      <= DIV_INIT;
@@ -347,9 +387,10 @@ module brd_host_if #(
             if (rx_ovr  && cnt_ovr   != 16'hffff) cnt_ovr   <= cnt_ovr + 1'b1;
             if (rx_ferr || rx_ovr) dbg_err <= 1'b1;
 
-            // baud-rate probation: revert unless a good frame arrived in time
+            // baud-rate probation: revert unless a good frame arrived in time. prob_cnt counts up from 0 by 1
+            // and stops at PROBATION_C, so "reached" is an equality.
             if (probation) begin
-                if (prob_cnt >= PROBATION_C) begin
+                if (prob_cnt == PROBATION_C) begin
                     probation <= 1'b0;
                     div       <= div_prev;
                 end else begin
@@ -357,11 +398,11 @@ module brd_host_if #(
                 end
             end
 
-            // inter-byte timeout inside a frame
+            // inter-byte timeout inside a frame (tmo counts up from 0 by 1 and restarts at TIMEOUT_C)
             if (st == S_RCMD || st == S_RLEN0 || st == S_RLEN1 || st == S_RPAY || st == S_RCRC) begin
                 if (rx_fire) begin
                     tmo <= {TMW{1'b0}};
-                end else if (tmo >= TIMEOUT_C) begin
+                end else if (tmo == TIMEOUT_C) begin
                     tmo <= {TMW{1'b0}};
                     st  <= S_RIDLE;
                     if (cnt_tmo != 16'hffff) cnt_tmo <= cnt_tmo + 1'b1;
@@ -405,10 +446,11 @@ module brd_host_if #(
                 S_RPAY: begin
                     if (rx_fire) begin
                         crc <= crc_next;
-                        if (idx < 16'd10) hdr[{idx[3:0], 3'b000} +: 8] <= rx_data;
-                        if (idx >= 16'd2) m56 <= (m56 == 6'd55) ? 6'd0 : (m56 + 1'b1);
-                        idx <= idx + 1'b1;
-                        if (idx + 16'd1 == len) st <= S_RCRC;
+                        for (hb = 0; hb < 10; hb = hb + 1)
+                            if (idx_hdr && idx[3:0] == hb[3:0]) hdr[8*hb +: 8] <= rx_data;
+                        if (idx[15:1] != 15'd0) m56 <= (m56 == 6'd55) ? 6'd0 : (m56 + 1'b1);
+                        idx <= idx_next;
+                        if (idx_next == len) st <= S_RCRC;
                     end
                 end
                 S_RCRC: begin
@@ -420,7 +462,7 @@ module brd_host_if #(
                             if (cnt_crc != 16'hffff) cnt_crc <= cnt_crc + 1'b1;
                             dbg_err <= 1'b1;
                             rstatus <= ST_E_CRC;
-                            blen    <= 16'd0;
+                            blen    <= {BLW{1'b0}};
                             st      <= S_TA5;
                         end
                     end
@@ -428,19 +470,19 @@ module brd_host_if #(
 
                 // ---------------------------------------------------------- dispatch
                 S_DISP: begin
-                    blen <= 16'd0;
-                    gi   <= 16'd0;
-                    wi   <= 16'd0;
+                    blen <= {BLW{1'b0}};
+                    gi   <= {GIW{1'b0}};
+                    wi   <= {NWW{1'b0}};
                     kk   <= 3'd0;
                     lane <= 3'd0;
-                    if ({1'b0, len} > PBUF_BYTES) begin
+                    if (len_big) begin
                         rstatus <= ST_E_LEN;
                         st      <= S_TA5;
                     end else begin
                         case (cmd)
                             C_PING: begin
                                 rstatus <= ST_OK;
-                                blen    <= len;
+                                blen    <= len[BLW-1:0];   // len <= 2**PBUF_AW here
                                 st      <= S_TA5;
                             end
                             C_INFO, C_STATUS: begin
@@ -450,12 +492,12 @@ module brd_host_if #(
                                 end else begin
                                     rstatus <= ST_OK;
                                     gkind   <= (cmd == C_INFO) ? G_INFO : G_STATUS;
-                                    glen    <= (cmd == C_INFO) ? INFO_LEN : STATUS_LEN;
+                                    glen    <= (cmd == C_INFO) ? INFO_LEN[GIW-1:0] : STATUS_LEN[GIW-1:0];
                                     st      <= S_GEN;
                                 end
                             end
                             C_RESET: begin
-                                if (len > 16'd1) begin
+                                if (len[15:1] != 15'd0) begin   // len > 1
                                     rstatus <= ST_E_LEN;
                                 end else begin
                                     rstatus  <= ST_OK;
@@ -486,7 +528,7 @@ module brd_host_if #(
                             C_SET_BAUD: begin
                                 if (len != 16'd4) begin
                                     rstatus <= ST_E_LEN;
-                                end else if (h_u32_0 < DIV_MIN || h_u32_0[31:DIVW] != {(32-DIVW){1'b0}}) begin
+                                end else if (div_bad) begin
                                     rstatus <= ST_E_ARG;
                                 end else begin
                                     rstatus      <= ST_OK;
@@ -497,24 +539,25 @@ module brd_host_if #(
                             end
                             C_WR_MEM, C_WR_IMEM: begin
                                 is_imem <= (cmd == C_WR_IMEM);
-                                if (cmd == C_WR_MEM ? (len < 16'd8 || len[2:0] != 3'd0)
-                                                    : (len < 16'd2 || m56 != 6'd0)) begin
+                                if (cmd == C_WR_MEM ? (len[15:3] == 13'd0 || len[2:0] != 3'd0)
+                                                    : (len[15:1] == 15'd0 || m56 != 6'd0)) begin
                                     rstatus <= ST_E_LEN;
                                     st      <= S_TA5;
                                 end else if (core_busy) begin
                                     rstatus <= ST_E_BUSY;
                                     st      <= S_TA5;
                                 end else begin
+                                    nwords <= nw_sub[NWW+2:3];
                                     if (cmd == C_WR_MEM) begin
-                                        nwords   <= (len - 16'd8) >> 3;
-                                        ptr      <= 16'd8;
-                                        cur_addr <= h_addr;
-                                        st       <= (len == 16'd8) ? S_TA5 : S_WRD;
+                                        ptr   <= {{(PBUF_AW-4){1'b0}}, 4'd8};
+                                        ca    <= h_addr[23:0];
+                                        ca_hi <= (h_addr[31:24] != 8'd0);
+                                        st    <= (len == 16'd8) ? S_TA5 : S_WRD;
                                     end else begin
-                                        nwords   <= (len - 16'd2) >> 3;
-                                        ptr      <= 16'd2;
-                                        cur_addr <= {13'd0, h_u16_0, 3'd0};
-                                        st       <= (len == 16'd2) ? S_TA5 : S_WRD;
+                                        ptr   <= {{(PBUF_AW-4){1'b0}}, 4'd2};
+                                        ca    <= {5'd0, h_u16_0, 3'd0};
+                                        ca_hi <= 1'b0;
+                                        st    <= (len == 16'd2) ? S_TA5 : S_WRD;
                                     end
                                     rstatus <= ST_OK;
                                 end
@@ -524,7 +567,7 @@ module brd_host_if #(
                                 if (len != 16'd10) begin
                                     rstatus <= ST_E_LEN;
                                     st      <= S_TA5;
-                                end else if ({1'b0, h_n, 3'b000} > {3'b000, PBUF_BYTES}) begin
+                                end else if (n_big) begin
                                     rstatus <= ST_E_ARG;
                                     st      <= S_TA5;
                                 end else if (core_busy) begin
@@ -532,9 +575,10 @@ module brd_host_if #(
                                     st      <= S_TA5;
                                 end else begin
                                     rstatus  <= ST_OK;
-                                    nwords   <= h_n;
-                                    ptr      <= 16'd0;
-                                    cur_addr <= h_addr;
+                                    nwords   <= h_n[NWW-1:0];   // h_n <= 2**(PBUF_AW - 3) here
+                                    ptr      <= {PBUF_AW{1'b0}};
+                                    ca       <= h_addr[23:0];
+                                    ca_hi    <= (h_addr[31:24] != 8'd0);
                                     st       <= (h_n == 16'd0) ? S_TA5 : S_RREQ;
                                 end
                             end
@@ -555,29 +599,23 @@ module brd_host_if #(
                     st  <= (kk == 3'd7) ? S_WREQ : S_WRD;
                 end
                 S_WREQ: begin
+                    // E_RANGE: the body is the index wi of the failed word (it does not change any more)
                     if (!addr_ok) begin
                         rstatus <= ST_E_RANGE;
-                        errinfo <= {16'd0, wi};
                         gkind   <= G_ERR;
-                        glen    <= 16'd4;
+                        glen    <= 7'd4;
                         st      <= S_GEN;
                     end else if (mw_ready) begin
                         if (mw_err) begin
                             rstatus <= ST_E_RANGE;
-                            errinfo <= {16'd0, wi};
                             gkind   <= G_ERR;
-                            glen    <= 16'd4;
+                            glen    <= 7'd4;
                             st      <= S_GEN;
                         end else begin
-                            wi <= wi + 1'b1;
-                            if (is_imem && lane == 3'd6) begin
-                                lane     <= 3'd0;
-                                cur_addr <= cur_addr + 32'd2;
-                            end else begin
-                                lane     <= lane + 1'b1;
-                                cur_addr <= cur_addr + 32'd1;
-                            end
-                            st <= (wi + 16'd1 == nwords) ? S_TA5 : S_WRD;
+                            wi   <= wi_next;
+                            ca   <= ca_next;
+                            lane <= (is_imem && lane == 3'd6) ? 3'd0 : (lane + 1'b1);
+                            st   <= (wi_next == nwords) ? S_TA5 : S_WRD;
                         end
                     end
                 end
@@ -586,16 +624,14 @@ module brd_host_if #(
                 S_RREQ: begin
                     if (!addr_ok) begin
                         rstatus <= ST_E_RANGE;
-                        errinfo <= {16'd0, wi};
                         gkind   <= G_ERR;
-                        glen    <= 16'd4;
+                        glen    <= 7'd4;
                         st      <= S_GEN;
                     end else if (mr_ready) begin
                         if (mr_err) begin
                             rstatus <= ST_E_RANGE;
-                            errinfo <= {16'd0, wi};
                             gkind   <= G_ERR;
-                            glen    <= 16'd4;
+                            glen    <= 7'd4;
                             st      <= S_GEN;
                         end else if (mr_rsp_valid) begin
                             wsr <= mr_rsp_data;
@@ -618,10 +654,10 @@ module brd_host_if #(
                     ptr <= ptr + 1'b1;
                     kk  <= kk + 1'b1;
                     if (kk == 3'd7) begin
-                        wi       <= wi + 1'b1;
-                        cur_addr <= cur_addr + 32'd1;
-                        if (wi + 16'd1 == nwords) begin
-                            blen <= {nwords[12:0], 3'b000};
+                        wi <= wi_next;
+                        ca <= ca_next;   // + 1 (is_imem = 0)
+                        if (wi_next == nwords) begin
+                            blen <= {nwords, 3'b000};
                             st   <= S_TA5;
                         end else begin
                             st <= S_RREQ;
@@ -631,9 +667,9 @@ module brd_host_if #(
 
                 // ---------------------------------------------------------- generated body
                 S_GEN: begin
-                    gi <= gi + 1'b1;
-                    if (gi + 16'd1 == glen) begin
-                        blen <= glen;
+                    gi <= gi_next;
+                    if (gi_next == glen) begin
+                        blen <= {{(BLW-GIW){1'b0}}, glen};
                         st   <= S_TA5;
                     end
                 end
@@ -642,7 +678,7 @@ module brd_host_if #(
                 S_TA5: begin
                     if (tx_fire) begin
                         crc <= 8'd0;
-                        bi  <= 16'd0;
+                        bi  <= {BLW{1'b0}};
                         st  <= S_TCMD;
                     end
                 end
@@ -667,15 +703,15 @@ module brd_host_if #(
                 S_TSTAT: begin
                     if (tx_fire) begin
                         crc <= crc_next;
-                        st  <= (blen == 16'd0) ? S_TCRC : S_TBF;
+                        st  <= (blen == {BLW{1'b0}}) ? S_TCRC : S_TBF;
                     end
                 end
                 S_TBF: st <= S_TBP;
                 S_TBP: begin
                     if (tx_fire) begin
                         crc <= crc_next;
-                        bi  <= bi + 1'b1;
-                        st  <= (bi + 16'd1 == blen) ? S_TCRC : S_TBF;
+                        bi  <= bi_next;
+                        st  <= (bi_next == blen) ? S_TCRC : S_TBF;
                     end
                 end
                 S_TCRC: begin

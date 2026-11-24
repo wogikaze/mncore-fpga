@@ -34,6 +34,10 @@
 // long word first, then LSB) of one unit's output (isel) to every destination that takes it.
 // A single-unit word takes 1 beat (2 with a 2-long-word destination or T), so with
 // mn_pe_store (IREG = 1) a nop takes 11 clocks and a long-word copy about 16.
+// The four store channels get the same write data (WP35: no per-channel data multiplexers), so
+// the store destinations of an MSB beat also share the data class: long word, word (its 32 bits
+// in both lanes; the lane enable picks the one of its address), or read-modify-write (one memory
+// per beat: its old long word is read into one register just before the beat and merged).
 //
 // The j word (and rd_use) must stay stable from start until done.
 // rd_use = {LM1, LM0, GRF1, GRF0}: memories the step reads as an operand (ALU / MAU / L1BM
@@ -200,13 +204,22 @@ module mn_pe_lsu #(
     reg  [3:0]  ri [0:3];         // READ: responses received per memory
     reg  [3:0]  fcur;             // mask flags of the cycle being written
     reg  [6:0]  pend0, pend1;     // EXEC: destinations still to write (MSB / LSB long word)
-    reg  [3:0]  prmw, iss, got;   // EXEC: read-modify-write memories, read issued, data back
+    reg  [3:0]  prmw;             // EXEC: memories of this cycle that need read-modify-write
+    reg         iss;              // EXEC: the read of the read-modify-write beat is issued
     reg         loc_pend;         // EXEC: $omr write still to do (after a read-modify-write)
-    reg  [255:0] old;             // RMW: old MSB long word, 64 bits per memory
+    reg  [63:0] old;              // RMW: old MSB long word of the beat's memory
     reg         hp_wait;          // host port: a read is outstanding
     reg         hp_lrsp;          // host port: local (non-store) read response pending
     reg  [63:0] hp_ldata;
     reg  [1:0]  hp_ch;            // host port: store channel of the outstanding read
+    reg         bh;               // EXEC beat: 0 MSB long word, 1 LSB long word
+    reg  [1:0]  bu;               // EXEC beat: unit (isel)
+    reg  [6:0]  bset;             // EXEC beat: destinations not yet written
+    // the memory of a read-modify-write beat (one-hot bset & prmw; bit 0 is the remaining case)
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire [3:0]  b_rm1 = bset[3:0] & prmw;
+    /* verilator lint_on UNUSEDSIGNAL */
+    wire [1:0]  b_ch  = {b_rm1[3] | b_rm1[2], b_rm1[3] | b_rm1[1]};
 
     assign idle      = (state == S_IDLE) & ~hp_wait;
     assign busy      = (state != S_IDLE);
@@ -356,15 +369,31 @@ module mn_pe_lsu #(
             wire [47:0] rav = {ra[m*4+3], ra[m*4+2], ra[m*4+1], ra[m*4]};   // cycles 3..0
             wire [10:0] aq  = rav[12*cq + 1 +: 11];  // long word address
             assign rq_v[m] = rq_turn[m] & (qi[m] < nreq);
-            assign rq_a[23*m +: 23] = {12'd0, aq + {10'd0, hq}};
+            // a 2-long-word access is aligned to 2 long words (mn_pe_agen), so + hq is | hq
+            assign rq_a[23*m +: 23] = {12'd0, aq[10:1], aq[0] | hq};
             assign rd_all[m] = (ri[m] == nreq);
             assign rd_fin[m] = (ri[m] == nreq) | ((ri[m] + 4'd1 == nreq) & st_rsp_valid[m]);
             assign r_cr[2*m +: 2] = cr;
             assign r_hr[m]   = hr;
             assign r_dl[m]   = dl;
             assign r_lane[m] = rav[12*cr];
+        end
+    endgenerate
 
+    // The store response the LSU listens to, one 64-bit multiplexer for all uses (WP35): the
+    // host read's channel between steps, the memory being read in READ (RBS = 1: one memory
+    // answers at a time, the lowest one that still waits), the read-modify-write beat's memory
+    // in EXEC.
+    wire [1:0]  sm      = ~rd_all[0] ? 2'd0 : ~rd_all[1] ? 2'd1 : ~rd_all[2] ? 2'd2 : 2'd3;
+    wire [1:0]  rsel    = (state == S_IDLE) ? hp_ch : (state == S_READ) ? sm : b_ch;
+    wire [63:0] rsp_sel = st_rsp_rdata[64*rsel +: 64];
+
+    generate
+        for (m = 0; m < 4; m = m + 1) begin : g_rbm
             if (RBS == 0) begin : g_rb
+                wire        dl    = rwl[m][1];
+                wire [1:0]  cr    = r_cr[2*m +: 2];
+                wire        hr    = r_hr[m];
                 // read buffer in bus layout: hi = MSB long word, lo = LSB long word (0 unless 2 long words)
                 wire        rb_we = (state == S_READ) & st_rsp_valid[m];
                 wire [63:0] rsp   = st_rsp_rdata[64*m +: 64];
@@ -384,13 +413,12 @@ module mn_pe_lsu #(
             assign opr_lm1  = opr_m[511:384];
             /* verilator lint_off UNUSEDSIGNAL */
             // RBS = 0: every memory has its own read buffer; the shared buffer's selection is not built
-            wire unused_rbs = ^{opr_mem, r_cr, r_hr, r_dl};
+            wire unused_rbs = ^{opr_mem, r_cr, r_hr, r_dl, sm};
             /* verilator lint_on UNUSEDSIGNAL */
         end else begin : g_rb_shared
             // one memory answers at a time (rq_turn): the lowest one that still waits
-            wire [1:0]  sm  = ~rd_all[0] ? 2'd0 : ~rd_all[1] ? 2'd1 : ~rd_all[2] ? 2'd2 : 2'd3;
             wire        sv  = (state == S_READ) & st_rsp_valid[sm];
-            wire [63:0] rsp = st_rsp_rdata[64*sm +: 64];
+            wire [63:0] rsp = rsp_sel;
             wire [1:0]  scr = r_cr[2*sm +: 2];
             wire        shr = r_hr[sm];
             wire [1:0]  swl = (sm == 2'd0) ? rwl[0] : (sm == 2'd1) ? rwl[1] : (sm == 2'd2) ? rwl[2] : rwl[3];
@@ -456,17 +484,19 @@ module mn_pe_lsu #(
     wire [6:0] need0 = {b1_on, b0_on, t_we & (|t_l0), n0};
     wire [6:0] need1 = {2'b00, t_we & (|t_l1), n1};
     wire [13:0] isel_d = {isel[3], isel[2], t_isel, isel[3], isel[2], isel[1], isel[0]};
-    wire any_rmw = |(rmw & n0);
+    wire [3:0]  wacc   = {wwl[3] == 2'b00, wwl[2] == 2'b00, wwl[1] == 2'b00, wwl[0] == 2'b00};
 
     // ------------------------------------------------------------------ EXEC: beats
     wire res_go = (state == S_EXEC) & (xs == X_S0) & res_valid;
     wire active = (state == S_EXEC) & (xs == X_WR);
     // A beat: half (MSB long word first), unit (the lowest pending destination's isel) and the
-    // destinations that take that unit. It is picked one clock ahead into bh / bu / bset, so
-    // the choice is not on the write-data path.
-    function [9:0] pick(input [6:0] e0, input [6:0] e1, input [13:0] sd);
-        reg       h;
+    // destinations that take that unit; in an MSB beat the store destinations also share the
+    // data class of the lowest one (wac: word access, rm: read-modify-write, alone). It is
+    // picked one clock ahead into bh / bu / bset, so the choice is not on the write-data path.
+    function [9:0] pick(input [6:0] e0, input [6:0] e1, input [13:0] sd, input [3:0] wac, input [3:0] rm);
+        reg       h, kw, kr;
         reg [6:0] eh, st;
+        reg [3:0] q0;
         reg [1:0] u;
         integer   q;
         begin
@@ -475,14 +505,17 @@ module mn_pe_lsu #(
             u  = 2'd0;
             for (q = 6; q >= 0; q = q - 1)
                 if (eh[q]) u = sd[2*q +: 2];
+            q0 = eh[3:0] & (~eh[3:0] + 4'd1);   // lowest pending store destination (one-hot)
+            kw = |(q0 & wac);
+            kr = |(q0 & rm);
             for (q = 0; q < 7; q = q + 1)
                 st[q] = eh[q] & (sd[2*q +: 2] == u);
+            if (!h)
+                for (q = 0; q < 4; q = q + 1)
+                    st[q] = st[q] & (kr ? q0[q] : (~rm[q] & (wac[q] == kw)));
             pick = {h, u, st};
         end
     endfunction
-    reg        bh;                 // this beat: 0 MSB long word, 1 LSB long word
-    reg  [1:0] bu;                 // this beat: unit (isel)
-    reg  [6:0] bset;               // this beat: destinations not yet written
     wire       h_cur = bh;
     wire [1:0] u_cur = bu;
     wire [6:0] beat  = bset;
@@ -491,9 +524,15 @@ module mn_pe_lsu #(
     wire [6:0] eff0_n = bh ? 7'd0 : (pend0 & ~done_d);
     wire [6:0] eff1_n = bh ? (pend1 & ~done_d) : pend1;
     wire       acc    = active & (eff0_n == 7'd0) & (eff1_n == 7'd0);
-    wire [9:0] b_first = pick(need0, need1, isel_d);    // first beat of a cycle
-    wire [9:0] b_next  = pick(eff0_n, eff1_n, isel_d);  // beat after this one
+    // one pick: the first beat of a cycle in X_S0, the beat after this one in X_WR
+    wire       p_s0    = (xs == X_S0);
+    wire [3:0] p_rm    = p_s0 ? (rmw & n0) : prmw;
+    wire [9:0] b_pick  = pick(p_s0 ? need0 : eff0_n, p_s0 ? need1 : eff1_n, isel_d, wacc, p_rm);
+    wire       p_rmw   = ~b_pick[9] & (|(b_pick[3:0] & p_rm));   // ... is a read-modify-write
     assign res_ready = acc;
+    // data class of this beat (MSB beats) and the memory of a read-modify-write beat
+    wire       b_rmw  = ~bh & (|(bset[3:0] & prmw));
+    wire       b_wac  = ~bh & (|(bset[3:0] & wacc));
 
     // shared write data: the selected unit's long word, zero-flushed
     wire [127:0] usel = (u_cur == 2'b00) ? res_mau : (u_cur == 2'b01) ? res_alu :
@@ -510,6 +549,13 @@ module mn_pe_lsu #(
     endgenerate
 
     assign wd = (state == S_IDLE) ? hp_req_wdata : wx;
+
+    // store write data, the same on the four channels: wd, or in an MSB beat the word in both
+    // lanes (word access) and the merge with the old long word (read-modify-write)
+    wire [63:0] ld   = b_wac ? {wd[63:32], wd[63:32]} : wd;
+    wire [3:0]  hvs  = hv[4*b_ch +: 4];
+    wire [63:0] mgd  = {merge32(old[63:32], ld[63:32], hvs[3:2]), merge32(old[31:0], ld[31:0], hvs[1:0])};
+    wire [63:0] sdat = ((state == S_EXEC) & ~bh) ? (b_rmw ? mgd : ld) : wd;
 
     // $omr: nibble wc <- unit flags AND the write mask (a masked-off flag is written as 0)
     assign omr_nib = (ifsel ? res_mau_flags : res_alu_flags) & ((tgt_mr & mask_on) ? f_now : 4'hf);
@@ -537,28 +583,27 @@ module mn_pe_lsu #(
     // store channel of a space: LM0 -> 2, LM1 -> 3, GRF0 -> 0, GRF1 -> 1
     wire        hp_st = (sp == SP_LM0) | (sp == SP_LM1) | (sp == SP_GRF0) | (sp == SP_GRF1);
     wire [1:0]  hp_sc = (sp == SP_LM0) ? 2'd2 : (sp == SP_LM1) ? 2'd3 : (sp == SP_GRF1) ? 2'd1 : 2'd0;
-    wire [22:0] hp_lim = ((sp == SP_GRF0) | (sp == SP_GRF1)) ? (23'd1 << GRF_AW) :
-                         ((sp == SP_LM0)  | (sp == SP_LM1))  ? (23'd1 << LM_AW) :
-                         (sp == SP_T) ? 23'd8 : (sp == SP_OMR) ? 23'd16 : (sp == SP_BAR) ? 23'd2 : 23'd0;
-    assign hp_in = (hp_req_addr < hp_lim);
+    // address below the depth of the space (powers of two; as logic, not a comparator)
+    assign hp_in = (((sp == SP_GRF0) | (sp == SP_GRF1)) & ((hp_req_addr >> GRF_AW) == 23'd0)) |
+                   (((sp == SP_LM0)  | (sp == SP_LM1))  & ((hp_req_addr >> LM_AW)  == 23'd0)) |
+                   ((sp == SP_T)   & (hp_req_addr[22:3] == 20'd0)) |
+                   ((sp == SP_OMR) & (hp_req_addr[22:4] == 19'd0)) |
+                   ((sp == SP_BAR) & (hp_req_addr[22:1] == 22'd0));
     assign hp_req_err   = ~hp_in;
     assign hp_req_ready = (state == S_IDLE) & ~hp_wait & ~start &
                           ~(hp_st & hp_in & ~st_req_ready[hp_sc]);
     assign hp_acc = hp_req_valid & hp_req_ready;
     wire        hp_str = hp_acc & hp_st & hp_in;   // goes to a store channel
     assign hp_rsp_valid = hp_lrsp | (hp_wait & ~hp_lrsp & (state == S_IDLE) & st_rsp_valid[hp_ch]);
-    assign hp_rsp_rdata = hp_lrsp ? hp_ldata : st_rsp_rdata[64*hp_ch +: 64];
+    assign hp_rsp_rdata = hp_lrsp ? hp_ldata : rsp_sel;
 
     // ------------------------------------------------------------------ store request mux
     integer k;
-    reg [63:0] ld;   // MSB beat lane data before the merge
-    wire [7:0] wwl_f = {wwl[3], wwl[2], wwl[1], wwl[0]};
     always @* begin
-        ld           = 64'd0;
         st_req_valid = 4'd0;
         st_req_we    = 4'd0;
         st_req_addr  = 92'd0;
-        st_req_wdata = 256'd0;
+        st_req_wdata = {4{sdat}};   // the same data on every channel (only written channels use it)
         st_req_wmask = 32'd0;
         for (k = 0; k < 4; k = k + 1) begin
             case (state)
@@ -566,7 +611,6 @@ module mn_pe_lsu #(
                     st_req_valid[k]          = hp_str & (hp_sc == k[1:0]);
                     st_req_we[k]             = hp_req_we;
                     st_req_addr[23*k +: 23]  = hp_req_addr;
-                    st_req_wdata[64*k +: 64] = wd;
                     st_req_wmask[8*k +: 8]   = hp_req_wmask;
                 end
                 S_READ: begin
@@ -576,21 +620,14 @@ module mn_pe_lsu #(
                 default: begin   // S_EXEC
                     st_req_addr[23*k +: 23]  = xa[23*k +: 23] | {22'd0, h_cur};
                     if (xs == X_RMW) begin
-                        st_req_valid[k]      = prmw[k] & ~iss[k];
+                        // read the old long word of the read-modify-write beat's memory
+                        st_req_valid[k]      = (b_ch == k[1:0]) & ~iss;
                     end else begin
                         st_req_valid[k]      = active & beat[k];
                         st_req_we[k]         = 1'b1;
-                        if (h_cur) begin
-                            st_req_wdata[64*k +: 64] = wd;
-                            st_req_wmask[8*k +: 8]   = {{4{l1[2*k+1]}}, {4{l1[2*k]}}};
-                        end else begin
-                            // a word access puts word 0 in the lane of its address
-                            ld = (wwl_f[2*k +: 2] == 2'b00) ? {wd[63:32], wd[63:32]} : wd;
-                            st_req_wdata[64*k +: 64] = prmw[k] ?
-                                {merge32(old[64*k + 32 +: 32], ld[63:32], hv[4*k+2 +: 2]),
-                                 merge32(old[64*k +: 32],      ld[31:0],  hv[4*k +: 2])} : ld;
-                            st_req_wmask[8*k +: 8]   = {{4{l0[2*k+1]}}, {4{l0[2*k]}}};
-                        end
+                        // a word access puts word 0 in the lane of its address (lane enable)
+                        st_req_wmask[8*k +: 8] = h_cur ? {{4{l1[2*k+1]}}, {4{l1[2*k]}}}
+                                                       : {{4{l0[2*k+1]}}, {4{l0[2*k]}}};
                     end
                 end
             endcase
@@ -616,7 +653,7 @@ module mn_pe_lsu #(
             hp_wait  <= 1'b0;
             hp_lrsp  <= 1'b0;
             loc_pend <= 1'b0;
-            pend0 <= 7'd0; pend1 <= 7'd0; prmw <= 4'd0; iss <= 4'd0; got <= 4'd0;
+            pend0 <= 7'd0; pend1 <= 7'd0; prmw <= 4'd0; iss <= 1'b0;
             bh <= 1'b0; bu <= 2'd0; bset <= 7'd0;
             ru <= 4'd0;
             for (j = 0; j < 4; j = j + 1) begin qi[j] <= 4'd0; ri[j] <= 4'd0; end
@@ -673,30 +710,36 @@ module mn_pe_lsu #(
                 default: begin   // S_EXEC
                     case (xs)
                         X_S0: if (res_go) begin
-                            // latch what this cycle writes; the beats follow in X_WR
+                            // latch what this cycle writes; the beats follow in X_WR (a
+                            // read-modify-write beat reads its memory in X_RMW first)
                             fcur     <= f_all[wc];
-                            {bh, bu, bset} <= b_first;
+                            {bh, bu, bset} <= b_pick;
                             prmw     <= rmw & n0;
                             pend0    <= need0;
                             pend1    <= need1;
-                            iss      <= 4'd0;
-                            got      <= 4'd0;
+                            iss      <= 1'b0;
                             loc_pend <= 1'b1;
-                            xs       <= any_rmw ? X_RMW : X_WR;
+                            xs       <= p_rmw ? X_RMW : X_WR;
                         end
                         X_RMW: begin
-                            iss <= iss | (prmw & st_req_ready);
-                            got <= got | (prmw & st_rsp_valid);
-                            for (j = 0; j < 4; j = j + 1)
-                                if (st_rsp_valid[j] && prmw[j]) old[64*j +: 64] <= st_rsp_rdata[64*j +: 64];
-                            if (((got | st_rsp_valid) & prmw) == prmw) xs <= X_WR;
+                            if (st_req_ready[b_ch]) iss <= 1'b1;
+                            if (st_rsp_valid[b_ch]) begin
+                                old <= rsp_sel;
+                                xs  <= X_WR;
+                            end
                         end
                         default: begin   // X_WR
                             pend0    <= eff0_n;
                             pend1    <= eff1_n;
                             loc_pend <= 1'b0;
                             if (brem != 7'd0) bset <= brem;            // store not ready: retry
-                            else              {bh, bu, bset} <= b_next;
+                            else begin
+                                {bh, bu, bset} <= b_pick;
+                                if (p_rmw && !acc) begin
+                                    iss <= 1'b0;
+                                    xs  <= X_RMW;
+                                end
+                            end
                         end
                     endcase
                     if (acc) begin

@@ -27,7 +27,14 @@
 //     "result >= 0"), lsr, and max / min (unsigned compare). Other `u` forms behave as without.
 //
 // Interface: valid / ready on both sides, throughput 1 per clock. All pipeline registers
-// advance together (in_ready = !out_valid || out_ready). Latency = 1 + IREG + PREG + MREG clocks.
+// advance together (in_ready = !out_valid || out_ready). Latency = 1 + IREG + PREG + MREG clocks,
+// except the shifts with PREG = 1 (below).
+//
+// Rotator (WP35, area): with PREG = 1 the lane rotation of the shifts is done in place in
+// register P, by 8 or by 1 bit per clock and lane until the lane's amount is used up (up to
+// 14 clocks for a 64-bit lane, 10 for 32 and 8 for 16); meanwhile the stages behind it wait
+// (in_ready = 0) and the output drains. The results are those of the six-stage rotator, which
+// is used with PREG = 0.
 //   stage 0 | IREG | stage 1 | PREG | stage 2 | MREG | stage 3 | output register
 //   stage 0: classification, decode, operand rounding (`r`), imm / zero bus
 //   stage 1: adder and max / min comparison, shift amounts and keep mask, rotator stages 0..2
@@ -70,7 +77,8 @@ module mn_alu_int #(
     output reg  [3:0]   flags,
     output reg          out_err
 );
-    wire adv = !out_valid || out_ready;     // every pipeline register advances
+    wire rbusy;                             // PREG = 1: register P is rotating
+    wire adv = (!out_valid || out_ready) && !rbusy;   // every pipeline register advances
     assign in_ready = adv;
 
     // ---------------------------------------------------------------------
@@ -270,32 +278,47 @@ module mn_alu_int #(
         end
     endgenerate
 
-    // ---- rotator stages 0..2 (stage j rotates by 2^j) ----
-    wire [64*4-1:0] st;
-    assign st[63:0] = a1;
-    generate
-        for (j = 0; j < 3; j = j + 1) begin : g_rs1
-            mn_alu_rot_stage #(.J(j)) u_stage (
-                .m16(m16_1), .m32(m32_1),
-                .c({rr1[18+j], rr1[12+j], rr1[6+j], rr1[j]}),
-                .d(st[64*j +: 64]), .q(st[64*(j+1) +: 64]));
-        end
-    endgenerate
-    wire [63:0] rotp1 = st[64*3 +: 64];
-    wire [11:0] rrh1  = {rr1[23:21], rr1[17:15], rr1[11:9], rr1[5:3]};
-
     // ---- register P ----
     // controls used in stage 2: err m16 m32 arith mm logic lsel[1:0] pass shift lnot pack fzero
     localparam C2W = 13;
     wire [C2W-1:0] c1s = {c1[21:19], c1[17], c1[14], c1[12:8], c1[4:2]};
-    localparam WP = 64 * 6 + 4 + 4 + 12 + 4 + C2W;
-    wire [WP-1:0] rp_d = {a1, b1, xlo1, sum1, rotp1, keep1, pick1, flar1, rrh1, fill1, c1s};
+    localparam WP = 64 * 5 + 4 + 4 + 4 + C2W;
+    wire [WP-1:0] rp_d = {a1, b1, xlo1, sum1, keep1, pick1, flar1, fill1, c1s};
     wire [WP-1:0] rp_q;
     wire          vp;
+    wire [63:0]   rot;    // a rotated right by rr in each lane (stage 2)
+    wire          m16_p = rp_q[11], m32_p = rp_q[10];   // lane width of the instruction in P
+
+    // rotate right within the lanes by nsh (16-, 32- or 64-bit lanes)
+    function [63:0] rotr;
+        input [63:0] d;
+        input integer nsh;
+        input lm16, lm32;
+        reg [63:0] r64, r32, r16;
+        integer b, w;
+        begin
+            for (b = 0; b < 64; b = b + 1) begin
+                r64[b] = d[(b + nsh) % 64];
+                w = b - b % 32;
+                r32[b] = d[w + (b - w + nsh) % 32];
+                w = b - b % 16;
+                r16[b] = d[w + (b - w + nsh) % 16];
+            end
+            rotr = lm16 ? r16 : lm32 ? r32 : r64;
+        end
+    endfunction
+
     generate
         if (PREG != 0) begin : g_rp
             reg [WP-1:0] q;
             reg          v;
+            reg [63:0]   rq;     // a, rotated in place
+            reg [23:0]   rrem;   // rotation still to do, per segment (the segments of a lane agree)
+            wire [3:0]   s8 = {|rrem[23:21], |rrem[17:15], |rrem[11:9], |rrem[5:3]};   // >= 8
+            wire [3:0]   s1 = ~s8 & {|rrem[20:18], |rrem[14:12], |rrem[8:6], |rrem[2:0]};
+            wire [63:0]  r8 = rotr(rq, 8, m16_p, m32_p);
+            wire [63:0]  r1 = rotr(rq, 1, m16_p, m32_p);
+            integer g;
             always @(posedge clk) begin
                 if (rst)
                     v <= 1'b0;
@@ -303,42 +326,57 @@ module mn_alu_int #(
                     v <= va;
                 if (adv)
                     q <= rp_d;
+                for (g = 0; g < 4; g = g + 1) begin
+                    if (rst)
+                        rrem[6*g +: 6] <= 6'd0;
+                    else if (adv)
+                        rrem[6*g +: 6] <= (va && c1[8]) ? rr1[6*g +: 6] : 6'd0;   // shifts only
+                    else if (s8[g])
+                        rrem[6*g + 3 +: 3] <= rrem[6*g + 3 +: 3] - 3'd1;
+                    else if (s1[g])
+                        rrem[6*g +: 3] <= rrem[6*g +: 3] - 3'd1;
+                    if (adv)
+                        rq[16*g +: 16] <= a1[16*g +: 16];
+                    else if (s8[g] || s1[g])
+                        rq[16*g +: 16] <= s8[g] ? r8[16*g +: 16] : r1[16*g +: 16];
+                end
             end
-            assign rp_q = q;
-            assign vp = v;
+            assign rp_q  = q;
+            assign vp    = v;
+            assign rot   = rq;
+            assign rbusy = ((s8 | s1) != 4'd0);
         end else begin : g_rp_n
-            assign rp_q = rp_d;
-            assign vp = va;
+            // stage j rotates by 2^j
+            wire [64*7-1:0] st;
+            assign st[63:0] = a1;
+            for (j = 0; j < 6; j = j + 1) begin : g_rs
+                mn_alu_rot_stage #(.J(j)) u_stage (
+                    .m16(m16_1), .m32(m32_1),
+                    .c({rr1[18+j], rr1[12+j], rr1[6+j], rr1[j]}),
+                    .d(st[64*j +: 64]), .q(st[64*(j+1) +: 64]));
+            end
+            assign rot   = st[64*6 +: 64];
+            assign rp_q  = rp_d;
+            assign vp    = va;
+            assign rbusy = 1'b0;
         end
     endgenerate
 
     // =====================================================================
-    // Stage 2: rotator stages 3..5, result selection, flags
+    // Stage 2: result selection, flags
     // =====================================================================
-    wire [63:0]   a2, b2, xlo2, sum2, rotp2, keep2;
+    wire [63:0]   a2, b2, xlo2, sum2, keep2;
     wire [3:0]    pick2, flar2, fill2;
-    wire [11:0]   rrh2;
     wire          err_2, m16_2, m32_2, arith_2, mm_2, logic_2, pass_2, shift_2, lnot_2, pack_2, fzero_2;
     wire [1:0]    lsel_2;
-    assign {a2, b2, xlo2, sum2, rotp2, keep2, pick2, flar2, rrh2, fill2,
+    assign {a2, b2, xlo2, sum2, keep2, pick2, flar2, fill2,
             err_2, m16_2, m32_2, arith_2, mm_2, logic_2, lsel_2, pass_2, shift_2,
             lnot_2, pack_2, fzero_2} = rp_q;
 
     wire [3:0] lsbseg2 = {m16_2, m16_2 | m32_2, m16_2, 1'b1};
     wire [3:0] lb2     = lane_top(m16_2, m32_2, seg_msb(b2));
 
-    // ---- rotator stages 3..5 and the keep mask ----
-    wire [64*4-1:0] st2;
-    assign st2[63:0] = rotp2;
-    generate
-        for (j = 3; j < 6; j = j + 1) begin : g_rs2
-            mn_alu_rot_stage #(.J(j)) u_stage (
-                .m16(m16_2), .m32(m32_2),
-                .c({rrh2[9+j-3], rrh2[6+j-3], rrh2[3+j-3], rrh2[j-3]}),
-                .d(st2[64*(j-3) +: 64]), .q(st2[64*(j-2) +: 64]));
-        end
-    endgenerate
-    wire [63:0] rot  = st2[64*3 +: 64];
+    // ---- the keep mask ----
     wire [63:0] fil  = {{16{fill2[3]}}, {16{fill2[2]}}, {16{fill2[1]}}, {16{fill2[0]}}};
     wire [63:0] shr  = (keep2 & rot) | (~keep2 & fil);
 
@@ -411,6 +449,8 @@ module mn_alu_int #(
             out_valid <= 1'b0;
         else if (adv)
             out_valid <= vm;
+        else if (out_ready)
+            out_valid <= 1'b0;   // register P is rotating: the output drains
         if (adv) begin
             z       <= err_3 ? 128'd0 : {res3, xlo3};
             flags   <= err_3 ? 4'd0 : fzero_3 ? rz3 : flnz3;
