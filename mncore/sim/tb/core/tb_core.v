@@ -16,6 +16,7 @@
 //   Q <space> <loc> <addr> <value>     read one long word and check it (self-test)
 //   X <pc> <count>                     RUN; prints "S <reason> <info> <pc> <steps> <trap> <clocks>"
 //   K <reason> <info>                  check the stop record of the last RUN (self-test)
+//   P <pc> <steps>                     check core_pc and core_steps of the last RUN (self-test)
 //   E                                  end
 //   # ...                              comment
 // All numbers are hex. The last line is PASS (no failed check, no port error) or FAIL.
@@ -226,6 +227,15 @@ module tb_core;
                             nfail = nfail + 1;
                             $display("MISMATCH status: reason %0h info %0h, expected %0h %0h",
                                      core_reason, core_info, a0, a1);
+                        end
+                    end
+                    "P": begin
+                        rc = $fscanf(fd, "%h %h", a0, a1);
+                        nchk = nchk + 1;
+                        if (core_pc !== a0[15:0] || core_steps !== a1) begin
+                            nfail = nfail + 1;
+                            $display("MISMATCH status: pc %0h steps %0h, expected %0h %0h",
+                                     core_pc, core_steps, a0, a1);
                         end
                     end
                     default: begin

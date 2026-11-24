@@ -48,7 +48,7 @@ MUTATIONS = [
     ("no_y_gather", PE, "alu_act & two_in, alu_act & ~d_is_imm};", "1'b0, alu_act & ~d_is_imm};",
      "gathering of ALU input y"),
     ("msb1", PE, "wire       fmsb = (gcode == 4'd8);", "wire       fmsb = 1'b0;", "$msb1"),
-    ("peid", PE, "localparam [5:0] V_PEID  = POS_M * 4 + POS_P;", "localparam [5:0] V_PEID  = 6'd1;",
+    ("peid", PE, "localparam [31:0] V_PEID  = POS_M * 4 + POS_P;", "localparam [31:0] V_PEID  = 32'd1;",
      "$peid"),
     ("rd_use_lm1", PE, "(s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b1000 : 4'd0;",
      "(s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b0000 : 4'd0;", "rd_use of LM1"),
@@ -58,8 +58,11 @@ MUTATIONS = [
     ("unsup_executes", PE, "wire [425:0] jw_nul = {2'b00, jw[423:0]};", "wire [425:0] jw_nul = jw;",
      "no write by an unsupported word"),
     ("ll10_executed", CORE, "if (e_ll == 2'b10) begin", "if (1'b0) begin", "E_DECODE of ll = 10"),
-    ("range_info", CORE, "info   <= (pe_st == 2'd1) ? {16'd0, pc} : {25'd0, pe_field};",
-     "info   <= (pe_st == 2'd1) ? {16'd0, pc + 16'd1} : {25'd0, pe_field};", "E_RANGE word number"),
+    ("range_info", CORE, "info   <= (pe_st == 2'd1) ? pc : {9'd0, pe_field};",
+     "info   <= (pe_st == 2'd1) ? pc + 16'd1 : {9'd0, pe_field};", "E_RANGE word number"),
+    ("no_clear", CORE, "clr    <= (CLEAR != 0);", "clr    <= 1'b0;", "clear of the PE state after reset"),
+    ("run_lost_in_clear", CORE, "if (run_start) run_pend <= 1'b1;", "if (1'b0) run_pend <= 1'b1;",
+     "RUN that arrives during the clear"),
 ]
 
 

@@ -473,10 +473,11 @@ def main(argv=None) -> int:
         (BUILD / f"{n}.scr").write_text(scr + "E\n", encoding="utf-8", newline="\n")
     if not only:
         # a RUN right after reset waits for the clear of the PE state (mn_core CLEAR), then runs
-        # entry 0 of the last test (ERR_PRE: iadd ... $lr64v) on the cleared state
-        tail = ["# RUN during the clear after reset", "C", "X 0 1", "K 0 0",
+        # entry 0 of the last test (ERR_PRE: iadd $lr0v $ls0v $lr64v $omr1) on the cleared state:
+        # 0 + 0 = 0 everywhere, and the flags ("result >= 0") set $omr1 to ffff
+        tail = ["# RUN during the clear after reset", "C", "X 0 1", "K 0 0", "P 1 1",
                 "Q 3 0 0 0000000000000000", "Q 3 0 20 0000000000000000", "Q 1 0 1ff 0000000000000000",
-                "Q 5 0 7 0000000000000000"]
+                "Q 5 0 7 0000000000000000", "Q 10 0 1 000000000000ffff", "Q 10 0 2 0000000000000000"]
         allscr = "".join(scr for _, scr in scripts) + "\n".join(tail) + "\nE\n"
         (FIXED / "all.scr").write_text(allscr, encoding="utf-8", newline="\n")
         print(f"wrote {len(scripts)} tests to {FIXED.relative_to(ROOT)}/ (all.scr)")

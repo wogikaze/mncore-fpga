@@ -335,11 +335,11 @@ def classify_stop(reason: int, info: int, entry_word):
             aluop = jfield(w, 147, 5)
             iselb = jfield(w, 159, 3)
             if name == "pe_aluc_aluop":
-                what = {0b10001: "msl", 0b10010: "msr"}.get(aluop, "")
-                if aluop == 0b11101:
-                    what = "bfe"
-                elif aluop == 0b11110 and (iselb >> 1) != 0b11:
-                    what = "bfn"
+                what = {0b10001: "msl", 0b10010: "msr", 0b10000: "rsqrt", 0b10100: "relu", 0b10101: "relu1",
+                        0b10110: "relu2", 0b10111: "relu3", 0b11000: "lrelud", 0b11001: "lreluo",
+                        0b11010: "ilrelud", 0b11011: "fmax", 0b11100: "fmin", 0b11101: "bfe"}.get(aluop, "")
+                if aluop == 0b11110:
+                    what = {0b110: "floor", 0b111: "ftoi"}.get(iselb, "bfn")
             elif name == "pe_mauc_mmode":
                 what = "matrix MAU"
             elif name == "pe_mauc_mw":
