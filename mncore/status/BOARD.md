@@ -10,7 +10,7 @@
 | WP05 | SDRAM | 1 | 実行中 | 実機 |
 | WP06 | Rust Sim の縮小トポロジ対応 | 1 | 実行中 | wogikaze/mncore の topo-param ブランチ |
 | WP07 | 資源とレシピ | 1 | 完了 2026-11-24 | `07-device-budget.md`。レシピ 6 本。`recipes.py check` は lead が再実行して PASS。§6 の予算を改訂 |
-| WP10 | RTL デコーダ | 2 | 実行中 | |
+| WP10 | RTL デコーダ | 2 | 完了 2026-11-24 | yaml から生成。j 8,926 語と m 1,220 語で不一致 0。LUT 約 190。sim、lint、synth は lead が再実行して PASS |
 | WP11 | 整数 ALU | 2 | 実行中 | |
 | WP12 | FP の FMA | 2 | 実行中 | |
 | WP13 | FP 系の ALU 命令 | 2 | 実行中 | |

@@ -56,3 +56,9 @@
 8. **語長欄は未使用でも 0 でない**: `pe_rfc*_wwl` / `rwl`、`pe_lm*_wl` は、そのメモリを使わない語（nop など）でも 01 になることが多い（assemble3 の既定値）。語長やアドレスの欄は、write・isel・入力セレクタと合わせて解釈すること。なお GRF の書き込みアドレス欄（cycle0〜3）は、write=0 の語では常に 0 だった [C]。
 9. **assemble3 の出力には `r` 行が混ざる**: `.vsm` に書かれた `r 0 000000000 001 3E80…` の形の行（DRAM の初期データと思われる）を、`d` 行と同様にそのまま出力する（CSV でも同じ）。`asm_io` / `csv_import` は種別 `r` として保持する。
 10. **CRLF**: Windows で `third_party/mncore` をチェックアウトすると `.vsm` が CRLF になり、assemble3 は `Trailing letter after location` で失敗する。`assemble_corpus.sh` は CR を除いてから渡す。
+
+## lead による追記（WP10 の報告から、2026-11-24）
+
+- `l1bm_me`: 「L1BM 命令式を含む語で常に 1」は不正確。`` を使う式では 0（コーパス 132 本）。L1BM の発行判定に me を使わない。
+- `nop ; wait iXX` は ll=00 の語として出力され、wd が入る。ll=00 でも WAIT は有効とみなす（assemble3 出力からの推定。エミュレータでは未確認。WP20 で確認する）。
+- `?mread` に専用の欄はない。`` の更新条件は WP20 がエミュレータで確かめる。

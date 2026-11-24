@@ -36,7 +36,10 @@
   - flat の L1BM 187..190 / 191..194 は 2 欄に分かれ、`l1bm_mabadr` と `l1bm_opcode` とする。
 - cycle1〜3 のアドレス欄には `_c1` / `_c2` / `_c3` を付ける（`spec/isa/` が正）。
 - 先頭 2bit（ll）: `01` 通常、`11` noforward（書くがフォワーディングを更新しない）、`00` nop、`10` は停止 → FPGA は `E_DECODE`。
-- 予約欄 `rsv_162` / `rsv_164` が 0 以外なら `E_UNSUPPORTED <field>`。
+- ll=00 の語でも wd（wait）は有効とする（暫定。WP20 で確認）。
+- 予約欄 `rsv_162` / `rsv_164` が 0 以外なら `E_UNSUPPORTED <field>`。`<field>` は yaml の欄番号（デコーダの `err_field`）で符号化する。
+- m 語の欄の Verilog 上の名前には `mv_` を付ける（`priority` が SystemVerilog の予約語のため）。
+- デコーダは `mncore/tools/gen_dec.py` が yaml から生成する（`mncore/rtl/dec/`）。手で編集しない。
 - imm の語では LM0 欄は即値なので、`pe_lm0_write` を LM0 書き込みとして解釈しない。
 
 ## 3. 縮小トポロジ
