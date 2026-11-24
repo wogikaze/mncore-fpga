@@ -6,7 +6,10 @@
 ## 1. 正解の優先順位
 
 1. **公式エミュレータ `gpfn3_package_main`**（judge 同梱の v20240826）。これが最終的な正解。
-2. `third_party/mncore/viz/core` の Rust Sim。公式と全問題で一致を確認済み。ユニット単位のベクタと縮小トポロジの正解はここから作る。
+2. `third_party/mncore/viz/core` の Rust Sim。ユニット単位のベクタと縮小トポロジの正解はここから作る。
+   - WP02 の全件比較（959 本）では両方が通った 809 本のうち 801 本が一致した。
+   - **例外: MV の n128 転送（`mvb/n128 $d0 $lc0`、`mvrffadd/n128 $lc0 $d0` など）。** viz/core の commit `2b9e595` 以降で公式と食い違う（WP06 で修正予定）。修正されるまで、これを含むプログラムは公式だけを正解とする。
+   - PDM は比較から外す。公式の `d get $p` は PDM ではなく DRAM の内容を出すため。
 3. SDM（`third_party/mncore/docs/mncore_llm`）、Scrapbox [mncore/機械語](https://scrapbox.io/mncore/機械語)。
    - Scrapbox には観測にもとづくフィールドの意味が書いてある。
 
@@ -63,10 +66,15 @@
 # ndmp v1
 LM0 n0c0b0m0p0 0x0000 0123456789abcdef
 GRF1 n0c0b0m0p3 0x00ff 3ff0000000000000
-L1BM n0c0 0x0010 0000000000000000
+L1BM n0c0b0 0x0010 0000000000000000
 ```
 
 - 1 行に 1 長語。列は「空間名 位置 長語アドレス 値（16 桁 hex、小文字）」。
+- アドレスは 4 桁。PDM と DRAM だけ 8 桁。
+- 追加の空間: `LM0W LM1W GRF0W GRF1W`（単語アクセス）、`OMR`（アドレスはエントリ × 4 + サイクル）。
+- T のアドレスは「2 × サイクル + k」。L1BM の `$llb` は長語 a と a + 4 の組として出す。
+- 同じ場所への d get が複数回あるときは後勝ち。
+- ヘッダ行の後にメタデータ行（`#` 始まり）を置いてよい。細目の正は `mncore/tools/golden/` の実装と `mncore/status/WP-02.md`。
 - 空間名は `LM0 LM1 GRF0 GRF1 T L1BM L2BM PDM DRAM` と、必要なら追加する名前。位置の表記は SDM 3.4.3 の d get に合わせる。
 - 行を辞書順に並べる。比較ツールは `mncore/tools/golden/ndiff.py`（WP02）。
 - 変換器（WP02 が作る）:

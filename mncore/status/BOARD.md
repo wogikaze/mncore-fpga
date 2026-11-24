@@ -4,7 +4,7 @@
 | --- | --- | --- | --- | --- |
 | WP00 | キックオフ | 0 | 完了 2026-11-24 | git init、submodule、雛形、simrun selftest PASS（sim、lint、synth） |
 | WP01 | ISA スキーマと Python デコーダ | 1 | 完了 2026-11-24 | 110 + 12 欄を確定。22,835 語の往復で不一致 0。unittest 31 件（lead が再実行して OK） |
-| WP02 | ゴールデン基盤 | 1 | 実行中 | |
+| WP02 | ゴールデン基盤 | 1 | 完了 2026-11-24 | 959 本を全件比較。一致 801、不一致 8（MV n128 の Rust 退行 6、PDM の d get 2）。test_golden 21 件は lead が再実行して OK |
 | WP03 | ベクタ生成 | 1 | 実行中 | |
 | WP04 | UART、ホスト | 1 | 実行中 | 実機 |
 | WP05 | SDRAM | 1 | 実行中 | 実機 |
