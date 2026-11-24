@@ -1,0 +1,47 @@
+# mnisa test fixture: one statement per feature. Regenerate the .asm / .csv with
+#   python mncore/tools/mnisa/tests/make_fixtures.py
+d set $lm0n0c0b0m0p0 1 000000260000001C
+r 0 000000000 001 3E8000003FE00000
+iinc $lm0v $ln0v
+iadd $lm8v $lr0v $ln8v
+lpassa $lr0 $t/0101
+lpassa/0101 $lr0 $lr32
+lpassa $lm[0,4,10,14] $ln16v
+lpassa $lr8v $ln24vj2
+lpassa $lmt0v $lr40v
+lpassa $lr0 $omr3
+fvfma -$lr0 $ls0e $lm0 $lr48
+fvadd $lr0 $ls0 $omr2
+dvfmad $llr0 $lls0 $llm0 $llr52
+dmwrite $llr0 $lx0
+imm i"0x12345678" $lr64v
+immu i"0x12345678" $lr72v
+imm f"1.0" $lr80
+zero $lr82
+hbfn/6 $lr0 $lr84
+ipassa $peid $lr86
+lpassa $lr0 $lr88; noforward
+l1bmp $llb8 $llr92
+l1bmm@2 $lr0 $lb0
+l1bmrsbor $lr0 $lb16
+l1bmd $t $lb64
+l2bmb $lc64 $lb32
+nop/2
+l2bm@1 $lb1024 $lc128
+nop/2
+l2bmrffadd $lb2048 $lc256
+nop/2
+l2bmdars $lc1024@.0 $dar0
+nop/2
+l2bmdarw
+lpassa $lr2 $lr34 $ls32 $lm32 $ln32
+lpassa $lr0 $mb
+mvp/n64i01 $lc0 $d0
+nop; wait i01
+mvd/n64 $lc64 $p128@0
+mvriand/n64 $lc0 $d0
+mvp/n64p2 $lc0 $d0
+mvp/n64nd4 $p0@0 $di32@0
+mvnop
+nop/2
+d get $ln0n0c0b0m0p0 1

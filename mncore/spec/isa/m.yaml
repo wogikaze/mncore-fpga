@@ -1,0 +1,137 @@
+# MN-Core 2 MV 命令語（m 行、82bit）のフィールド定義。auto_stride と flat で共通。WP01 が管理する。
+#
+# 出所: assemble3 --print-csv（2024 年配布版、revision e0d90436755d1303e5577ea6e17c6611ab88f300）。m 行の CSV は 12 列で、ヘッダ
+#   'm,valid,mmode,…,priority' と同じ順に並び、連結すると m 語に一致する。
+# 参照: Scrapbox https://scrapbox.io/mncore/機械語 「m命令のフィールド」ほか、SDM 3.5。
+# 規約は j_flat.yaml と同じ（pos 0 は 'm ' に続くビット列の左端、Verilog では [81:0] で mw[81-pos]）。
+
+schema: mnisa-1
+kind: m
+width: 82
+assembler: "assemble3 2024-08-26 (judge v20240826) revision e0d90436755d1303e5577ea6e17c6611ab88f300"
+references:
+  scrapbox: "https://scrapbox.io/mncore/機械語"
+  sdm: "third_party/mncore/docs/mncore_llm"
+groups:
+  mv: "MV 命令（上位記憶間のデータ移動）"
+fields:
+  - name: valid
+    pos: 0
+    width: 1
+    group: mv
+    csv_col: 0
+    csv_name: "valid"
+    desc: "MV 命令あり。0 は mvnop（他の欄もすべて 0）。"
+    ref: ["SDM 3.5.8.1"]
+  - name: mmode
+    pos: 1
+    width: 3
+    group: mv
+    csv_col: 1
+    csv_name: "mmode"
+    desc: "転送の向き（転送元→転送先の記憶の組）。"
+    ref: ["SDM 3.5.8", "Scrapbox 機械語「MVのルーティングと転送モード」"]
+    enum:
+      - {val: "000", name: p2d, desc: "PDM→DRAM（mvnop も 000）"}
+      - {val: "001", name: p2c, desc: "PDM→L2BM"}
+      - {val: "010", name: d2c, desc: "DRAM→L2BM"}
+      - {val: "011", name: p2p, desc: "PDM→PDM"}
+      - {val: "100", name: d2p, desc: "DRAM→PDM"}
+      - {val: "101", name: c2p, desc: "L2BM→PDM"}
+      - {val: "110", name: c2d, desc: "L2BM→DRAM"}
+    notes: "111 は未観測。"
+  - name: tmode
+    pos: 4
+    width: 3
+    group: mv
+    csv_col: 2
+    csv_name: "tmode"
+    desc: "転送の形（個別・放送・縮約・分配）。"
+    ref: ["SDM 3.5.8", "Scrapbox 機械語「MVのルーティングと転送モード」"]
+    enum:
+      - {val: "000", name: single, desc: "mvp の単独個別転送（例: mvp/n64 $d0@0 $p0@0）"}
+      - {val: "001", name: parallel, desc: "mvp の並列個別転送（例: mvp/n64 $lc0@.0 $d0、mvp/n1024 $lc0 $d0）"}
+      - {val: "010", name: b2, desc: "mvb2 / mvr2…"}
+      - {val: "011", name: b4, desc: "mvb4 / mvr4…"}
+      - {val: "100", name: b, desc: "mvb / mvr…"}
+      - {val: "101", name: d, desc: "mvd（分配・結合）"}
+    notes: "mvb / mvb2 / mvb4（mvr も同様）と SDM 3.5.8 の放送・縮約の各節（グループ内・グループ間・分配放送）との対応は確認していない。"
+  - name: destid
+    pos: 7
+    width: 3
+    group: mv
+    csv_col: 3
+    csv_name: "destid"
+    desc: "転送先の ID。@n は n×2、@n.m は n×2+m（プローブ: $d0@3 → 110、$lc0@1.1 → 011）。"
+    ref: ["SDM 3.5.2", "Scrapbox 機械語「MVのルーティングと転送モード」"]
+    notes: "縮約転送（mvr…）では bit0（右端）が縮約 opcode の bit3 になる（整数系で 1）。"
+  - name: srcid
+    pos: 10
+    width: 3
+    group: mv
+    csv_col: 4
+    csv_name: "srcid"
+    desc: "転送元の ID。符号は destid と同じ。"
+    ref: ["SDM 3.5.2"]
+    notes: "縮約転送（mvr…）では縮約 opcode の bit2..0 になる（fadd 000、max 001、min 010、iadd 000、band 001、and 010、bor 100、or 101）。"
+  - name: dmode
+    pos: 13
+    width: 2
+    group: mv
+    csv_col: 5
+    csv_name: "dmode"
+    desc: "縮約転送の精度。"
+    ref: ["SDM 3.5.5"]
+    enum:
+      - {val: "00", name: dl, desc: "倍精度 / 64bit 整数（縮約でない転送でも 00）"}
+      - {val: "01", name: fi, desc: "単精度 / 32bit 整数"}
+      - {val: "10", name: hs, desc: "半精度 / 16bit 整数"}
+  - name: mvid
+    pos: 15
+    width: 8
+    group: mv
+    csv_col: 6
+    csv_name: "mvid"
+    desc: "MV 命令のタグ（i<hex>）。00000000 はタグなし。PE 命令の wd と同じ符号。"
+    ref: ["SDM 3.5.4", "Scrapbox 機械語「priorityとwait」"]
+  - name: indirect
+    pos: 23
+    width: 1
+    group: mv
+    csv_col: 7
+    csv_name: "indirect"
+    desc: "DRAM 間接参照（nd<k>、$di…）。"
+    ref: ["SDM 3.5.6"]
+    notes: "indirect=1 のとき adra の符号化は通常と異なる（プローブ: mvp/n64nd4 $p0@0 $di32@0 → adra=0x1020）。UNKNOWN.md。"
+  - name: adra
+    pos: 24
+    width: 30
+    group: mv
+    csv_col: 8
+    csv_name: "adra"
+    desc: "DRAM 側のアドレス。ソースのアドレスを 16 で割った値（$d48000 → 3000）。DRAM を含まない転送では PDM 側（L2BM⇔PDM）または転送元（PDM→PDM）。"
+    ref: ["SDM 3.5.2.2", "Scrapbox 機械語「MVサイズ・タグ・アドレスの比較」"]
+  - name: adrb
+    pos: 54
+    width: 15
+    group: mv
+    csv_col: 9
+    csv_name: "adrb"
+    desc: "L2BM または PDM 側のアドレス。ソースのアドレスを 16 で割った値（$lc64 → 4）。PDM→PDM では転送先。"
+    ref: ["SDM 3.5.2.1", "SDM 3.5.2.3", "Scrapbox 機械語「MVサイズ・タグ・アドレスの比較」"]
+  - name: nw
+    pos: 69
+    width: 11
+    group: mv
+    csv_col: 10
+    csv_name: "nw"
+    desc: "転送語数。/n<words> を 16 で割った値。"
+    ref: ["SDM 3.5.3", "Scrapbox 機械語「MVサイズ・タグ・アドレスの比較」"]
+  - name: priority
+    pos: 80
+    width: 2
+    group: mv
+    csv_col: 11
+    csv_name: "priority"
+    desc: "優先度（p0..p3）。"
+    ref: ["SDM 3.5.7"]
