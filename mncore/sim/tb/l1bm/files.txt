@@ -1,0 +1,16 @@
+# WP31: the L1BM unit (mn_l1bm) and its reduction network (mn_l1bm_rrn).
+# Default top tb_l1bm: the directed tests (fixed/*.tst, made by gen_tests.py with the official
+# emulator) on N_MAB = 1 and N_MAB = 16, then mn_l1bm_rrn on the rrn vectors (vectors_fixed).
+# The decoder (rtl/dec, WP10) gives the testbench the fields of the words.
+top: tb_l1bm
+rtl_top: mn_l1bm
+incdir: mncore/rtl/dec
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/sim/tb/l1bm/tb_l1bm_rrnchk.v
+mncore/sim/tb/l1bm/tb_l1bm_env.v
+mncore/sim/tb/l1bm/tb_l1bm.v
+mncore/sim/tb/l1bm/tb_l1bm_rrn.v
