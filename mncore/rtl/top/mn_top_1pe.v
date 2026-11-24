@@ -11,9 +11,11 @@
 //   0x03 GRF0 / 0x04 GRF1 2**GRF_AW, 0x05 T 8. The design-specific spaces 0x10 OMR (16 entries,
 //   entry 0 read-only) and 0x11 BAR (2) are served too; INFO only lists spaces 0..15.
 //
-// FPALU / MAU select the arithmetic units of the PE (mn_core): FPALU = 2 is the light FP ALU
-// (relu, relu1..3, lrelud, lreluo, ilrelud only; WP21 area option), 1 the full one, 0 none.
-// Instructions of a unit that is left out stop with E_UNSUPPORTED.
+// FPALU / MAU select the arithmetic units of the PE (mn_core / mn_pe_core): FPALU = 1 the full FP
+// ALU, 2 without floor / ftoi, 3 also without fmax / fmin (relu, relu1..3, lrelud, lreluo,
+// ilrelud, rsqrt), 0 none. Instructions of a unit that is left out stop with E_UNSUPPORTED.
+// On the GW2AR-18 with nextpnr-himbaechel, FPALU = 3 (LUT4 75 %) and 0 (71 %) place and route;
+// 2 (77 %) and 1 (83 %) do not (WP21 report). The default is the largest that fits.
 //
 // LEDs (active low): 0 heartbeat, 1 UART RX activity, 2 UART TX activity, 3 link error
 // (CRC / framing / overrun / timeout), 4 core running, 5 the last RUN stopped with an error
@@ -29,7 +31,7 @@ module mn_top_1pe #(
     parameter IMEM_RD       = 0,
     parameter LM_AW         = 9,
     parameter GRF_AW        = 8,
-    parameter FPALU         = 0,
+    parameter FPALU         = 3,
     parameter MAU           = 1,
     parameter LED_STRETCH   = 22            // activity LEDs stay on for 2**LED_STRETCH clocks
 ) (

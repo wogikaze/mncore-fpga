@@ -18,9 +18,10 @@
 //   E                                   end
 // Every response frame is checked (sync, command, CRC, status OK unless stated). The last line is
 // PASS or FAIL.
-// Compile with -DTB_FPALU=<0|1|2> / -DTB_MAU=<0|1> for the other configurations.
+// Compile with -DTB_FPALU=<0|1|2|3> / -DTB_MAU=<0|1> for the other configurations (default: the
+// board configuration FPALU = 3; the default script passes with every FPALU).
 `ifndef TB_FPALU
-`define TB_FPALU 0
+`define TB_FPALU 3
 `endif
 `ifndef TB_MAU
 `define TB_MAU 1

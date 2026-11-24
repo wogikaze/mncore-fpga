@@ -14,9 +14,10 @@ GRF0/GRF1, the W forms, T, OMR; official LM data beyond 512 long words must be 0
 
 Each program is classified pass / mismatch(...) / E_UNSUPPORTED <field> / E_RANGE / E_DECODE / error, and
 also checked against what the RTL simulation of the same configuration gave (build/results.tsv for
-FPALU=1, build/results_TB_FPALU<N>.tsv otherwise): "as rtl" when both agree (a pass, or a stop at the same
-word with the same reason). The board must be locked (contract 06 section 9):
-C:\\wgkz\\nano20k\\mncore\\.board.lock must exist and name WP21.
+FPALU=1, build/results_TB_FPALU<N>.tsv otherwise, from `run.py --define TB_FPALU=<N>`): "as rtl" when both
+agree (a pass, or a stop at the same word with the same reason). --fpalu is the FPALU of the bitstream on
+the board (default 3, mncore/fpga/top_1pe/build.py's default). The board must be locked first (contract 06
+section 9): C:\\wgkz\\nano20k\\mncore\\.board.lock must exist (with the WP number and the start time).
 """
 from __future__ import annotations
 
@@ -111,7 +112,7 @@ def main(argv=None) -> int:
     ap.add_argument("programs", nargs="*")
     ap.add_argument("--all", action="store_true", help="every corpus program with pe1 = yes")
     ap.add_argument("--list", help="file with one corpus path per line ('#' comments)")
-    ap.add_argument("--fpalu", type=int, default=0, help="FPALU of the loaded bitstream (for the RTL expectation)")
+    ap.add_argument("--fpalu", type=int, default=3, help="FPALU of the loaded bitstream (for the RTL expectation)")
     ap.add_argument("--port", default="auto")
     ap.add_argument("--baud", type=int, default=2000000, help="switch to this baud rate first (0: stay at 1M)")
     ap.add_argument("-o", "--output", help="results table (TSV)")
@@ -127,9 +128,8 @@ def main(argv=None) -> int:
             logf.write(s + "\n")
             logf.flush()
 
-    if not a.no_lock_check:
-        if not LOCK.exists() or "WP21" not in LOCK.read_text(encoding="utf-8", errors="replace"):
-            raise SystemExit(f"take the board lock first: {LOCK} (WP21, start time)")
+    if not a.no_lock_check and not LOCK.exists():
+        raise SystemExit(f"take the board lock first: {LOCK} (WP number, start time)")
     rows = corpus_rows()
     paths = list(a.programs)
     if a.list:

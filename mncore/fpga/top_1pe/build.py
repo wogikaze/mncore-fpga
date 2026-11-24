@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Build the 1-PE board design mn_top_1pe (WP21) for the Tang Nano 20K, optionally load it.
 
-  python mncore/fpga/top_1pe/build.py                       # FPALU=0 (stage 1), 27 MHz
-  python mncore/fpga/top_1pe/build.py --param FPALU=2       # light FP ALU (relu / lrelu family)
+  python mncore/fpga/top_1pe/build.py                       # FPALU=3 (relu, lrelu*, rsqrt; stage 2), 27 MHz
+  python mncore/fpga/top_1pe/build.py --param FPALU=0       # no FP ALU (stage 1)
   python mncore/fpga/top_1pe/build.py --seeds 1,2,3         # try placement seeds, keep the first that meets timing
   python mncore/fpga/top_1pe/build.py --program             # ... and load it into the FPGA SRAM
+  python mncore/fpga/top_1pe/build.py --fs mncore/fpga/top_1pe/build/FPALU3/top_1pe.fs   # only load it
+
+FPALU=1 (full FP ALU, LUT4 83 %) and FPALU=2 (no floor / ftoi, 77 %) synthesize but do not place
+(nextpnr's legaliser gives up); FPALU=3 takes 75 %, FPALU=0 71 % (WP21 report). One place & route
+takes 20 to 25 minutes.
 
 Steps: yosys `synth_gowin -family gw2a -nowidelut` (contract 06 section 6) -> nextpnr-himbaechel
 (GW2AR-LV18QN88C8/I7, family GW2A-18C, top_1pe.cst) -> gowin_pack. The RTL list is the one of the
@@ -107,7 +112,7 @@ def main(argv=None) -> int:
         return rc
 
     prm = dict(kv.split("=", 1) for kv in a.param)
-    prm.setdefault("FPALU", "0")
+    prm.setdefault("FPALU", "3")
     tag = a.tag or "_".join(f"{k}{v}" for k, v in sorted(prm.items())) + ("_default" if a.default_synth else "")
     d = HERE / "build" / tag
     d.mkdir(parents=True, exist_ok=True)
