@@ -179,7 +179,59 @@ class RunProgram(unittest.TestCase):
             with redirect_stdout(buf), redirect_stderr(io.StringIO()):
                 mh.main(["--port", "fake", "run", asm, "-o", out])
             with open(out) as fh:
-                self.assertEqual(fh.read(), "# ndmp v1\nL1BM n0c0b0 0x0004 1111222233334444\n")
+                text = fh.read()
+            self.assertTrue(text.startswith("# ndmp v1\n"))
+            self.assertEqual([l for l in text.splitlines() if not l.startswith("#")],
+                             ["L1BM n0c0b0 0x0004 1111222233334444"])
+
+    def test_ndmp_units_like_norm_gpfn3(self):
+        """WP21: word access -> LM0W.., T 2c+k, OMR entry*4+cycle, cut at the INFO depth, skipped spaces."""
+        sd = {0x00: 64 * 8, 0x01: 512, 0x02: 512, 0x03: 256, 0x04: 256, 0x05: 8, 0x10: 16}
+        dev, fd = dev_on_fake(space_depth=sd)
+        text = "\n".join([
+            "r 0 000000000 001 3E8000003FE00000 # DRAM data",        # skipped (no DRAM)
+            "d set $lm0 2 0123456789ABCDEFFEDCBA9876543210",
+            "d set $lb0n0c0b0 1 1111222233334444",                   # no L1BM: skipped
+            "d set $ln1022 2 AAAAAAAAAAAAAAAABBBBBBBBBBBBBBBB",       # long words 511 (kept) and 512 (dropped)
+            J0,
+            "d getf $m1n0c0b0m0p0 2",                                # words 1, 2 -> LM0W
+            "d get $lm2n0c0b0m0p0 1",                                # long word 1
+            "d get $lltn0c0b0m0p0 4",                                # T 0..7
+            "d get $lt1n0c0b0m0p0 1",                                # T cycle 1, MSB long word -> 2
+            "d get $omr0n0c0b0m0p0 2",                               # entry 0 (all ones) and entry 1
+            "d get $omr17n0c0b0m0p0 1",                              # fixed pattern 10001
+            "d get $ln0n0c0b0m0p0 2048",                             # cut at 512 long words
+            "d get $lb0n0c0b0 4",                                    # no L1BM: skipped
+        ])
+        fd.mem[(0x05, 0, 3)] = 0x3333
+        fd.mem[(0x10, 0, 1)] = 0x8421                               # cycle c nibble = bits 4c+3..4c
+        r = mh.execute_program(dev, mh.parse_asm(text), mh.Topology())
+        self.assertIsNone(r.stop)
+        rec = r.records
+        self.assertEqual(rec[("LM0W", "n0c0b0m0p0", 1)], 0x89ABCDEF)
+        self.assertEqual(rec[("LM0W", "n0c0b0m0p0", 2)], 0xFEDCBA98)
+        self.assertEqual(rec[("LM0", "n0c0b0m0p0", 1)], 0xFEDCBA9876543210)
+        self.assertEqual(rec[("T", "n0c0b0m0p0", 3)], 0x3333)
+        self.assertEqual(sorted(a for s, _, a in rec if s == "T"), list(range(8)))
+        self.assertEqual([rec[("OMR", "n0c0b0m0p0", a)] for a in range(8)], [15, 15, 15, 15, 1, 2, 4, 8])
+        # fixed pattern 1xxxx: cycle c takes bit 3 - c (mn_pe_lsu f_all)
+        self.assertEqual([rec[("OMR", "n0c0b0m0p0", 68 + c)] for c in range(4)], [0, 0, 0, 15])
+        self.assertEqual(len([1 for s, _, _ in rec if s == "LM1"]), 512)
+        self.assertEqual(rec[("LM1", "n0c0b0m0p0", 511)], 0xAAAAAAAAAAAAAAAA)
+        self.assertEqual(r.stats["dropped"], 1)
+        self.assertEqual(r.stats["skipped_d"], 2)
+        self.assertEqual(r.stats["rlines"], 1)
+        self.assertFalse(any(s == "L1BM" for s, _, _ in rec))
+        self.assertIn("LM0W n0c0b0m0p0 0x0001 0000000089abcdef", r.lines())
+
+    def test_stop_in_window(self):
+        """A RUN that stops reports the program entry (window base + pc) and the E_RANGE word."""
+        dev, fd = dev_on_fake(imem_depth=4)
+        fd.stop_rule = lambda start, count: (1, start + 1, start + 1) if fd.runs[-1:] and len(fd.runs) == 2 else None
+        text = "\n".join([J0] * 10)
+        r = mh.execute_program(dev, mh.parse_asm(text), mh.Topology())
+        self.assertEqual(fd.runs, [(0, 4), (0, 4)])
+        self.assertEqual((r.stop.reason, r.stop_entry, r.stats["e_range_word"]), (1, 5, 5))
 
 
 if __name__ == "__main__":

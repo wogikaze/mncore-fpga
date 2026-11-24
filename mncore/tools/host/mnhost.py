@@ -7,6 +7,13 @@
   python mncore/tools/host/mnhost.py read TEST 0 0x10 4
   python mncore/tools/host/mnhost.py run prog.asm -o prog.ndmp      # assemble3 flat/no-packer output
   python mncore/tools/host/mnhost.py run --start 0 --count 100
+
+`run X.asm` (PROTOCOL.md section 6): RESET, the j / m words into the instruction memory (in windows of
+its depth), RUN split at the d lines, d set -> WR_MEM, d get -> RD_MEM.  Only what the device implements
+is used (INFO: topology and space depths; OMR 0x10 with the PE spaces); d set / d get are cut at the
+implemented depth and `r` lines (DRAM data) are skipped without DRAM.  The d get values are written as
+the ndmp of the official emulator's dump (mncore/tools/golden/norm_gpfn3.py): word access -> LM0W.., T
+2c+k, OMR entry*4+cycle; the last d get of a location wins.
   python mncore/tools/host/mnhost.py status
   python mncore/tools/host/mnhost.py bench --bauds 1000000,2000000,3000000
   python mncore/tools/host/mnhost.py bridge reboot     # BL616 UART bridge hung: reboot the debugger chip
@@ -37,6 +44,7 @@ REASON_NAMES = {0: "OK", 1: "E_RANGE", 2: "E_UNSUPPORTED", 3: "E_DECODE"}
 SPACES = {
     "IMEM": 0x00, "LM0": 0x01, "LM1": 0x02, "GRF0": 0x03, "GRF1": 0x04, "T": 0x05,
     "L1BM": 0x06, "L2BM": 0x07, "PDM": 0x08, "DRAM": 0x09, "TEST": 0x0F,
+    "OMR": 0x10, "BAR": 0x11,       # design-specific spaces of the PE cores (mn_pe_lsu, WP14)
 }
 SPACE_BY_ID = {v: k for k, v in SPACES.items()}
 
@@ -462,26 +470,30 @@ def imem_entry(kind: str, word: int) -> int:
 @dataclass
 class DOp:
     op: str                 # "set" or "get"
-    space: str              # LM0 LM1 GRF0 GRF1 T L1BM L2BM PDM DRAM
+    space: str              # LM0 LM1 GRF0 GRF1 T OMR L1BM L2BM PDM DRAM
     width: str              # "w" (32-bit word), "l" (long), "ll" (2 long words)
-    addr: int               # as written: word address for r/s/m/n, long-word address otherwise
+    addr: int               # as written: word address for r/s/m/n, entry for omr, long-word address otherwise
     loc: dict               # specified fields only, e.g. {"n": 0, "c": 0}
     count: int
     payload: list = field(default_factory=list)   # long words (set)
     text: str = ""
+    dtype: str = ""         # d get dtype: "", "d", "f" or "h" (a word access d get needs one, WP20)
 
 
 @dataclass
 class AsmProgram:
     entries: list = field(default_factory=list)  # 448-bit IMEM entries in program order
     events: list = field(default_factory=list)   # (position in entries, DOp)
+    rlines: list = field(default_factory=list)   # `r` lines (DRAM initial data, contract 06 section 2)
 
 
 MEM_LETTER = {"r": "GRF0", "s": "GRF1", "m": "LM0", "n": "LM1", "t": "T", "b": "L1BM", "c": "L2BM",
               "p": "PDM", "d": "DRAM"}
-SPACE_LEVEL = {"LM0": 5, "LM1": 5, "GRF0": 5, "GRF1": 5, "T": 5, "L1BM": 3, "L2BM": 2, "PDM": 1, "DRAM": 1}
-MEM_RE = re.compile(r"^\$(ll|l)?([rsmntbcpd])(\d*)((?:[ncbmp]\d+)*)$")
-D_RE = re.compile(r"^d\s+(set|get[dfh]?)\s+(\S+)\s+(\d+)\s*(.*)$")
+SPACE_LEVEL = {"LM0": 5, "LM1": 5, "GRF0": 5, "GRF1": 5, "T": 5, "OMR": 5, "L1BM": 3, "L2BM": 2, "PDM": 1,
+               "DRAM": 1}
+PE_WORD_SPACES = ("LM0", "LM1", "GRF0", "GRF1")
+MEM_RE = re.compile(r"^\$(ll|l)?(omr|[rsmntbcpd])(\d*)((?:[ncbmp]\d+)*)$")
+D_RE = re.compile(r"^d\s+(set|get)([dfh]?)\s+(\S+)\s+(\d+)\s*(.*)$")
 
 
 def parse_payload(text: str) -> list[int]:
@@ -510,21 +522,27 @@ def parse_dline(line: str) -> DOp:
     m = D_RE.match(body)
     if not m:
         raise ValueError(f"cannot parse: {line}")
-    op, mem, cnt, rest = m.groups()
+    op, dtype, mem, cnt, rest = m.groups()
     mm = MEM_RE.match(mem)
     if not mm:
         raise ValueError(f"cannot parse memory operand {mem!r}")
     pre, letter, addr, loc = mm.groups()
-    space = MEM_LETTER[letter]
-    if letter in "rsmn":
-        width = {None: "w", "l": "l", "ll": "ll"}[pre]
-    elif letter in "tb":
-        width = "ll" if pre == "ll" else "l"
+    if letter == "omr":
+        space, width = "OMR", "w"
     else:
-        width = "l"
-    d = DOp(op="set" if op == "set" else "get", space=space, width=width, addr=int(addr or 0),
-            loc={k: int(v) for k, v in re.findall(r"([ncbmp])(\d+)", loc)}, count=int(cnt), text=body)
+        space = MEM_LETTER[letter]
+        if letter in "rsmn":
+            width = {None: "w", "l": "l", "ll": "ll"}[pre]
+        elif letter in "tb":
+            width = "ll" if pre == "ll" else "l"
+        else:
+            width = "l"
+    d = DOp(op=op, space=space, width=width, addr=int(addr or 0),
+            loc={k: int(v) for k, v in re.findall(r"([ncbmp])(\d+)", loc)}, count=int(cnt), text=body,
+            dtype=dtype)
     if d.op == "set":
+        if space == "OMR":
+            raise ValueError(f"d set of a mask register is not supported: {line}")
         d.payload = parse_payload(rest)
         need = d.count * (2 if width == "ll" else 1)
         if len(d.payload) != need:
@@ -547,6 +565,8 @@ def parse_asm(text: str) -> AsmProgram:
             prog.entries.append(imem_entry(tag, int(bits, 2)))
         elif tag == "d":
             prog.events.append((len(prog.entries), parse_dline(line)))
+        elif tag == "r" and len(line) > 2 and line[1] == " ":
+            prog.rlines.append(line)       # DRAM data (assemble3 echoes the .vsm data lines)
         elif tag in "iq":
             raise ValueError(f"line {ln}: '{tag}' words are not supported (use --instruction-mode flat "
                              f"--disable-packer)")
@@ -578,7 +598,19 @@ def loc_text(space: str, f: dict) -> str:
 
 
 class SpaceMap:
-    """Maps (space, loc, long-word addr) to a device request.  Identity for a real core."""
+    """Maps (space, loc, long-word addr) to a device request and tells the implemented depth of a
+    space (long words; OMR: entries).  Identity for a real core; the depths come from INFO, and the
+    design-specific OMR space (0x10, 16 entries, mn_pe_lsu) exists wherever the PE spaces do."""
+
+    def __init__(self, info: Info | None = None):
+        self.info = info
+
+    def depth(self, space: str) -> int:
+        if self.info is None:
+            return 1 << 23
+        if space == "OMR":
+            return 16 if self.info.space_depth.get(SPACES["T"], 0) else 0
+        return self.info.space_depth.get(SPACES[space], 0)
 
     def target(self, space: str, f: dict, lw: int) -> tuple[int, int, int]:
         return SPACES[space], loc_code(**f), lw
@@ -588,6 +620,11 @@ class TestSpaceMap(SpaceMap):
     """Board-test smoke test: every space lives in a window of the TEST memory (single location)."""
     BASE = {"LM0": 0, "LM1": 1024, "GRF0": 2048, "GRF1": 2560, "T": 3072, "L1BM": 3584, "L2BM": 4608,
             "PDM": 6144, "DRAM": 7168}
+    SIZE = {"LM0": 1024, "LM1": 1024, "GRF0": 512, "GRF1": 512, "T": 512, "L1BM": 1024, "L2BM": 1536,
+            "PDM": 1024, "DRAM": 1024}
+
+    def depth(self, space):
+        return self.SIZE.get(space, 0)
 
     def target(self, space, f, lw):
         return SPACES["TEST"], 0, self.BASE[space] + lw
@@ -598,14 +635,18 @@ def long_words(d: DOp) -> list[tuple[int, int, int]]:
 
     For d get the value/mask fields are unused (value 0, mask 0xFF)."""
     out = []
-    if d.space == "T":
+    if d.space == "OMR":
+        for i in range(d.count):
+            out.append((d.addr + i, 0, 0xFF))
+    elif d.space == "T":
         # T: 4 cycles x 2 long words; long-word index = 2 * cycle + half (half 0 = MSB side)
         for i in range(d.count):
+            c = (d.addr + i) % 4
             if d.width == "ll":
-                out.append((2 * i, d.payload[2 * i] if d.payload else 0, 0xFF))
-                out.append((2 * i + 1, d.payload[2 * i + 1] if d.payload else 0, 0xFF))
+                out.append((2 * c, d.payload[2 * i] if d.payload else 0, 0xFF))
+                out.append((2 * c + 1, d.payload[2 * i + 1] if d.payload else 0, 0xFF))
             else:
-                out.append((2 * i, d.payload[i] if d.payload else 0, 0xFF))
+                out.append((2 * c, d.payload[i] if d.payload else 0, 0xFF))
     elif d.width == "w":
         # 32-bit words: word w is the MSB half of long word w//2 when w is even (SDM 3.4.4 example 3)
         for i in range(d.count):
@@ -643,14 +684,106 @@ def _runs(items):
         yield run
 
 
-def run_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMap | None = None,
-                run_timeout: float = 30.0, log=None) -> tuple[list[str], Status | None]:
-    """Execute a parsed .asm: IMEM load, RUN segments split at d lines, d set -> WR_MEM, d get -> RD_MEM.
-    Returns (ndmp lines, failing status or None)."""
-    smap = smap or SpaceMap()
+def get_units(d: DOp) -> list[tuple[str, int, int | None, object]]:
+    """What a d get shows, in the units of the ndmp of the official emulator's dump (norm_gpfn3, WP02):
+    a list of (ndmp space, ndmp address, long word to read or None, how to take the value).
+
+    - LM0 / LM1 / GRF0 / GRF1 word access ($m, $n, $r, $s): space LM0W..., word address, the value is
+      the 32-bit word (the MSB half of long word w >> 1 when w is even, contract 06 section 4).
+    - long word / 2 long word access: long word (word address >> 1) + i.
+    - T: address 2 * cycle + k (k = 0 the MSB long word of the cycle).
+    - OMR: address entry * 4 + cycle, the value is the 4-bit flag nibble of the cycle (bits 4c+3..4c of
+      the mask register long word); $omr0 is all ones, entries 16..31 are the fixed patterns.
+    - L1BM / L2BM / PDM / DRAM: long word address (as WP04 had them)."""
+    out: list[tuple[str, int, int | None, object]] = []
+    if d.space == "OMR":
+        for e in range(d.addr, d.addr + d.count):
+            for c in range(4):
+                if e == 0:
+                    out.append(("OMR", 4 * e + c, None, 15))
+                elif e >= 16:
+                    out.append(("OMR", 4 * e + c, None, 15 if (e >> (3 - c)) & 1 else 0))
+                else:
+                    out.append(("OMR", 4 * e + c, e, ("nib", c)))
+    elif d.space == "T":
+        for i in range(d.count):
+            c = (d.addr + i) % 4
+            for k in range(2 if d.width == "ll" else 1):
+                out.append(("T", 2 * c + k, 2 * c + k, "lw"))
+    elif d.space in PE_WORD_SPACES and d.width == "w":
+        for i in range(d.count):
+            a = d.addr + i
+            out.append((d.space + "W", a, a >> 1, "hi" if a % 2 == 0 else "lo"))
+    else:
+        per = 2 if d.width == "ll" else 1
+        base = d.addr >> 1 if d.space in PE_WORD_SPACES else d.addr
+        for i in range(d.count * per):
+            out.append((d.space, base + i, base + i, "lw"))
+    return out
+
+
+def _unit_value(how, w: int) -> int:
+    if how == "lw":
+        return w
+    if how == "hi":
+        return w >> 32
+    if how == "lo":
+        return w & 0xFFFFFFFF
+    return (w >> (4 * how[1])) & 0xF            # ("nib", c)
+
+
+def _addr_runs(addrs):
+    """Sorted runs of consecutive integers."""
+    run: list[int] = []
+    for a in sorted(set(addrs)):
+        if run and a == run[-1] + 1:
+            run.append(a)
+        else:
+            if run:
+                yield run
+            run = [a]
+    if run:
+        yield run
+
+
+WIDE_NDMP_SPACES = ("PDM", "DRAM")
+
+
+def ndmp_line(space: str, loc: str, addr: int, val: int) -> str:
+    """One ndmp line (contract 06 section 4, mncore/tools/golden/ndmp.py)."""
+    width = 8 if space in WIDE_NDMP_SPACES else 4
+    return f"{space} {loc} 0x{addr:0{width}x} {val & MASK64:016x}"
+
+
+@dataclass
+class RunResult:
+    records: dict = field(default_factory=dict)  # (ndmp space, loc, addr) -> value; the last d get wins
+    stop: Status | None = None                   # the failing STATUS, or None when the program ran to the end
+    stop_entry: int | None = None                # program entry (word number) that stopped
+    stats: dict = field(default_factory=dict)
+
+    def lines(self) -> list[str]:
+        return sorted(ndmp_line(s, l, a, v) for (s, l, a), v in self.records.items())
+
+
+def execute_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMap | None = None,
+                    run_timeout: float = 30.0, log=None) -> RunResult:
+    """Execute a parsed .asm (PROTOCOL.md section 6): RESET (the core clears the PE state), IMEM load in
+    windows of the device depth, RUN segments split at the d lines, d set -> WR_MEM, d get -> RD_MEM.
+
+    Only what the device implements is touched: locations of the INFO topology and spaces with an INFO
+    depth; d set / d get are cut at that depth (dropped d set long words are counted in stats["dropped"]).
+    `r` lines (DRAM data) are skipped when the device has no DRAM.  The d get values become ndmp records
+    like norm_gpfn3 makes them from the emulator's dump (get_units).  A RUN that stops with an error ends
+    the program: stop is its STATUS and stop_entry the program entry (window base + pc; an E_RANGE info is
+    the entry number in the window, the window base is added in stats["e_range_word"])."""
+    smap = smap or SpaceMap(dev.info())
     inf = dev.info()
     depth = inf.imem_depth
-    lines: list[str] = []
+    res = RunResult(stats={"runs": 0, "steps": 0, "windows": 0, "dropped": 0, "gets": 0, "sets": 0,
+                           "skipped_d": 0, "rlines": len(prog.rlines), "read_words": 0})
+    if prog.rlines and smap.depth("DRAM") > 0:
+        raise ValueError("`r` lines (DRAM data) are not supported yet")
     dev.reset()
     win = {"base": None}
 
@@ -658,6 +791,7 @@ def run_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMap | 
         chunk = prog.entries[base:base + depth]
         dev.write_imem(0, chunk)
         win["base"] = base
+        res.stats["windows"] += 1
 
     def run_range(a, b):
         while a < b:
@@ -668,40 +802,65 @@ def run_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMap | 
             n = min(b, win["base"] + depth) - a
             dev.run(a - win["base"], n)
             st = dev.wait_idle(run_timeout)
+            res.stats["runs"] += 1
+            res.stats["steps"] += st.steps
             if st.reason != 0:
-                return st
+                res.stop, res.stop_entry = st, win["base"] + st.pc
+                if st.reason == 1:
+                    res.stats["e_range_word"] = win["base"] + st.info
+                return False
             a += n
-        return None
+        return True
 
     if prog.entries:
         load_window(0)
     pc = 0
     for pos, d in prog.events:
         if pos > pc:
-            st = run_range(pc, pos)
-            if st is not None:
-                return sorted(lines), st
+            if not run_range(pc, pos):
+                return res
             pc = pos
         if log:
             log(f"[{pos}] {d.text}")
-        for f in topo.locations(d.space, d.loc):
-            words = long_words(d)
+        dep = smap.depth(d.space)
+        locs = topo.locations(d.space, d.loc) if dep else []
+        if not locs:
+            res.stats["skipped_d"] += 1
+            continue
+        for f in locs:
             if d.op == "set":
-                for run in _runs(words):
+                res.stats["sets"] += 1
+                words = long_words(d)
+                keep = [w for w in words if w[0] < dep]
+                res.stats["dropped"] += len(words) - len(keep)
+                for run in _runs(keep):
                     sp, lc, a0 = smap.target(d.space, f, run[0][0])
                     dev.write(sp, lc, a0, [v for _, v, _ in run], mask=run[0][2])
             else:
-                addrs = sorted({a for a, _, _ in words})
-                lo, hi = addrs[0], addrs[-1]
-                sp, lc, a0 = smap.target(d.space, f, lo)
-                vals = dev.read(sp, lc, a0, hi - lo + 1)
-                for a in addrs:
-                    lines.append(f"{d.space} {loc_text(d.space, f)} 0x{a:04x} {vals[a - lo]:016x}")
+                res.stats["gets"] += 1
+                units = get_units(d)
+                vals: dict[int, int] = {}
+                for run in _addr_runs(lw for _, _, lw, _ in units if lw is not None and lw < dep):
+                    sp, lc, a0 = smap.target(d.space, f, run[0])
+                    got = dev.read(sp, lc, a0, len(run))
+                    res.stats["read_words"] += len(run)
+                    vals.update(zip(run, got))
+                lt = loc_text(d.space, f)
+                for space, addr, lw, how in units:
+                    if lw is None:
+                        res.records[(space, lt, addr)] = how
+                    elif lw in vals:
+                        res.records[(space, lt, addr)] = _unit_value(how, vals[lw])
     if len(prog.entries) > pc:
-        st = run_range(pc, len(prog.entries))
-        if st is not None:
-            return sorted(lines), st
-    return sorted(lines), None
+        run_range(pc, len(prog.entries))
+    return res
+
+
+def run_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMap | None = None,
+                run_timeout: float = 30.0, log=None) -> tuple[list[str], Status | None]:
+    """execute_program, returning (ndmp lines, failing status or None) as before."""
+    r = execute_program(dev, prog, topo, smap, run_timeout, log)
+    return r.lines(), r.stop
 
 
 # ----------------------------------------------------------------------------- CLI
@@ -781,20 +940,31 @@ def cmd_run(dev, a):
     prog = parse_asm(open(a.asm, encoding="utf-8").read())
     inf = dev.info()
     topo = Topology(tuple(int(x) for x in a.topo.split(","))) if a.topo else Topology(inf.topo)
-    smap = TestSpaceMap() if a.map_test else SpaceMap()
+    smap = TestSpaceMap() if a.map_test else SpaceMap(inf)
     if a.map_test and not a.topo:
         topo = Topology((1, 1, 1, 1, 1))
     log = (lambda s: print(s, file=sys.stderr)) if a.verbose else None
-    lines, st = run_program(dev, prog, topo, smap, a.run_timeout, log)
-    out = "# ndmp v1\n" + "".join(l + "\n" for l in lines)
+    t0 = time.monotonic()
+    r = execute_program(dev, prog, topo, smap, a.run_timeout, log)
+    lines = r.lines()
+    out = "# ndmp v1\n" + f"# producer: mnhost (design 0x{inf.design_id:02x})\n# src: {a.asm}\n"
+    out += "".join(l + "\n" for l in lines)
     if a.output:
         with open(a.output, "w", encoding="utf-8", newline="\n") as fh:
             fh.write(out)
     else:
         sys.stdout.write(out)
-    print(f"{len(prog.entries)} entries, {len(prog.events)} d lines, {len(lines)} ndmp lines", file=sys.stderr)
-    if st is not None:
-        print(f"STOPPED: {st.reason_name} pc {st.pc} info {st.info}", file=sys.stderr)
+    s = r.stats
+    print(f"{len(prog.entries)} entries, {len(prog.events)} d lines ({s['skipped_d']} skipped: space or location not "
+          f"implemented), {s['rlines']} r lines skipped, {s['runs']} RUNs, {s['steps']} steps, {len(lines)} ndmp "
+          f"lines, {time.monotonic() - t0:.1f} s", file=sys.stderr)
+    if s["dropped"]:
+        print(f"warning: {s['dropped']} long words of d set beyond the implemented depth were dropped",
+              file=sys.stderr)
+    if r.stop is not None:
+        st = r.stop
+        extra = f" (word {s['e_range_word']})" if st.reason == 1 else f" info {st.info:#x}"
+        print(f"STOPPED: {st.reason_name} at entry {r.stop_entry}{extra}", file=sys.stderr)
         sys.exit(2)
 
 
