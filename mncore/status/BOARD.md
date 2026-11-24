@@ -10,11 +10,11 @@
 | WP05 | SDRAM | 1 | 実行中 | 実機 |
 | WP06 | Rust Sim の縮小トポロジ対応 | 1 | 実行中 | wogikaze/mncore の topo-param ブランチ |
 | WP07 | 資源とレシピ | 1 | 完了 2026-11-24 | `07-device-budget.md`。レシピ 6 本。`recipes.py check` は lead が再実行して PASS。§6 の予算を改訂 |
-| WP10 | RTL デコーダ | 2 | 未着手 | |
+| WP10 | RTL デコーダ | 2 | 実行中 | |
 | WP11 | 整数 ALU | 2 | 未着手 | |
 | WP12 | FP の FMA | 2 | 未着手 | |
 | WP13 | FP 系の ALU 命令 | 2 | 未着手 | |
-| WP14 | PE の記憶 | 2 | 未着手 | |
+| WP14 | PE の記憶 | 2 | 実行中 | |
 | WP20 | PE コアの統合 | 3 | 未着手 | |
 | WP21 | 1 PE を実機で動かす | 3 | 未着手 | |
 | WP30〜34 | 階層 | 4 | 未着手 | |
