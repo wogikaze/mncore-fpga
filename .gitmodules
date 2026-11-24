@@ -1,0 +1,3 @@
+[submodule "third_party/mncore"]
+	path = third_party/mncore
+	url = https://github.com/wogikaze/mncore.git

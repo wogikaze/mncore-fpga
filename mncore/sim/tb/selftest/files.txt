@@ -1,0 +1,4 @@
+top: tb_selftest
+rtl_top: mn_selftest_counter
+mncore/rtl/common/mn_selftest_counter.v
+mncore/sim/tb/selftest/tb_selftest.v

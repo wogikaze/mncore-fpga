@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+init/*.json
+init/*.fs
+**/build/
+*.vcd
+*.fst
+*.vvp
+mncore/sim/vectors/
+mncore/.board.lock
+target/
