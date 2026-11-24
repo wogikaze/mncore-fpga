@@ -1,0 +1,14 @@
+[package]
+name = "vecgen"
+version = "0.1.0"
+edition = "2024"
+description = "Unit test vectors for the nano20k RTL, taken from the mncore Rust simulator"
+license = "MIT"
+publish = false
+
+[dependencies]
+# The reference simulator (wogikaze/mncore viz/core). Expected values come from running it.
+mncore-sim = { path = "../../third_party/mncore/viz/core" }
+
+[profile.release]
+debug = false
