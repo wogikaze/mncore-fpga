@@ -1,0 +1,5 @@
+design mn_top_mab {'FPALU': '3', 'MAU': '0', 'BFN': '1'} synth_gowin -family gw2a -nowidelut
+yosys: LUT 11567, ALU 1784, MUX2 0, FF 5550, SSRAM 132, BSRAM 33, DSP 0, LUT_eq 14407  (LUT_eq = LUT + ALU + 8 * SSRAM = 14407, 69.5 % of 20736)
+seed 1: Fmax 49.4 MHz (PASS at 27.0 MHz); critical u_core.u_imem.g_lane[0].mem.0.7.DO32 -> u_core.g_mab.u_mab.g_mab.u_xb.g_port[0].mem.0.30.DI[3] (11.30 ns logic + 8.94 ns routing)
+  utilisation: VCC 1/1 (100 %), IOB 10/66 (15 %), LUT4 14737/20736 (71 %), ALU 2114/15552 (14 %), GND 1/1 (100 %), DFF 6342/15552 (41 %), RAM16SDP4 132/648 (20 %), BSRAM 33/46 (72 %), GSR 1/1 (100 %), BUFG 1/24 (4 %)
+bitstream: mncore/fpga/top_mab/build/BFN1_FPALU3_MAU0/top_mab.fs (seed 1)

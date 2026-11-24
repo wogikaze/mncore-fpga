@@ -1,8 +1,17 @@
-// mn_core: the MN-Core of the 1-PE mode (WP20): instruction memory, sequencer, one PE.
+// mn_core: the MN-Core of the reduced topology: instruction memory, sequencer and one PE (the
+// 1-PE mode, WP20) or one MAB of 4 PEs on a time-multiplexed datapath (N_PE = 4, WP30).
 //
 // The ports are the core side of brd_host_if (rtl/board/PROTOCOL.md section 5): memory
 // write / read ports (mw_*, mr_*), RUN control and status. Connect rst to the system reset
 // OR brd_host_if's core_rst. Single clock.
+//
+// N_PE = 4 (WP30): the PEs are n?c?b?m?p0..p3 of the MAB at PE_LOC (PE_LOC[1:0] = 0); mn_mab
+// runs each word on the 4 PEs (rtl/mab/mn_mab.v: check-only pass, msl / msr / bfn / bfe,
+// normal pass). The PE spaces exist at the 4 locations; the clear after reset covers the 4 PEs.
+// LM_AW = 8 keeps the 4 PEs' memories in 16 BSRAM (contract LM_DEPTH 256). BFN = 0 leaves the
+// block-float unit out (bfn / bfe stop with E_UNSUPPORTED). An E_RANGE stops the word before
+// any PE writes; core_trap is the detail of the PE that trapped (its number is mn_mab's
+// trap_pe, not a port of mn_core, whose ports stay those of brd_host_if).
 //
 // Instruction memory (space 0x00 IMEM): 2**IMEM_AW entries of 448 bits (PROTOCOL.md section 3:
 //   [447:446] type 01 j / 10 m, [425:0] jw, m words in [81:0]); lane k (0..6) of entry e is
@@ -10,17 +19,18 @@
 //   are staged in registers and the entry is written with lane 6, so an entry is written
 //   whole, lanes 0..6 in order (WR_IMEM does this; mask must be 0xFF). Reading IMEM back
 //   (RD_MEM space 0) is optional (IMEM_RD = 1); otherwise mr_err.
-// PE spaces (location PE_LOC only; loc = n<<10 | c<<9 | b<<6 | m<<2 | p): 0x01 LM0, 0x02 LM1,
-//   0x03 GRF0, 0x04 GRF1, 0x05 T, 0x10 OMR, 0x11 BAR (mn_pe_lsu host port). Other spaces and
-//   locations are rejected (mw_err / mr_err). The ports are served only while not running.
+// PE spaces (location PE_LOC only, or PE_LOC + p for p < N_PE; loc = n<<10 | c<<9 | b<<6 |
+//   m<<2 | p): 0x01 LM0, 0x02 LM1, 0x03 GRF0, 0x04 GRF1, 0x05 T, 0x10 OMR, 0x11 BAR (mn_pe_lsu
+//   host port, mn_mab_mem with 4 PEs). Other spaces and locations are rejected (mw_err /
+//   mr_err). The ports are served only while not running.
 //
 // Reset (rst, e.g. the RESET command): clears the sequencers and, with CLEAR = 1, then writes
 //   0 to the whole PE state through the PE host port (GRF0, GRF1, LM0, LM1, T, OMR 1..15,
-//   $mb/$nb; one long word per clock, 2*2**GRF_AW + 2*2**LM_AW + 26 clocks), like the official
-//   emulator's initial state (PROTOCOL.md: only RESET clears the architectural state). During
-//   the clear mw_ready / mr_ready are 0 (requests wait) and core_busy stays 0; a RUN that
-//   arrives meanwhile starts after it. The forwarding registers are not cleared (reading
-//   one before its unit ran is an error in the emulator).
+//   $mb/$nb of each PE; one long word per clock, N_PE * (2*2**GRF_AW + 2*2**LM_AW + 26)
+//   clocks), like the official emulator's initial state (PROTOCOL.md: only RESET clears the
+//   architectural state). During the clear mw_ready / mr_ready are 0 (requests wait) and
+//   core_busy stays 0; a RUN that arrives meanwhile starts after it. The forwarding registers
+//   are not cleared (reading one before its unit ran is an error in the emulator).
 //
 // RUN(start, count): executes entries start .. start+count-1 in order, then stops.
 //   - j word, ll = 01 / 11: one PE step (mn_pe_core).
@@ -51,7 +61,9 @@ module mn_core #(
     parameter CLEAR   = 1,           // 1: clear the PE state after reset
     parameter FPALU   = 1,           // FP-side ALU: 1 full, 0 none, 2 / 3 reduced (mn_pe_core)
     parameter MAU     = 1,           // 0: no MAU (mn_mau_vec)
-    parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0)
+    parameter N_PE    = 1,           // 1: one PE (M1); 4: one MAB, time-multiplexed (WP30)
+    parameter BFN     = 1,           // N_PE = 4: bfn / bfe (mn_fp_alu_bfn)
+    parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0), or of PE 0 of the MAB
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -168,8 +180,11 @@ module mn_core #(
     // BAR: one long word per clock through the PE host port
     localparam [10:0] GRF_LAST = (11'd1 << GRF_AW) - 11'd1;
     localparam [10:0] LM_LAST  = (11'd1 << LM_AW) - 11'd1;
+    localparam [31:0] PE_LAST32 = N_PE - 1;
+    localparam [1:0]  PE_LAST  = PE_LAST32[1:0];
     reg  [2:0]  clr_sp;
     reg  [10:0] clr_a;
+    reg  [1:0]  clr_pe;
     wire [7:0]  clr_space = (clr_sp == 3'd0) ? 8'h03 : (clr_sp == 3'd1) ? 8'h04 :
                             (clr_sp == 3'd2) ? 8'h01 : (clr_sp == 3'd3) ? 8'h02 :
                             (clr_sp == 3'd4) ? 8'h05 : (clr_sp == 3'd5) ? 8'h10 : 8'h11;
@@ -188,11 +203,16 @@ module mn_core #(
             clr    <= (CLEAR != 0);
             clr_sp <= 3'd0;
             clr_a  <= 11'd0;
+            clr_pe <= 2'd0;
         end else if (clr && hp_req_ready) begin
             if (clr_a == clr_last) begin
                 clr_a  <= 11'd0;
                 clr_sp <= clr_sp + 3'd1;
-                if (clr_sp == 3'd6) clr <= 1'b0;
+                if (clr_sp == 3'd6) begin
+                    clr_sp <= 3'd0;
+                    clr_pe <= clr_pe + 2'd1;
+                    if (clr_pe == PE_LAST) clr <= 1'b0;
+                end
             end else begin
                 clr_a <= clr_a + 11'd1;
             end
@@ -203,9 +223,14 @@ module mn_core #(
         is_pe_space = (sp == 8'h01) || (sp == 8'h02) || (sp == 8'h03) || (sp == 8'h04) ||
                       (sp == 8'h05) || (sp == 8'h10) || (sp == 8'h11);
     endfunction
-    wire w_pe = is_pe_space(mw_space) && (mw_loc == PE_LOC);
-    wire r_pe = is_pe_space(mr_space) && (mr_loc == PE_LOC);
+    // the PE locations: PE_LOC (one PE) or the MAB PE_LOC[15:2] with p = 0..3 (N_PE = 4)
+    function is_pe_loc(input [15:0] l);
+        is_pe_loc = (N_PE > 1) ? (l[15:2] == PE_LOC[15:2]) : (l == PE_LOC);
+    endfunction
+    wire w_pe = is_pe_space(mw_space) && is_pe_loc(mw_loc);
+    wire r_pe = is_pe_space(mr_space) && is_pe_loc(mr_loc);
     assign hp_req_valid = clr | (~busy & ((mw_valid & w_pe) | (mr_valid & r_pe)));
+    wire [1:0] hp_pe = clr ? clr_pe : mw_valid ? mw_loc[1:0] : mr_loc[1:0];
 
     assign mw_ready = ~busy & ~clr & (w_pe ? hp_req_ready : 1'b1);
     assign mw_err   = w_pe ? hp_req_err : w_im ? ~w_im_ok : 1'b1;
@@ -220,18 +245,53 @@ module mn_core #(
     wire [11:0]  trap_addr;
     assign core_trap = {trap_wr, trap_mem, trap_cycle, trap_addr};
 
-    mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU),
-                 .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
-                 .POS_M({28'd0, PE_LOC[5:2]}), .POS_P({30'd0, PE_LOC[1:0]})) u_pe (
-        .clk(clk), .rst(rst),
-        .start(pe_start), .ready(pe_ready), .jw(jw), .done(pe_done), .st(pe_st), .st_field(pe_field),
-        .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
-        .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
-        .hp_req_space(clr ? clr_space : mw_valid ? mw_space : mr_space),
-        .hp_req_addr(clr ? {12'd0, clr_a} : mw_valid ? mw_addr : mr_addr),
-        .hp_req_wdata(mw_data & {64{~clr}}), .hp_req_wmask(mw_mask | {8{clr}}), .hp_req_err(hp_req_err),
-        .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
-    );
+    wire [7:0]   hp_space = clr ? clr_space : mw_valid ? mw_space : mr_space;
+    wire [22:0]  hp_addr  = clr ? {12'd0, clr_a} : mw_valid ? mw_addr : mr_addr;
+    wire [63:0]  hp_wdata = mw_data & {64{~clr}};
+    wire [7:0]   hp_wmask = mw_mask | {8{clr}};
+    generate
+        if (N_PE == 1) begin : g_pe
+            // one PE (M1): mn_pe_core as in WP20 (the files of the 1-PE builds stay the same)
+            /* verilator lint_off UNUSEDSIGNAL */
+            // xg_* / xpe_op / prechk: only for N_PE = 4; hp_pe: one PE
+            wire         u_xg_valid, u_prechk;
+            wire [1:0]   u_xg_cycle, u_xz_cycle, u_xpe_op;
+            wire [127:0] u_xg_x;
+            wire [1:0]   unused_hp_pe = hp_pe;
+            /* verilator lint_on UNUSEDSIGNAL */
+            mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU),
+                         .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
+                         .POS_M({28'd0, PE_LOC[5:2]}), .POS_P({30'd0, PE_LOC[1:0]})) u_pe (
+                .clk(clk), .rst(rst),
+                .start(pe_start), .ready(pe_ready), .jw(jw), .pe(2'd0), .rd_only(1'b0),
+                .done(pe_done), .st(pe_st), .st_field(pe_field),
+                .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
+                .xpe_op(u_xpe_op), .prechk(u_prechk), .xg_valid(u_xg_valid), .xg_cycle(u_xg_cycle),
+                .xg_x(u_xg_x), .xz_cycle(u_xz_cycle), .xz_z(128'd0),
+                .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
+                .hp_pe(2'd0), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
+                .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+            );
+        end else begin : g_mab
+            // the 4 PEs of a MAB on one time-multiplexed datapath (WP30)
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire [1:0] trap_pe;   // the PE of an E_RANGE (not a port: the ports are brd_host_if's)
+            /* verilator lint_on UNUSEDSIGNAL */
+            mn_mab #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
+                     .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
+                     .POS_M({28'd0, PE_LOC[5:2]}), .POS_P(0)) u_mab (
+                .clk(clk), .rst(rst),
+                .start(pe_start), .ready(pe_ready), .jw(jw), .done(pe_done), .st(pe_st), .st_field(pe_field),
+                .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
+                .trap_pe(trap_pe),
+                .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
+                .hp_pe(hp_pe), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
+                .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+            );
+        end
+    endgenerate
 
     // ------------------------------------------------------------------ sequencer
     wire [1:0] e_type = imem_q[427:426];
