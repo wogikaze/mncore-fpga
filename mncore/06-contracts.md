@@ -171,6 +171,9 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - デコーダ約 190、整数 ALU 約 1,900〜2,100、PE の記憶 約 5,500（RAM16SDP4 の分を含む。Fmax 約 62 MHz）。
   - FMA / MAU ベクトル 約 3,800（DSP 8）、FP ALU 約 2,500、ブロックフロート化 約 2,700。
   - ボード（host_if）約 1,900〜3,000、SDRAM 約 1,000。
+  - **実機の実測（WP21、27 MHz）**: 1 PE 構成（FPALU=3）で LUT4 15,582（75%）、DFF 62%、BSRAM 23/46、DSP 8、Fmax 48 MHz。
+  - **LUT4 は 75% を上限とする。** これを超えると nextpnr が配置できない（77% と 83% で失敗）。
+  - RAM16SDP4 は CFU を 1 つ使う（LUT 8 個と DFF 6 個の場所）。浅いメモリは深さ 16 にまとめる。
   - **実測（WP20）**: 全部入りのコアだけで LUT 換算 80% になり、配置できない。`FPALU=0` ならコアだけで LUT4 66%、55.8 MHz。削減案 A〜H は `mncore/status/WP-20.md` にある。
   - **単純に足すと LUT が全体の約 100% になる。** WP20 / WP21 は面積の削減を前提にする（共有化、`RND` の省略、加数の位置合わせ窓の縮小、host_if の縮小など）。
 - ALU 系ユニットの共通インタフェースは `mn_alu_int` の形（valid/ready、デコード済みの `pe_aluc_*` 欄）。`mn_fp_alu` はこれに `pe_aluc_iselb` を加え、`imm32` を除いたもの。
@@ -215,6 +218,9 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - E_RANGE は命令メモリのエントリ番号。
   - 細目の正は `PROTOCOL.md`。
 - 命令メモリは 7 レーンを順に書く。
+- デザイン ID: 0x02 は `mn_top_1pe`。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
+- `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。
+- 実機での回帰は `python mncore/fpga/top_1pe/hwrun.py --all --fpalu <n>` で行う。
 - 単語の `d get` には dtype が必須。
 - `d set` / `d get` はホスト側ツールが `WR_MEM` / `RD_MEM` と `RUN` の分割に変換する。FPGA は `d` 行を解釈しない。
 
