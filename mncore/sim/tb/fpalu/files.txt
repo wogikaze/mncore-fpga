@@ -1,0 +1,14 @@
+# WP13: FP-side ALU instructions and block-float conversion
+# The default run uses mncore/sim/vectors_fixed/fpalu (manifest_fixed.txt).
+# All generated vectors: python mncore/sim/tb/fpalu/fpalu_vec.py full
+# mn_alu_rnd (the `r` rounding) and mn_alu_cls (routing, checked by the testbench) are WP11's.
+top: tb_fpalu
+rtl_top: mn_fp_alu_harness
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/sim/tb/fpalu/mn_fp_alu_harness.v
+mncore/sim/tb/fpalu/tb_fpalu.v
