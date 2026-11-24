@@ -1,4 +1,4 @@
-# vec v1 unit=mau op=hvaddr prec=h kind=add lanes=4 fmt_ab=16 fmt_c=32 fmt_z=16 dmode=10 enfma=1 mmode=0 round_out=1 mdw_side=0 passa=1 zeroc=0 mul_pes=0123 sdm=yes seed=1 edge=25 rows=50 excluded=round_twice cols: pe signa signb signc exta extb extc a_hi a_lo b_hi b_lo c_hi c_lo | z_hi z_lo flags
+# vec v1 unit=mau op=hvaddr prec=h kind=add lanes=4 fmt_ab=16 fmt_c=32 fmt_z=16 dmode=10 enfma=1 mmode=0 round_out=1 mdw_side=0 passa=1 zeroc=0 mul_pes=0123 sdm=yes disputed=round_twice seed=1 edge=25 rows=50 expect=official cols: pe signa signb signc exta extb extc a_hi a_lo b_hi b_lo c_hi c_lo | z_hi z_lo flags
 0 0 0 0 0 0 0 0000800001ff7e00 38b749e84125da1f 29328c780b48c5f9 1c56cfe42f1d7cc6 0000000000000000 0000000000000000 | 0000000000007e00 0000000000000000 f
 1 0 0 0 0 0 0 020082003e00be01 f1f22159241d11d4 c3f020a2ba65694b 33818ca50c2a7841 8000000080000000 8000000080000000 | 020082003e00be01 0000000000000000 a
 2 1 0 0 0 0 0 020082003e00be01 79a6f4e5b3139b2f 026c0ad74619842a 22f562c2ce5428aa ff800000ff800000 ff800000ff800000 | fe00fe00fe00fe00 0000000000000000 0
