@@ -1,0 +1,14 @@
+[package]
+name = "golden-rs"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Runs a VSM program on the viz/core Rust simulator and prints its d get output as ndmp records (WP02)"
+
+[dependencies]
+# The reference simulator. Referenced by path so that the submodule stays unmodified.
+mncore-sim = { path = "../../third_party/mncore/viz/core" }
+
+[[bin]]
+name = "golden_dump"
+path = "src/main.rs"

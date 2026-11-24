@@ -1,0 +1,960 @@
+path	kind	testcase	groups	cross_pe	lm_max	lm_dyn	dget	words	official	rust	match	pe1	pe1_reason
+docs/mnist-golf/submissions/1.a-b.vsm	solution	problems/1.a-b/testcase.vsm	alu_int,mau	no	15	no	testcase	3	ok	ok	match	yes	
+docs/mnist-golf/submissions/10.sumrow.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	16	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/11.maxrow.vsm	solution	problems/11.maxrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	20	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/12.divrow-vec.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	29	ok	ok	match	no	groups:l1bm;lm_dyn
+docs/mnist-golf/submissions/13.exp-low-prec.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau	no	7	no	testcase	9	ok	ok	match	yes	
+docs/mnist-golf/submissions/14.exp.vsm	solution	problems/14.exp/testcase.vsm	alu_int,fp,mau,l1bm	yes	8	no	testcase	16	ok	ok	match	no	groups:l1bm
+docs/mnist-golf/submissions/15.onehot-mini.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,mau,l1bm	yes	7	no	testcase	7	ok	ok	match	no	groups:l1bm
+docs/mnist-golf/submissions/16.onehot.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	24	ok	ok	match	no	groups:l1bm;lm_dyn
+docs/mnist-golf/submissions/17.dram-dl-256-16.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/18.dram-ul-256-16.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/19.dram-dl-256-16p.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	19	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/2.fmul7.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	5	ok	ok	match	yes	
+docs/mnist-golf/submissions/20.dram-ul-256-16p.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/21.dram-dl-256-16-l2b.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	l1bm,l2bm,mv	yes	63	no	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/22.dram-dl-1024-16.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/23.dram-dl-256-1024.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	68	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/24.dram-dl-16.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	4	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/25.dram-ul-16.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	4	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/26.dram-dl-16-1024.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	39	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/27.dram-ul-16-1024.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/28.dram-dl-16-16.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	7	ok	ok	MISMATCH(L1BM,L2BM,LM0)	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/29.dram-ul-16-16.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/3.relu.vsm	solution	problems/3.relu/testcase.vsm	fp	no	7	no	testcase	2	ok	ok	match	yes	
+docs/mnist-golf/submissions/30.dram-dl-256.vsm	solution	problems/30.dram-dl-256/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	31	no	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv
+docs/mnist-golf/submissions/31.dram-ul-256.vsm	solution	problems/31.dram-ul-256/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	7	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/32.matmul-trb-mab-lm-4-8-8.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	4	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/33.matmul-trb-mab-lm-4-8-16.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	fp,matrix	yes	19	no	testcase	6	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/34.matmul-trb-mab-lm-4-16-8.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	fp,matrix	yes	23	no	testcase	6	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/35.matmul-trb-mab-lm-4-16-16.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/36.matmul-trb-pkg-lm-256-16-16.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/37.matmul-trb-mab-lm-32-8-16.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	alu_int,fp,matrix,l1bm	yes	63	yes	testcase	17	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/38.matmul-trb-pkg-lm-256-128-16.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	fp,matrix,l1bm	yes	63	no	testcase	23	ok	ok	match	no	groups:matrix+l1bm
+docs/mnist-golf/submissions/39.matmul-trb-pkg-lmdram-256-1024-16.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+docs/mnist-golf/submissions/4.relu-grad.vsm	solution	problems/4.relu-grad/testcase.vsm	alu_int,mau	no	7	no	testcase	2	ok	ok	match	yes	
+docs/mnist-golf/submissions/40.matmul-notr-mab-lm-4-8-8.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	7	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/41.matmul-notr-mab-lm-4-16-16.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	alu_int,fp,matrix,l1bm	yes	39	yes	testcase	13	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/42.matmul-notr-pkg-lm-256-16-16.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	alu_int,fp,matrix	yes	39	no	testcase	10	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/43.matmul-tra-mab-lm-8-8-8.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	fp,matrix	yes	15	no	testcase	8	ok	ok	match	no	groups:matrix
+docs/mnist-golf/submissions/44.matmul-tra-mab-lm-16-8-16.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	alu_int,fp,matrix,l1bm	yes	31	yes	testcase	15	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/45.matmul-tra-mab-lm-16-4-16.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	alu_int,fp,matrix,l1bm	yes	31	yes	testcase	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/46.matmul-tra-pkg-lmdram-16-256-16.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	testcase	22	ok	ok	MISMATCH(DRAM)	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/47.matmul-tra-mab-lm-16-32-8.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	alu_int,fp,mau,matrix,l1bm	yes	95	yes	testcase	17	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+docs/mnist-golf/submissions/48.matmul-tra-pkg-lmdram-16-256-1024.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	testcase	61	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+docs/mnist-golf/submissions/5.addcol-vec.vsm	solution	problems/5.addcol-vec/testcase.vsm	alu_int,mau	no	9	no	testcase	2	ok	ok	match	yes	
+docs/mnist-golf/submissions/6.subrow-vec.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	24	ok	ok	match	no	groups:l1bm;lm_dyn
+docs/mnist-golf/submissions/7.sumcol-mini.vsm	solution	problems/7.sumcol-mini/testcase.vsm	fp,mau	no	9	no	testcase	4	ok	ok	match	yes	
+docs/mnist-golf/submissions/8.sumcol.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+docs/mnist-golf/submissions/9.sumrow-mini.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,mau,matrix	yes	7	no	testcase	6	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/1.a-b/kernel.vsm	solution	problems/1.a-b/testcase.vsm	alu_int,mau	no	15	no	testcase	4	ok	ok	match	yes	
+mncompile/benchmarks/results/1.plus-one/kernel.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	alu_int	no	7	no	testcase	2	ok	ok	match	yes	
+mncompile/benchmarks/results/10.gather-easy/kernel.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	alu_int	no	1039	yes	testcase	12	ok	ok	match	no	lm_max>=256;lm_dyn
+mncompile/benchmarks/results/10.sumrow/kernel.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,mau,matrix,l1bm	yes	127	yes	testcase	24	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+mncompile/benchmarks/results/11.maxrow/kernel.vsm	solution	problems/11.maxrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	24	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+mncompile/benchmarks/results/11.square-sum/kernel.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm,l2bm	yes	127	yes	testcase	21	ok	ok	match	no	groups:l1bm+l2bm;lm_dyn
+mncompile/benchmarks/results/12.convert-endian/kernel.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	alu_int	no	0	no	testcase	6	ok	ok	match	yes	
+mncompile/benchmarks/results/12.divrow-vec/kernel.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	56	ok	ok	match	no	groups:l1bm;lm_dyn
+mncompile/benchmarks/results/13.exp-low-prec/kernel.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,mau	no	7	no	testcase	20	ok	ok	match	yes	
+mncompile/benchmarks/results/13.mod3/kernel.vsm	solution	problems/challenge/13.mod3/testcase.vsm	alu_int,fp,mau	no	15	no	testcase	15	ok	ok	match	yes	
+mncompile/benchmarks/results/14.exp/kernel.vsm	solution	problems/14.exp/testcase.vsm	alu_int,fp,mau	no	7	no	testcase	30	ok	ok	match	yes	
+mncompile/benchmarks/results/14.mat-sq/kernel.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	fp,matrix	yes	31	no	testcase	12	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/15.contains/kernel.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,matrix,l1bm	yes	40	yes	testcase	59	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+mncompile/benchmarks/results/15.onehot-mini/kernel.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int	no	7	no	testcase	17	ok	ok	match	yes	
+mncompile/benchmarks/results/16.count-up/kernel.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	3	no	testcase	43	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/16.onehot/kernel.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,l1bm	yes	127	yes	testcase	44	ok	ok	match	no	groups:l1bm;lm_dyn
+mncompile/benchmarks/results/17.dram-dl-256-16/kernel.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/17.transpose-mab/kernel.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,l1bm	yes	271	yes	testcase	45	ok	ok	match	no	groups:l1bm;lm_max>=256;lm_dyn
+mncompile/benchmarks/results/18.dram-ul-256-16/kernel.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/18.inversion-small/kernel.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	alu_int,l1bm	yes	31	yes	testcase	30	ok	ok	match	no	groups:l1bm;lm_dyn
+mncompile/benchmarks/results/19.dram-dl-256-16p/kernel.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	25	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/19.inversion/kernel.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	76	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+mncompile/benchmarks/results/2.fmul7/kernel.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	5	ok	ok	match	yes	
+mncompile/benchmarks/results/2.plus-two/kernel.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	alu_int	no	19	no	testcase	7	ok	ok	match	yes	
+mncompile/benchmarks/results/20.dram-ul-256-16p/kernel.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	16	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+mncompile/benchmarks/results/20.fizzbuzz/kernel.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	10	yes	testcase	103	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+mncompile/benchmarks/results/21.dram-dl-256-16-l2b/kernel.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	l1bm,l2bm,mv	yes	63	no	testcase	14	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/21.hello-world/kernel.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	3	no	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/22.bit-reverse/kernel.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	alu_int,matrix,l1bm	yes	3	no	testcase	32	ok	ok	match	no	groups:matrix+l1bm
+mncompile/benchmarks/results/22.dram-dl-1024-16/kernel.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/23.dram-dl-256-1024/kernel.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	74	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/23.fizzbuzz-pe/kernel.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	alu_int,mau,l1bm	yes	3	no	testcase	12	ok	ok	match	no	groups:l1bm
+mncompile/benchmarks/results/24.dram-dl-16/kernel.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/24.log2/kernel.vsm	solution	problems/challenge/24.log2/testcase.vsm	alu_int,mau	no	15	no	testcase	15	ok	ok	match	yes	
+mncompile/benchmarks/results/25.dram-ul-16/kernel.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/25.hsv2rgb/kernel.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	alu_int,fp,mau,l1bm	yes	11	no	testcase	27	ok	ok	match	no	groups:l1bm
+mncompile/benchmarks/results/26.dram-dl-16-1024/kernel.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	44	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/27.dram-ul-16-1024/kernel.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	18	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+mncompile/benchmarks/results/28.dram-dl-16-16/kernel.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/29.dram-ul-16-16/kernel.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/3.a-plus-b/kernel.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	alu_int	no	31	no	testcase	6	ok	ok	match	yes	
+mncompile/benchmarks/results/3.relu/kernel.vsm	solution	problems/3.relu/testcase.vsm	fp	no	7	no	testcase	2	ok	ok	match	yes	
+mncompile/benchmarks/results/30.dram-dl-256/kernel.vsm	solution	problems/30.dram-dl-256/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	11	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/31.dram-ul-256/kernel.vsm	solution	problems/31.dram-ul-256/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	9	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+mncompile/benchmarks/results/32.matmul-trb-mab-lm-4-8-8/kernel.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	4	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/33.matmul-trb-mab-lm-4-8-16/kernel.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	fp,matrix	yes	19	no	testcase	7	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/34.matmul-trb-mab-lm-4-16-8/kernel.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	fp,matrix	yes	23	no	testcase	6	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/35.matmul-trb-mab-lm-4-16-16/kernel.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/36.matmul-trb-pkg-lm-256-16-16/kernel.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/37.matmul-trb-mab-lm-32-8-16/kernel.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	fp,matrix	yes	63	no	testcase	21	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/38.matmul-trb-pkg-lm-256-128-16/kernel.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	fp,matrix,l1bm	yes	111	no	testcase	48	ok	ok	match	no	groups:matrix+l1bm
+mncompile/benchmarks/results/39.matmul-trb-pkg-lmdram-256-1024-16/kernel.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	63	no	testcase	38	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+mncompile/benchmarks/results/4.mul7/kernel.vsm	solution	problems/challenge/4.mul7/testcase.vsm	alu_int	no	15	no	testcase	10	ok	ok	match	yes	
+mncompile/benchmarks/results/4.relu-grad/kernel.vsm	solution	problems/4.relu-grad/testcase.vsm	alu_int,fp	no	7	no	testcase	3	ok	ok	match	yes	
+mncompile/benchmarks/results/40.matmul-notr-mab-lm-4-8-8/kernel.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	7	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/41.matmul-notr-mab-lm-4-16-16/kernel.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	23	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/42.matmul-notr-pkg-lm-256-16-16/kernel.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	23	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/43.matmul-tra-mab-lm-8-8-8/kernel.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	fp,matrix	yes	15	no	testcase	10	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/44.matmul-tra-mab-lm-16-8-16/kernel.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	fp,matrix	yes	31	no	testcase	26	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/45.matmul-tra-mab-lm-16-4-16/kernel.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	fp,matrix	yes	31	no	testcase	20	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/46.matmul-tra-pkg-lmdram-16-256-16/kernel.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	31	no	testcase	31	ok	ok	MISMATCH(DRAM)	no	groups:matrix+l1bm+l2bm+mv
+mncompile/benchmarks/results/47.matmul-tra-mab-lm-16-32-8/kernel.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	fp,matrix	yes	95	no	testcase	50	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/48.matmul-tra-pkg-lmdram-16-256-1024/kernel.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	95	no	testcase	94	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+mncompile/benchmarks/results/5.abs/kernel.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau,l1bm	yes	43	no	testcase	15	ok	ok	match	no	groups:l1bm
+mncompile/benchmarks/results/5.addcol-vec/kernel.vsm	solution	problems/5.addcol-vec/testcase.vsm	alu_int,mau	no	9	no	testcase	4	ok	ok	match	yes	
+mncompile/benchmarks/results/6.fadd-mul/kernel.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	alu_int,mau	no	63	no	testcase	18	ok	ok	match	yes	
+mncompile/benchmarks/results/6.subrow-vec/kernel.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,mau,l1bm	yes	159	yes	testcase	35	ok	ok	match	no	groups:l1bm;lm_dyn
+mncompile/benchmarks/results/7.mul2/kernel.vsm	solution	problems/challenge/7.mul2/testcase.vsm	alu_int,mau	no	47	no	testcase	13	ok	ok	match	yes	
+mncompile/benchmarks/results/7.sumcol-mini/kernel.vsm	solution	problems/7.sumcol-mini/testcase.vsm	alu_int,mau	no	7	no	testcase	4	ok	ok	match	yes	
+mncompile/benchmarks/results/8.fle/kernel.vsm	solution	problems/challenge/8.fle/testcase.vsm	alu_int,fp,mau	no	19	no	testcase	9	ok	ok	match	yes	
+mncompile/benchmarks/results/8.sumcol/kernel.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	7	no	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv
+mncompile/benchmarks/results/9.sumrow-mini/kernel.vsm	solution	problems/9.sumrow-mini/testcase.vsm	mau,matrix	yes	7	no	testcase	9	ok	ok	match	no	groups:matrix
+mncompile/benchmarks/results/9.transpose-addr/kernel.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	alu_int	no	63	no	testcase	16	ok	ok	match	yes	
+problems/1.a-b/answer.vsm	solution	problems/1.a-b/testcase.vsm	alu_int,mau	no	15	no	testcase	3	ok	ok	match	yes	
+problems/1.a-b/main.vsm	solution	problems/1.a-b/testcase.vsm	fp,mau	no	15	no	testcase	3	ok	ok	match	yes	
+problems/1.a-b/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/10.sumrow/answer.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	16	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+problems/10.sumrow/main.vsm	solution	problems/10.sumrow/testcase.vsm	mau,matrix	yes	127	no	testcase	160	ok	ok	match	no	groups:matrix
+problems/10.sumrow/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/11.maxrow/answer.vsm	solution	problems/11.maxrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	20	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+problems/11.maxrow/main.vsm	solution	problems/11.maxrow/testcase.vsm	fp,mau,matrix	yes	127	no	testcase	145	ok	ok	match	no	groups:matrix
+problems/11.maxrow/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/12.divrow-vec/answer.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	28	ok	ok	match	no	groups:l1bm;lm_dyn
+problems/12.divrow-vec/main.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau	no	159	no	testcase	577	ok	ok	match	yes	
+problems/12.divrow-vec/testcase.vsm	testcase	-	-	no	159	no	testcase	0	ok	ok	match	yes	
+problems/13.exp-low-prec/answer.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau,l1bm	yes	7	no	testcase	8	ok	ok	match	no	groups:l1bm
+problems/13.exp-low-prec/main.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,mau	no	7	no	testcase	39	ok	ok	match	yes	
+problems/13.exp-low-prec/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/14.exp/answer.vsm	solution	problems/14.exp/testcase.vsm	alu_int,mau,l1bm	yes	10	no	testcase	14	ok	ok	match	no	groups:l1bm
+problems/14.exp/main.vsm	solution	problems/14.exp/testcase.vsm	alu_int,fp,mau	no	7	no	testcase	86	ok	ok	match	yes	
+problems/14.exp/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/15.onehot-mini/answer.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,mau,l1bm	yes	7	no	testcase	7	ok	ok	match	no	groups:l1bm
+problems/15.onehot-mini/main.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int	no	7	no	testcase	23	ok	ok	match	yes	
+problems/15.onehot-mini/scratch/test_mau.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,mau	no	7	no	testcase	4	asm_fail 134	parse_error	skip	no	official:asm_fail 134
+problems/15.onehot-mini/scratch/test_syntax.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,mau	no	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+problems/15.onehot-mini/scratch/test_syntax2.vsm	solution	problems/15.onehot-mini/testcase.vsm	mau	no	7	no	testcase	1	ok	ok	match	yes	
+problems/15.onehot-mini/scratch/test_syntax3.vsm	solution	problems/15.onehot-mini/testcase.vsm	mau	no	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+problems/15.onehot-mini/scratch/test_syntax4.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp	no	7	no	testcase	21	ok	ok	match	yes	
+problems/15.onehot-mini/scratch/test_syntax5.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp	no	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+problems/15.onehot-mini/scratch/test_syntax6.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp	no	7	no	testcase	0	asm_fail 134	unsupported	skip	no	official:asm_fail 134
+problems/15.onehot-mini/scratch/test_syntax7.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp	no	7	no	testcase	20	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+problems/15.onehot-mini/scratch/test_syntax8.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp,unknown	no	7	no	testcase	3	asm_fail 134	parse_error	skip	no	official:asm_fail 134;groups:unknown;unknown_ops:inc
+problems/15.onehot-mini/scratch/test_syntax9.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,fp	no	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+problems/15.onehot-mini/solution.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int	no	7	no	testcase	24	ok	ok	match	yes	
+problems/15.onehot-mini/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/16.onehot/answer.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	24	ok	ok	match	no	groups:l1bm;lm_dyn
+problems/16.onehot/main.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,fp	no	127	no	testcase	560	ok	ok	match	yes	
+problems/16.onehot/solution.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,fp	no	127	no	testcase	562	ok	ok	match	yes	
+problems/16.onehot/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/17.dram-dl-256-16/answer.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/17.dram-dl-256-16/main.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/17.dram-dl-256-16/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/18.dram-ul-256-16/answer.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/18.dram-ul-256-16/main.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/18.dram-ul-256-16/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/19.dram-dl-256-16p/answer.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	19	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/19.dram-dl-256-16p/main.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	25	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/19.dram-dl-256-16p/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/2.fmul7/answer.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	5	ok	ok	match	yes	
+problems/2.fmul7/main.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	5	ok	ok	match	yes	
+problems/2.fmul7/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/20.dram-ul-256-16p/answer.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/20.dram-ul-256-16p/main.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	26	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/20.dram-ul-256-16p/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/21.dram-dl-256-16-l2b/answer.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	l1bm,l2bm,mv	yes	63	no	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/21.dram-dl-256-16-l2b/main.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	l1bm,l2bm,mv	yes	63	no	testcase	14	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/21.dram-dl-256-16-l2b/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+problems/22.dram-dl-1024-16/answer.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/22.dram-dl-1024-16/main.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/22.dram-dl-1024-16/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/23.dram-dl-256-1024/answer.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	68	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/23.dram-dl-256-1024/main.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	74	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/23.dram-dl-256-1024/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/24.dram-dl-16/answer.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	3	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/24.dram-dl-16/main.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/24.dram-dl-16/testcase.vsm	testcase	-	-	no	1	no	testcase	0	ok	ok	match	yes	
+problems/25.dram-ul-16/answer.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	4	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/25.dram-ul-16/main.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/25.dram-ul-16/testcase.vsm	testcase	-	-	no	1	no	testcase	0	ok	ok	match	yes	
+problems/26.dram-dl-16-1024/answer.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	39	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/26.dram-dl-16-1024/main.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	41	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/26.dram-dl-16-1024/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/27.dram-ul-16-1024/answer.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/27.dram-ul-16-1024/main.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	41	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/27.dram-ul-16-1024/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/28.dram-dl-16-16/answer.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	7	ok	ok	MISMATCH(L1BM,L2BM,LM0)	no	groups:l1bm+l2bm+mv
+problems/28.dram-dl-16-16/main.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/28.dram-dl-16-16/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/29.dram-ul-16-16/answer.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/29.dram-ul-16-16/improved.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/29.dram-ul-16-16/main.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/29.dram-ul-16-16/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/3.relu/answer.vsm	solution	problems/3.relu/testcase.vsm	fp	no	7	no	testcase	2	ok	ok	match	yes	
+problems/3.relu/main.vsm	solution	problems/3.relu/testcase.vsm	fp	no	7	no	testcase	2	ok	ok	match	yes	
+problems/3.relu/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/30.dram-dl-256/answer.vsm	solution	problems/30.dram-dl-256/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	31	no	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/30.dram-dl-256/main.vsm	solution	problems/30.dram-dl-256/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	11	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/30.dram-dl-256/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/31.dram-ul-256/answer.vsm	solution	problems/31.dram-ul-256/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	7	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/31.dram-ul-256/main.vsm	solution	problems/31.dram-ul-256/testcase.vsm	matrix,l1bm,l2bm,mv	yes	31	no	testcase	37	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/31.dram-ul-256/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/32.matmul-trb-mab-lm-4-8-8/answer.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	4	ok	ok	match	no	groups:matrix
+problems/32.matmul-trb-mab-lm-4-8-8/main.vsm	solution	problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/32.matmul-trb-mab-lm-4-8-8/testcase.vsm	testcase	-	-	no	11	no	testcase	0	ok	ok	match	yes	
+problems/33.matmul-trb-mab-lm-4-8-16/answer.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	fp,matrix	yes	19	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/33.matmul-trb-mab-lm-4-8-16/main.vsm	solution	problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	fp,matrix	yes	19	no	testcase	12	ok	ok	match	no	groups:matrix
+problems/33.matmul-trb-mab-lm-4-8-16/testcase.vsm	testcase	-	-	no	19	no	testcase	0	ok	ok	match	yes	
+problems/34.matmul-trb-mab-lm-4-16-8/answer.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	fp,matrix	yes	23	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/34.matmul-trb-mab-lm-4-16-8/improved.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	fp,matrix	yes	23	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/34.matmul-trb-mab-lm-4-16-8/main.vsm	solution	problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	fp,matrix	yes	23	no	testcase	12	ok	ok	match	no	groups:matrix
+problems/34.matmul-trb-mab-lm-4-16-8/testcase.vsm	testcase	-	-	no	23	no	testcase	0	ok	ok	match	yes	
+problems/35.matmul-trb-mab-lm-4-16-16/answer.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/35.matmul-trb-mab-lm-4-16-16/improved.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/35.matmul-trb-mab-lm-4-16-16/main.vsm	solution	problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	24	ok	ok	match	no	groups:matrix
+problems/35.matmul-trb-mab-lm-4-16-16/testcase.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+problems/36.matmul-trb-pkg-lm-256-16-16/answer.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	6	ok	ok	match	no	groups:matrix
+problems/36.matmul-trb-pkg-lm-256-16-16/main.vsm	solution	problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	24	ok	ok	match	no	groups:matrix
+problems/36.matmul-trb-pkg-lm-256-16-16/testcase.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+problems/37.matmul-trb-mab-lm-32-8-16/answer.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	fp,matrix	yes	63	no	testcase	13	ok	ok	match	no	groups:matrix
+problems/37.matmul-trb-mab-lm-32-8-16/main.vsm	solution	problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	fp,matrix	yes	63	no	testcase	96	ok	ok	match	no	groups:matrix
+problems/37.matmul-trb-mab-lm-32-8-16/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+problems/38.matmul-trb-pkg-lm-256-128-16/answer.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	fp,matrix,l1bm	yes	63	no	testcase	15	ok	ok	match	no	groups:matrix+l1bm
+problems/38.matmul-trb-pkg-lm-256-128-16/main.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	fp,matrix,l1bm	yes	63	no	testcase	132	ok	ok	match	no	groups:matrix+l1bm
+problems/38.matmul-trb-pkg-lm-256-128-16/solution.vsm	solution	problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	fp,matrix,l1bm	yes	63	no	testcase	132	ok	ok	match	no	groups:matrix+l1bm
+problems/38.matmul-trb-pkg-lm-256-128-16/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/answer.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/main.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	63	no	testcase	121	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/solution.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	63	no	testcase	123	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	testcase	-	-	no	47	no	testcase	0	ok	ok	match	yes	
+problems/4.relu-grad/answer.vsm	solution	problems/4.relu-grad/testcase.vsm	alu_int,mau	no	7	no	testcase	2	ok	ok	match	yes	
+problems/4.relu-grad/main.vsm	solution	problems/4.relu-grad/testcase.vsm	alu_int,fp	no	7	no	testcase	3	ok	ok	match	yes	
+problems/4.relu-grad/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/40.matmul-notr-mab-lm-4-8-8/answer.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	7	ok	ok	match	no	groups:matrix
+problems/40.matmul-notr-mab-lm-4-8-8/main.vsm	solution	problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	fp,matrix	yes	11	no	testcase	12	ok	ok	match	no	groups:matrix
+problems/40.matmul-notr-mab-lm-4-8-8/testcase.vsm	testcase	-	-	no	11	no	testcase	0	ok	ok	match	yes	
+problems/41.matmul-notr-mab-lm-4-16-16/answer.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	alu_int,fp,matrix,l1bm	yes	39	yes	testcase	13	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+problems/41.matmul-notr-mab-lm-4-16-16/main.vsm	solution	problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	40	ok	ok	match	no	groups:matrix
+problems/41.matmul-notr-mab-lm-4-16-16/testcase.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+problems/42.matmul-notr-pkg-lm-256-16-16/answer.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	9	ok	ok	match	no	groups:matrix
+problems/42.matmul-notr-pkg-lm-256-16-16/main.vsm	solution	problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	fp,matrix	yes	39	no	testcase	40	ok	ok	match	no	groups:matrix
+problems/42.matmul-notr-pkg-lm-256-16-16/testcase.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+problems/43.matmul-tra-mab-lm-8-8-8/answer.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	fp,matrix	yes	15	no	testcase	8	ok	ok	match	no	groups:matrix
+problems/43.matmul-tra-mab-lm-8-8-8/main.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	fp,matrix	yes	15	no	testcase	16	ok	ok	match	no	groups:matrix
+problems/43.matmul-tra-mab-lm-8-8-8/solution.vsm	solution	problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	fp,matrix	yes	15	no	testcase	16	ok	ok	match	no	groups:matrix
+problems/43.matmul-tra-mab-lm-8-8-8/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/44.matmul-tra-mab-lm-16-8-16/answer.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	fp,matrix	yes	31	no	testcase	10	ok	ok	match	no	groups:matrix
+problems/44.matmul-tra-mab-lm-16-8-16/main.vsm	solution	problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	fp,matrix	yes	31	no	testcase	40	ok	ok	match	no	groups:matrix
+problems/44.matmul-tra-mab-lm-16-8-16/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/45.matmul-tra-mab-lm-16-4-16/answer.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	fp,matrix	yes	31	no	testcase	9	ok	ok	match	no	groups:matrix
+problems/45.matmul-tra-mab-lm-16-4-16/main.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	alu_int,fp,matrix	yes	31	no	testcase	54	ok	ok	match	no	groups:matrix
+problems/45.matmul-tra-mab-lm-16-4-16/solution.vsm	solution	problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	alu_int,fp,matrix	yes	31	no	testcase	38	ok	ok	match	no	groups:matrix
+problems/45.matmul-tra-mab-lm-16-4-16/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/46.matmul-tra-pkg-lmdram-16-256-16/answer.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	testcase	21	ok	ok	MISMATCH(DRAM)	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+problems/46.matmul-tra-pkg-lmdram-16-256-16/main.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	31	no	testcase	44	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/46.matmul-tra-pkg-lmdram-16-256-16/solution.vsm	solution	problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	31	no	testcase	44	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+problems/46.matmul-tra-pkg-lmdram-16-256-16/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/47.matmul-tra-mab-lm-16-32-8/answer.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	alu_int,fp,matrix,l1bm	yes	95	yes	testcase	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+problems/47.matmul-tra-mab-lm-16-32-8/main.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	fp,matrix	yes	95	no	testcase	96	ok	ok	match	no	groups:matrix
+problems/47.matmul-tra-mab-lm-16-32-8/solution.vsm	solution	problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	fp,matrix	yes	95	no	testcase	96	ok	ok	match	no	groups:matrix
+problems/47.matmul-tra-mab-lm-16-32-8/testcase.vsm	testcase	-	-	no	95	no	testcase	0	ok	ok	match	yes	
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/answer.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	testcase	58	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/main.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	testcase	61	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/scratch/test_fmfma.vsm	solution	problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	matrix	yes	95	no	testcase	2	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix
+problems/48.matmul-tra-pkg-lmdram-16-256-1024/testcase.vsm	testcase	-	-	no	95	no	testcase	0	ok	ok	match	yes	
+problems/5.addcol-vec/answer.vsm	solution	problems/5.addcol-vec/testcase.vsm	alu_int,mau	no	9	no	testcase	2	ok	ok	match	yes	
+problems/5.addcol-vec/main.vsm	solution	problems/5.addcol-vec/testcase.vsm	mau	no	9	no	testcase	5	ok	ok	match	yes	
+problems/5.addcol-vec/scratch/5lines.vsm	solution	problems/5.addcol-vec/testcase.vsm	mau	no	9	no	testcase	5	ok	ok	match	yes	
+problems/5.addcol-vec/testcase.vsm	testcase	-	-	no	9	no	testcase	0	ok	ok	match	yes	
+problems/6.subrow-vec/answer.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	22	ok	ok	match	no	groups:l1bm;lm_dyn
+problems/6.subrow-vec/main.vsm	solution	problems/6.subrow-vec/testcase.vsm	mau	no	159	no	testcase	64	ok	ok	match	yes	
+problems/6.subrow-vec/testcase.vsm	testcase	-	-	no	159	no	testcase	0	ok	ok	match	yes	
+problems/7.sumcol-mini/answer.vsm	solution	problems/7.sumcol-mini/testcase.vsm	fp,mau	no	9	no	testcase	4	ok	ok	match	yes	
+problems/7.sumcol-mini/main.vsm	solution	problems/7.sumcol-mini/testcase.vsm	mau	no	7	no	testcase	4	ok	ok	match	yes	
+problems/7.sumcol-mini/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/8.sumcol/answer.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+problems/8.sumcol/main.vsm	solution	problems/8.sumcol/testcase.vsm	mau,l1bm,l2bm,mv	yes	7	no	testcase	11	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/8.sumcol/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/9.sumrow-mini/answer.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,mau,matrix	yes	7	no	testcase	5	ok	ok	match	no	groups:matrix
+problems/9.sumrow-mini/main.vsm	solution	problems/9.sumrow-mini/testcase.vsm	mau,matrix	yes	7	no	testcase	8	ok	ok	match	no	groups:matrix
+problems/9.sumrow-mini/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/challenge/1.plus-one/answer.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	alu_int	no	7	no	testcase	2	ok	ok	match	yes	
+problems/challenge/1.plus-one/main.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	alu_int	no	7	no	testcase	2	ok	ok	match	yes	
+problems/challenge/1.plus-one/official.vsm	solution	problems/challenge/1.plus-one/testcase.vsm	alu_int	no	7	no	testcase	2	ok	ok	match	yes	
+problems/challenge/1.plus-one/testcase.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+problems/challenge/10.gather-easy/answer.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	alu_int,mau,matrix	yes	1039	yes	testcase	6	ok	ok	match	no	groups:matrix;lm_max>=256;lm_dyn
+problems/challenge/10.gather-easy/main.vsm	solution	problems/challenge/10.gather-easy/testcase.vsm	alu_int,mau,matrix	yes	1039	yes	testcase	6	ok	ok	match	no	groups:matrix;lm_max>=256;lm_dyn
+problems/challenge/10.gather-easy/testcase.vsm	testcase	-	-	no	1039	no	testcase	0	ok	ok	match	no	lm_max>=256
+problems/challenge/11.square-sum/answer.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	11	ok	ok	match	no	groups:l1bm;lm_dyn
+problems/challenge/11.square-sum/main.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	11	ok	ok	match	no	groups:l1bm;lm_dyn
+problems/challenge/11.square-sum/testcase.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+problems/challenge/12.convert-endian/answer.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	alu_int,mau	no	1	no	testcase	3	ok	ok	match	yes	
+problems/challenge/12.convert-endian/main.vsm	solution	problems/challenge/12.convert-endian/testcase.vsm	alu_int,mau	no	1	no	testcase	3	ok	ok	match	yes	
+problems/challenge/12.convert-endian/testcase.vsm	testcase	-	-	no	0	no	testcase	0	ok	ok	match	yes	
+problems/challenge/13.mod3/answer.vsm	solution	problems/challenge/13.mod3/testcase.vsm	alu_int,mau,l1bm	yes	15	no	testcase	8	ok	ok	match	no	groups:l1bm
+problems/challenge/13.mod3/main.vsm	solution	problems/challenge/13.mod3/testcase.vsm	alu_int,mau,l1bm	yes	15	no	testcase	8	ok	ok	match	no	groups:l1bm
+problems/challenge/13.mod3/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/challenge/14.mat-sq/answer.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	fp,matrix	yes	31	no	testcase	10	ok	ok	match	no	groups:matrix
+problems/challenge/14.mat-sq/main.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	fp,matrix	yes	31	no	testcase	10	ok	ok	match	no	groups:matrix
+problems/challenge/14.mat-sq/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/challenge/15.contains/answer.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,fp,mau,matrix,l1bm	yes	512	yes	testcase	20	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+problems/challenge/15.contains/main.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,fp,mau,matrix,l1bm	yes	512	yes	testcase	20	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+problems/challenge/15.contains/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/challenge/16.count-up/answer.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	21	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/challenge/16.count-up/main.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	21	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/challenge/16.count-up/testcase.vsm	testcase	-	-	no	-	no	testcase	0	ok	ok	match	yes	
+problems/challenge/17.transpose-mab/answer.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,mau,l1bm	yes	2047	yes	testcase	15	ok	ok	match	no	groups:l1bm;lm_max>=256;lm_dyn
+problems/challenge/17.transpose-mab/main.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,mau,l1bm	yes	2047	yes	testcase	15	ok	ok	match	no	groups:l1bm;lm_max>=256;lm_dyn
+problems/challenge/17.transpose-mab/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/challenge/18.inversion-small/answer.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	alu_int,mau,matrix,l1bm	yes	2044	yes	testcase	9	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+problems/challenge/18.inversion-small/main.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	alu_int,mau,matrix,l1bm	yes	2044	yes	testcase	9	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+problems/challenge/18.inversion-small/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/challenge/19.inversion/answer.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	31	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+problems/challenge/19.inversion/main.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	31	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+problems/challenge/19.inversion/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+problems/challenge/2.plus-two/answer.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	alu_int	no	19	no	testcase	5	ok	ok	match	yes	
+problems/challenge/2.plus-two/main.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	alu_int	no	19	no	testcase	5	ok	ok	match	yes	
+problems/challenge/2.plus-two/official.vsm	solution	problems/challenge/2.plus-two/testcase.vsm	alu_int	no	19	no	testcase	9	ok	ok	match	yes	
+problems/challenge/2.plus-two/testcase.vsm	testcase	-	-	no	19	no	testcase	0	ok	ok	match	yes	
+problems/challenge/20.fizzbuzz/answer.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	1857	yes	testcase	47	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+problems/challenge/20.fizzbuzz/lpha100.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	250	no	testcase	100	ok	parse_error	skip	no	groups:l1bm+l2bm+mv
+problems/challenge/20.fizzbuzz/main.vsm	solution	problems/challenge/20.fizzbuzz/testcase.vsm	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	testcase	98	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+problems/challenge/20.fizzbuzz/testcase.vsm	testcase	-	-	no	-	no	testcase	0	ok	ok	match	yes	
+problems/challenge/21.hello-world/answer.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	9	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/challenge/21.hello-world/main.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	9	ok	ok	match	no	groups:l1bm+l2bm+mv
+problems/challenge/21.hello-world/testcase.vsm	testcase	-	-	no	-	no	testcase	0	ok	ok	match	yes	
+problems/challenge/22.bit-reverse/answer.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	alu_int,matrix,l1bm	yes	3	no	testcase	9	ok	ok	match	no	groups:matrix+l1bm
+problems/challenge/22.bit-reverse/main.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	alu_int,mau,matrix,l1bm	yes	3	no	testcase	10	ok	ok	match	no	groups:matrix+l1bm
+problems/challenge/22.bit-reverse/testcase.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+problems/challenge/23.fizzbuzz-pe/answer.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	alu_int,mau,l1bm	yes	3	no	testcase	9	ok	ok	match	no	groups:l1bm
+problems/challenge/23.fizzbuzz-pe/main.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	alu_int,mau,l1bm	yes	3	no	testcase	9	ok	ok	match	no	groups:l1bm
+problems/challenge/23.fizzbuzz-pe/testcase.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+problems/challenge/24.log2/answer.vsm	solution	problems/challenge/24.log2/testcase.vsm	alu_int,mau,l1bm	yes	15	no	testcase	7	ok	ok	match	no	groups:l1bm
+problems/challenge/24.log2/main.vsm	solution	problems/challenge/24.log2/testcase.vsm	alu_int,mau,l1bm	yes	15	no	testcase	7	ok	ok	match	no	groups:l1bm
+problems/challenge/24.log2/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/challenge/25.hsv2rgb/answer.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	alu_int,fp,mau,l1bm	yes	11	no	testcase	12	ok	ok	match	no	groups:l1bm
+problems/challenge/25.hsv2rgb/main.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	alu_int,fp,mau,l1bm	yes	11	no	testcase	12	ok	ok	match	no	groups:l1bm
+problems/challenge/25.hsv2rgb/testcase.vsm	testcase	-	-	no	11	no	testcase	0	ok	ok	match	yes	
+problems/challenge/3.a-plus-b/answer.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	alu_int	no	31	no	testcase	6	ok	ok	match	yes	
+problems/challenge/3.a-plus-b/main.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	alu_int	no	31	no	testcase	6	ok	ok	match	yes	
+problems/challenge/3.a-plus-b/official.vsm	solution	problems/challenge/3.a-plus-b/testcase.vsm	alu_int	no	31	no	testcase	8	ok	ok	match	yes	
+problems/challenge/3.a-plus-b/testcase.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+problems/challenge/4.mul7/answer.vsm	solution	problems/challenge/4.mul7/testcase.vsm	alu_int,mau	no	15	no	testcase	6	ok	ok	match	yes	
+problems/challenge/4.mul7/main.vsm	solution	problems/challenge/4.mul7/testcase.vsm	alu_int,mau	no	15	no	testcase	6	ok	ok	match	yes	
+problems/challenge/4.mul7/testcase.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+problems/challenge/5.abs/answer.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau,l1bm	yes	43	no	testcase	13	ok	ok	match	no	groups:l1bm
+problems/challenge/5.abs/main.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau,l1bm	yes	43	no	testcase	13	ok	ok	match	no	groups:l1bm
+problems/challenge/5.abs/testcase.vsm	testcase	-	-	no	43	no	testcase	0	ok	ok	match	yes	
+problems/challenge/6.fadd-mul/answer.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	alu_int,fp,mau,l1bm	yes	63	no	testcase	14	ok	ok	match	no	groups:l1bm
+problems/challenge/6.fadd-mul/main.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	alu_int,fp,mau,l1bm	yes	63	no	testcase	14	ok	ok	match	no	groups:l1bm
+problems/challenge/6.fadd-mul/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+problems/challenge/7.mul2/answer.vsm	solution	problems/challenge/7.mul2/testcase.vsm	fp,mau,l1bm	yes	47	no	testcase	9	ok	ok	match	no	groups:l1bm
+problems/challenge/7.mul2/main.vsm	solution	problems/challenge/7.mul2/testcase.vsm	fp,mau,l1bm	yes	47	no	testcase	9	ok	ok	match	no	groups:l1bm
+problems/challenge/7.mul2/testcase.vsm	testcase	-	-	no	47	no	testcase	0	ok	ok	match	yes	
+problems/challenge/8.fle/answer.vsm	solution	problems/challenge/8.fle/testcase.vsm	alu_int,mau	no	19	no	testcase	4	ok	ok	match	yes	
+problems/challenge/8.fle/main.vsm	solution	problems/challenge/8.fle/testcase.vsm	alu_int,mau	no	19	no	testcase	4	ok	ok	match	yes	
+problems/challenge/8.fle/testcase.vsm	testcase	-	-	no	19	no	testcase	0	ok	ok	match	yes	
+problems/challenge/9.transpose-addr/answer.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	alu_int,fp,mau	no	63	no	testcase	10	ok	ok	match	yes	
+problems/challenge/9.transpose-addr/main.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	alu_int,fp,mau	no	63	no	testcase	10	ok	ok	match	yes	
+problems/challenge/9.transpose-addr/testcase.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+proofs_lean/evidence/empty-baselines/empty.vsm	standalone	-	-	no	-	no	no	0	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/00-alu-valid.vsm	standalone	-	alu_int	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/01-alu-nop.vsm	standalone	-	alu_int	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/02-alu-noforward.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/03-alu-noforward-alu.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/04-alu-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/05-alu-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/06-alu-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/07-alu-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/08-alu-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/09-alu-disabled-long-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/10-alu-disabled-flush-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/11-alu-disabled-register-off.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/12-mau-valid.vsm	standalone	-	alu_int,mau	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/13-mau-nop.vsm	standalone	-	alu_int,mau	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/14-mau-noforward.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/15-mau-noforward-alu.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/16-mau-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/17-mau-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/18-mau-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/19-mau-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/20-mau-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/21-mread-valid.vsm	standalone	-	alu_int,matrix	yes	-	no	self	7	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/22-mread-nop.vsm	standalone	-	alu_int,matrix	yes	-	no	self	10	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/23-mread-noforward.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/24-mread-noforward-alu.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/25-mread-disabled-write.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/26-mread-disabled-discard.vsm	standalone	-	alu_int,matrix	yes	-	no	no	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/27-mread-disabled-mask-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/28-mread-disabled-narrow-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/29-mread-disabled-chain.vsm	standalone	-	alu_int,matrix	yes	-	no	self	9	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/30-lbf-valid.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/31-lbf-nop.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	7	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/32-lbf-noforward.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/33-lbf-noforward-alu.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/34-lbf-disabled-write.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/35-lbf-disabled-discard.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/36-lbf-disabled-mask-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/37-lbf-disabled-narrow-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/38-lbf-disabled-chain.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/00-alu-valid.vsm	standalone	-	alu_int	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/01-alu-nop.vsm	standalone	-	alu_int	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/02-alu-noforward.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/03-alu-noforward-alu.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/04-alu-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/05-alu-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/06-alu-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/07-alu-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/08-alu-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/09-alu-disabled-long-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/10-alu-disabled-flush-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/11-alu-disabled-register-off.vsm	standalone	-	alu_int,mau	no	-	no	self	6	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/12-alu-disabled-register-focus.vsm	standalone	-	alu_int,mau	no	-	no	self	9	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/12-mau-valid.vsm	standalone	-	alu_int,mau	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/13-mau-nop.vsm	standalone	-	alu_int,mau	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/13-mau-valid.vsm	standalone	-	alu_int,mau	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/14-mau-noforward.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/14-mau-nop.vsm	standalone	-	alu_int,mau	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/15-mau-noforward-alu.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/15-mau-noforward.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/16-mau-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/16-mau-noforward-alu.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/17-mau-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/17-mau-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/18-mau-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/18-mau-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/19-mau-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/19-mau-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/20-mau-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/20-mau-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/21-mau-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/21-mread-valid.vsm	standalone	-	alu_int,matrix	yes	-	no	self	7	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/22-mread-nop.vsm	standalone	-	alu_int,matrix	yes	-	no	self	10	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/22-mread-valid.vsm	standalone	-	alu_int,matrix	yes	-	no	self	7	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/23-mread-noforward.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/23-mread-nop.vsm	standalone	-	alu_int,matrix	yes	-	no	self	10	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/24-mread-noforward-alu.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/24-mread-noforward.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/25-mread-disabled-write.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/25-mread-noforward-alu.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/26-mread-disabled-discard.vsm	standalone	-	alu_int,matrix	yes	-	no	no	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/26-mread-disabled-write.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/27-mread-disabled-discard.vsm	standalone	-	alu_int,matrix	yes	-	no	no	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/27-mread-disabled-mask-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/28-mread-disabled-mask-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/28-mread-disabled-narrow-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/29-mread-disabled-chain.vsm	standalone	-	alu_int,matrix	yes	-	no	self	9	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/29-mread-disabled-narrow-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-lbf-valid.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-mread-disabled-chain.vsm	standalone	-	alu_int,matrix	yes	-	no	self	9	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-nop.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	7	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-valid.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-noforward.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-nop.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	7	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward-alu.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-disabled-write.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-noforward-alu.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/35-lbf-disabled-discard.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/35-lbf-disabled-write.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/36-lbf-disabled-discard.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/36-lbf-disabled-mask-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/37-lbf-disabled-mask-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/37-lbf-disabled-narrow-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/38-lbf-disabled-chain.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/38-lbf-disabled-narrow-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/39-lbf-disabled-chain.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/programs/00-alu-valid.vsm	standalone	-	alu_int	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/01-alu-nop.vsm	standalone	-	alu_int	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/02-alu-noforward.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/03-alu-noforward-alu.vsm	standalone	-	alu_int	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/04-alu-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/05-alu-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/06-alu-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/07-alu-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/08-alu-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/09-alu-disabled-long-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/10-alu-disabled-flush-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/11-alu-disabled-register-off.vsm	standalone	-	alu_int,mau	no	-	no	self	6	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/12-alu-disabled-register-focus.vsm	standalone	-	alu_int,mau	no	-	no	self	9	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/13-mau-valid.vsm	standalone	-	alu_int,mau	no	-	no	self	4	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/14-mau-nop.vsm	standalone	-	alu_int,mau	no	-	no	self	7	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/15-mau-noforward.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/16-mau-noforward-alu.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/17-mau-disabled-write.vsm	standalone	-	alu_int,mau	no	-	no	self	5	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/18-mau-disabled-discard.vsm	standalone	-	alu_int,mau	no	-	no	no	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/19-mau-disabled-mask-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/20-mau-disabled-narrow-off.vsm	standalone	-	alu_int,mau	no	-	no	self	5	ok	ok	match	yes	
+proofs_lean/evidence/forwarding/programs/21-mau-disabled-chain.vsm	standalone	-	alu_int,mau	no	-	no	self	6	emu_fail 134	unsupported	skip	no	official:emu_fail 134
+proofs_lean/evidence/forwarding/programs/22-mread-valid.vsm	standalone	-	alu_int,matrix	yes	-	no	self	7	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/23-mread-nop.vsm	standalone	-	alu_int,matrix	yes	-	no	self	10	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/24-mread-noforward.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/25-mread-noforward-alu.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/26-mread-disabled-write.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/27-mread-disabled-discard.vsm	standalone	-	alu_int,matrix	yes	-	no	no	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/28-mread-disabled-mask-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/29-mread-disabled-narrow-off.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/30-mread-disabled-chain.vsm	standalone	-	alu_int,matrix	yes	-	no	self	9	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/31-mread-disabled-alu-imm.vsm	standalone	-	alu_int,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/32-mread-disabled-mau.vsm	standalone	-	alu_int,mau,matrix	yes	-	no	self	8	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/forwarding/programs/33-lbf-valid.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/programs/34-lbf-nop.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	7	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/programs/35-lbf-noforward.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/programs/36-lbf-noforward-alu.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/forwarding/programs/37-lbf-disabled-write.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/programs/38-lbf-disabled-discard.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/programs/39-lbf-disabled-mask-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/programs/40-lbf-disabled-narrow-off.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/forwarding/programs/41-lbf-disabled-chain.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/hm34/solution.vsm	standalone	-	fp,matrix	yes	23	no	no	6	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/hm35/solution.vsm	standalone	-	fp,matrix	yes	39	no	no	6	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/lbf-encoded/00-disabled-write/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/00-disabled-write/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/00-disabled-write/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	no	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/driver.vsm	standalone	-	alu_int	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/06-after-mau/driver.vsm	standalone	-	mau	no	-	no	no	1	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/06-after-mau/intended.vsm	standalone	-	alu_int,mau,l1bm	yes	-	no	self	3	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/06-after-mau/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/driver.vsm	standalone	-	alu_int	no	-	no	no	2	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	asm_fail 1	ok	skip	no	official:asm_fail 1;groups:l1bm
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/08-producer-new/driver.vsm	standalone	-	l1bm	yes	-	no	no	1	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/08-producer-new/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/08-producer-new/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/driver.vsm	standalone	-	l1bm	yes	-	no	no	1	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/10-nop/driver.vsm	standalone	-	-	no	-	no	no	3	ok	ok	match	yes	
+proofs_lean/evidence/lbf-encoded/10-nop/intended.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	7	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/lbf-encoded/10-nop/template.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	4	ok	ok	match	no	groups:l1bm
+proofs_lean/evidence/pkg36/solution.vsm	standalone	-	fp,matrix	yes	39	no	no	6	ok	ok	match	no	groups:matrix
+proofs_lean/evidence/ul29/solution.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	7	yes	no	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/algo-redesign/t_coord.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	no	19	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/algo-redesign/t_coord2.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	no	20	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/algo-redesign/tt.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	no	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/constants/base.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_c1_Tmoved.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_c2_maskL3.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	2	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_c3_maskL56.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_c4_32atL2.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_d18_s28_13.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_d18_s29_8.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_e1_mt42_on_L77.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	75	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_e2_mt42_merge.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	41	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_e3_mt42_LM1.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	100	yes	no	77	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_f1_Twrite_on_L76.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	75	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_f2_pack_s28_del78.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	77	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_m1_masklit.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_m2_l16mask.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_v1_63mau.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/cand_v2_63mau.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_1.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_11.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_12.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_13.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_14.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_16.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_17.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_19.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_2.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_20.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_21.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	55	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_25.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_26.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_27.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_28.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_29.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_3.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_30.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_31.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_36.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_37.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_38.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_39.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_42.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_43.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_44.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_45.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_46.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_47.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_48.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_52.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_53.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_55.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_58.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_59.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_61.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_62.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_64.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_65.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_66.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_68.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_69.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_70.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_72.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_73.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_75.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_76.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_81.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_82.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_83.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_84.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_86.vsm	standalone	-	alu_int,fp,mau,matrix,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l2bm+mv;lm_dyn
+research/experiments/constants/del_89.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_9.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_90.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_92.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/del_93.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/host18_86.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/host18_89.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/constants/host18_90.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_drop51.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	48	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_move51.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	51	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_r18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	88	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_table.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	48	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_table_keep51.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	91	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/digit-closedform/cand_zero.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	88	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/fable52/v13_54.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	54	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v13_55.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	55	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_47.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1857	yes	no	47	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_47_commented.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1857	yes	no	47	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_47_fmt.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1857	yes	no	47	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_48.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	48	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_49.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	49	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_50.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	50	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v15_51.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	51	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v1_181.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	127	no	no	181	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+research/experiments/fable52/v2_101.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	101	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_118.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	118	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_79.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	79	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_79_commented.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	79	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_82.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	82	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_84.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	84	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_87.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	87	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v2_92.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	1921	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v3_75.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	75	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v4_60.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	60	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v4_62.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	62	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v4_65.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	65	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v4_66.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	66	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v5_59.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	59	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v8_58.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1920	yes	no	58	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v9_55.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	55	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fable52/v9_57.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1985	yes	no	57	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/fb52/prim_8lanes.vsm	standalone	-	alu_int,matrix	yes	-	no	no	24	ok	ok	match	no	groups:matrix
+research/experiments/fb52/val_digit.vsm	standalone	-	alu_int,fp,mau,matrix	yes	35	no	no	107	ok	ok	match	no	groups:matrix
+research/experiments/fb52/val_inv.vsm	standalone	-	alu_int,fp,mau,matrix	yes	23	no	no	67	ok	ok	match	no	groups:matrix
+research/experiments/fb52/val_x.vsm	standalone	-	alu_int,mau,matrix	yes	-	no	no	27	ok	ok	match	no	groups:matrix
+research/experiments/isa-analyst/logs/a_dump.vsm	standalone	-	unknown	no	-	no	self	0	asm_fail 134	parse_error	skip	no	official:asm_fail 134;groups:unknown;unknown_ops:j,m
+research/experiments/isa-analyst/progs/b_base.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvd.vsm	standalone	-	mv	no	-	no	no	2	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvp_l2bm_par.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvp_l2bm_single.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvp_pdm.vsm	standalone	-	mv	no	-	no	no	2	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvr.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvr2.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/b_mvr4.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/e2_l1bmd_extent.vsm	standalone	-	alu_int,l1bm	yes	-	no	self	5	ok	ok	match	no	groups:l1bm
+research/experiments/isa-analyst/progs/e2_multiwrite.vsm	standalone	-	alu_int,l1bm,l2bm	yes	3	no	self	5	ok	ok	match	no	groups:l1bm+l2bm
+research/experiments/isa-analyst/progs/e2_three_mem.vsm	standalone	-	alu_int,l1bm,l2bm	yes	7	no	self	9	ok	ok	match	no	groups:l1bm+l2bm
+research/experiments/isa-analyst/progs/t_base.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/t_l2bm_dram.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/t_mv_share.vsm	standalone	-	alu_int,mv	no	3	no	no	0	asm_fail 134	parse_error	skip	no	official:asm_fail 134;groups:mv
+research/experiments/isa-analyst/progs/t_mvp.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/experiments/isa-analyst/progs/t_nop.vsm	standalone	-	alu_int	no	3	no	no	6	ok	ok	match	yes	
+research/experiments/isa-analyst/progs/t_pdm_base.vsm	standalone	-	mv	no	-	no	self	1	ok	ok	match	no	groups:mv
+research/experiments/lowerbound/cand_aluf.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/lowerbound/cand_one_l2bmd.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/lowerbound/nine_word.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	no	9	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/packer/baseline-93.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_direct_l2bm_dram.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm	yes	58	yes	no	91	ok	ok	match	no	groups:matrix+l1bm+l2bm;lm_dyn
+research/experiments/packer/cand/c_direct_l2bm_dram_par.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm	yes	58	yes	no	91	ok	ok	match	no	groups:matrix+l1bm+l2bm;lm_dyn
+research/experiments/packer/cand/c_drop_nop85.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_drop_nop87.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_drop_nop8791.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_drop_nop88.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_drop_nop8889.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_drop_nop91.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	86	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_l1bm_to_dram.vsm	standalone	-	alu_int,l1bm,mv	yes	-	no	no	6	asm_fail 134	parse_error	skip	no	official:asm_fail 134;groups:l1bm+mv
+research/experiments/packer/cand/c_l2bm512_to_d0.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm	yes	58	yes	no	91	ok	ok	match	no	groups:matrix+l1bm+l2bm;lm_dyn
+research/experiments/packer/cand/c_mvd_only_then_dist.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_skip_gather1.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_skip_gather2.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/cand/c_skip_l1bmd.vsm	standalone	-	alu_int,fp,mau,matrix,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p01_word_half.vsm	standalone	-	alu_int	no	-	no	self	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+research/experiments/packer/probes/p02_pack_sim.vsm	standalone	-	alu_int	no	-	no	self	12	ok	ok	match	yes	
+research/experiments/packer/probes/p03_dump_stages.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	self	93	ok	ok	MISMATCH(PDM)	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p04_grf_write.vsm	standalone	-	alu_int	no	-	no	self	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+research/experiments/packer/probes/p05_mask.vsm	standalone	-	alu_int	no	-	no	self	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+research/experiments/packer/probes/p06_canvas.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	self	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p07_tag_2block.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	self	21	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/packer/probes/p08_tag_1block.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	self	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/packer/probes/p09_dar_scatter.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	self	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/packer/probes/p10_l1bm_dup.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	self	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p11_write4words.vsm	standalone	-	alu_int	no	-	no	self	0	asm_fail 134	ok	skip	no	official:asm_fail 134
+research/experiments/packer/probes/p12_2block_pack.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	35	yes	self	52	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p12_final_2block.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	35	yes	self	51	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p12b.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	35	yes	self	48	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p12c.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	35	yes	self	48	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/packer/probes/p13_flat_canvas_writes.vsm	standalone	-	alu_int	no	39	yes	self	7	ok	ok	match	no	lm_dyn
+research/experiments/parent/dead_chain_84.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	84	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/parent/no_nops.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	67	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/10.sumrow/base.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	16	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/10.sumrow/best.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	257	yes	testcase	15	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/10.sumrow/fail14_lm0port.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	257	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/10.sumrow/fail_lm1_inout.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	273	no	testcase	6	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_max>=256
+research/experiments/resched/10.sumrow/probe_fmmul.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix	yes	127	no	testcase	6	ok	ok	match	no	groups:matrix
+research/experiments/resched/10.sumrow/probe_fpassa_t.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp	no	127	yes	testcase	6	ok	ok	match	no	lm_dyn
+research/experiments/resched/10.sumrow/probe_peid_t.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int	no	127	yes	testcase	6	ok	ok	match	no	lm_dyn
+research/experiments/resched/10.sumrow/r15.vsm	solution	problems/10.sumrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	257	yes	testcase	15	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/11.maxrow/c_twolm.vsm	solution	problems/11.maxrow/testcase.vsm	alu_int,fp,matrix,l1bm	yes	127	yes	testcase	3	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_dyn
+research/experiments/resched/11.maxrow/d1.vsm	solution	problems/11.maxrow/testcase.vsm	-	no	127	no	both	0	ok	ok	match	yes	
+research/experiments/resched/11.maxrow/t1.vsm	solution	problems/11.maxrow/testcase.vsm	alu_int,fp	no	127	yes	testcase	6	ok	ok	match	no	lm_dyn
+research/experiments/resched/11.square-sum/base.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	11	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/11.square-sum/p_nonop.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm;lm_dyn
+research/experiments/resched/11.square-sum/p_tline2.vsm	solution	problems/challenge/11.square-sum/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm;lm_dyn
+research/experiments/resched/12.divrow-vec/best.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	28	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/12.divrow-vec/p1.vsm	solution	problems/12.divrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	28	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/13.exp-low-prec/answer.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau,l1bm	yes	7	no	testcase	10	ok	ok	match	no	groups:l1bm
+research/experiments/resched/13.exp-low-prec/c8.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau,l1bm	yes	7	no	testcase	8	ok	ok	match	no	groups:l1bm
+research/experiments/resched/13.exp-low-prec/exp8.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau,l1bm	yes	7	no	testcase	8	ok	ok	match	no	groups:l1bm
+research/experiments/resched/13.exp-low-prec/exp9.vsm	solution	problems/13.exp-low-prec/testcase.vsm	alu_int,fp,mau	no	7	no	testcase	9	ok	ok	match	yes	
+research/experiments/resched/14.exp/a14.vsm	solution	problems/14.exp/testcase.vsm	alu_int,mau,l1bm	yes	10	no	testcase	14	ok	ok	match	no	groups:l1bm
+research/experiments/resched/14.exp/exp14.vsm	solution	problems/14.exp/testcase.vsm	alu_int,mau,l1bm	yes	10	no	testcase	14	ok	ok	match	no	groups:l1bm
+research/experiments/resched/15.contains/c1.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,mau,matrix,l1bm	yes	512	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/15.contains/c2.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,fp,mau,matrix,l1bm	yes	512	yes	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/15.contains/c3.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,fp,mau,matrix,l1bm	yes	1024	yes	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/15.contains/c5_nohbfn.vsm	solution	problems/challenge/15.contains/testcase.vsm	alu_int,mau,matrix,l1bm	yes	512	yes	testcase	20	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/16.count-up/base.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	21	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/16.count-up/dbg.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	both	21	ok	ok	MISMATCH(PDM)	no	groups:l1bm+l2bm+mv
+research/experiments/resched/16.count-up/proto_mv.vsm	solution	problems/challenge/16.count-up/testcase.vsm	mv	no	-	no	testcase	7	ok	ok	match	no	groups:mv
+research/experiments/resched/16.count-up/v1.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	-	no	testcase	35	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/16.count-up/v2.vsm	solution	problems/challenge/16.count-up/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	-	no	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/16.onehot/c23.vsm	solution	problems/16.onehot/testcase.vsm	alu_int,mau,l1bm	yes	127	yes	testcase	23	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/17.transpose-mab/base.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,mau,l1bm	yes	2047	yes	testcase	15	ok	ok	match	no	groups:l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/17.transpose-mab/nodiag14.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,l1bm	yes	2047	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/17.transpose-mab/nonop.vsm	solution	problems/challenge/17.transpose-mab/testcase.vsm	alu_int,mau,l1bm	yes	2047	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/19.inversion/c30a.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	8	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/19.inversion/c30b.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/19.inversion/c30c.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/19.inversion/c30d.vsm	solution	problems/challenge/19.inversion/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	2040	yes	testcase	3	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/25.hsv2rgb/dbg.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	alu_int,fp,mau,l1bm	yes	11	no	testcase	12	ok	ok	match	no	groups:l1bm
+research/experiments/resched/25.hsv2rgb/t1.vsm	solution	problems/challenge/25.hsv2rgb/testcase.vsm	alu_int,mau	no	11	no	testcase	4	ok	ok	match	yes	
+research/experiments/resched/27.dram-ul-16-1024/base.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/c1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/c2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/c3.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/d11.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/d3.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/d5.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/d6.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/t1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/t2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/v_bar.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/v_noimm.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/v_t1.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/27.dram-ul-16-1024/v_t2.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/best.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/c1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/h1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	23	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r1.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r2.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	3	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/r3.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	emu_fail 134	unsupported	skip	no	official:emu_fail 134;groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/t2.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp	no	47	no	testcase	1	ok	ok	match	yes	
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/v3.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	29	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/39.matmul-trb-pkg-lmdram-256-1024-16/v4.vsm	solution	problems/39.matmul-trb-pkg-lmdram-256-1024-16/testcase.vsm	fp,matrix,l1bm,l2bm,mv	yes	47	no	testcase	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv
+research/experiments/resched/48.matmul/base.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	61	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/best.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	58	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	17	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c2.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	23	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c3.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c4.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c5.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	59	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c6.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	58	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/c7_nonop.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	48	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/p1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/sh1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	60	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/t1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	60	asm_fail 134	unsupported	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/48.matmul/t2.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	59	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/5.abs/base.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau,l1bm	yes	43	no	testcase	13	ok	ok	match	no	groups:l1bm
+research/experiments/resched/5.abs/probe1.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau	no	43	no	testcase	10	ok	ok	match	yes	
+research/experiments/resched/5.abs/probe2.vsm	solution	problems/challenge/5.abs/testcase.vsm	alu_int,mau	no	43	no	testcase	9	ok	ok	match	yes	
+research/experiments/resched/6.fadd-mul/dbg.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	-	no	63	no	both	0	ok	ok	match	yes	
+research/experiments/resched/6.fadd-mul/ktest.vsm	solution	problems/challenge/6.fadd-mul/testcase.vsm	alu_int,mau	no	63	no	testcase	7	ok	ok	match	yes	
+research/experiments/resched/6.subrow-vec/best.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	22	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/6.subrow-vec/cand22.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	22	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/6.subrow-vec/cand23.vsm	solution	problems/6.subrow-vec/testcase.vsm	alu_int,fp,mau,l1bm	yes	159	yes	testcase	23	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/8.sumcol/base.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/best.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c5bar.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c5t.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c6a.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c6b.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	33	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c6bar.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/8.sumcol/c7a.vsm	solution	problems/8.sumcol/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	7	yes	testcase	7	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/challenge-mid/14.mat-sq/base.vsm	solution	problems/challenge/14.mat-sq/testcase.vsm	fp,matrix	yes	31	no	testcase	10	ok	ok	match	no	groups:matrix
+research/experiments/resched/challenge-mid/18.inversion-small/base.vsm	solution	problems/challenge/18.inversion-small/testcase.vsm	alu_int,mau,matrix,l1bm	yes	2044	yes	testcase	9	ok	ok	match	no	groups:matrix+l1bm;lm_max>=256;lm_dyn
+research/experiments/resched/challenge-mid/21.hello-world/base.vsm	solution	problems/challenge/21.hello-world/testcase.vsm	alu_int,mau,l1bm,l2bm,mv	yes	-	no	testcase	9	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/base.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	alu_int,mau,l1bm	yes	3	no	testcase	9	ok	ok	match	no	groups:l1bm
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/c8a.vsm	solution	problems/challenge/23.fizzbuzz-pe/testcase.vsm	alu_int,mau,l1bm	yes	3	no	testcase	8	ok	ok	match	no	groups:l1bm
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/full.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/challenge-mid/9.transpose-addr/base.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	alu_int,fp,mau	no	63	no	testcase	10	ok	ok	match	yes	
+research/experiments/resched/challenge-mid/9.transpose-addr/dirty10.vsm	solution	problems/challenge/9.transpose-addr/testcase.vsm	alu_int,fp,mau	no	63	no	testcase	10	ok	ok	match	yes	
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/a1.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	1	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/a2.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	1	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/d0.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dar-sweep/18.dram-ul-256-16/a1.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	3	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dar-sweep/18.dram-ul-256-16/a2.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/17.dram-dl-256-16/base.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	5	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/17.dram-dl-256-16/c4_nonop.vsm	solution	problems/17.dram-dl-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/18.dram-ul-256-16/base.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	6	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/18.dram-ul-256-16/c5_onenop.vsm	solution	problems/18.dram-ul-256-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/19.dram-dl-256-16p/base.vsm	solution	problems/19.dram-dl-256-16p/testcase.vsm	l1bm,l2bm,mv	yes	127	no	testcase	19	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/20.dram-ul-256-16p/base.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/dram-sweep/20.dram-ul-256-16p/c9_nomvwait.vsm	solution	problems/20.dram-ul-256-16p/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	127	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/dram-sweep/21.dram-dl-256-16-l2b/base.vsm	solution	problems/21.dram-dl-256-16-l2b/testcase.vsm	l1bm,l2bm,mv	yes	63	no	testcase	12	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/22.dram-dl-1024-16/base.vsm	solution	problems/22.dram-dl-1024-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/23.dram-dl-256-1024/base.vsm	solution	problems/23.dram-dl-256-1024/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	68	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/24.dram-dl-16/base.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	4	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/24.dram-dl-16/best.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	3	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	3	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3_bad16.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3m.vsm	solution	problems/24.dram-dl-16/testcase.vsm	l1bm,l2bm,mv	yes	1	no	testcase	3	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/25.dram-ul-16/base.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	4	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/25.dram-ul-16/c3_nonop.vsm	solution	problems/25.dram-ul-16/testcase.vsm	l1bm,l2bm,mv	yes	7	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/26.dram-dl-16-1024/base.vsm	solution	problems/26.dram-dl-16-1024/testcase.vsm	l1bm,l2bm,mv	yes	15	no	testcase	39	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/27.dram-ul-16-1024/base.vsm	solution	problems/27.dram-ul-16-1024/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	15	yes	testcase	13	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/dram-sweep/28.dram-dl-16-16/base.vsm	solution	problems/28.dram-dl-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	7	ok	ok	MISMATCH(L1BM,L2BM,LM0)	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/29.dram-ul-16-16/base.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	8	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/dram-sweep/29.dram-ul-16-16/c7_flat_mvr.vsm	solution	problems/29.dram-ul-16-16/testcase.vsm	l1bm,l2bm,mv	yes	31	no	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/30.dram-dl-256/base.vsm	solution	problems/30.dram-dl-256/testcase.vsm	alu_int,fp,mau,l1bm,l2bm,mv	yes	31	no	testcase	10	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/experiments/resched/dram-sweep/31.dram-ul-256/base.vsm	solution	problems/31.dram-ul-256/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	7	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/dram-sweep/31.dram-ul-256/c6_onenop.vsm	solution	problems/31.dram-ul-256/testcase.vsm	alu_int,l1bm,l2bm,mv	yes	31	yes	testcase	0	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/37/best.vsm	standalone	-	fp,matrix	yes	63	no	no	13	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/37/c1.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	63	yes	no	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/37/c2.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	63	yes	no	14	ok	unsupported	skip	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/37/c3.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	63	yes	no	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/37/h13.vsm	standalone	-	fp,matrix	yes	63	no	no	13	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/38/best.vsm	standalone	-	fp,matrix,l1bm	yes	63	no	no	15	ok	ok	match	no	groups:matrix+l1bm
+research/experiments/resched/matmul-sweep/38/h15.vsm	standalone	-	fp,matrix,l1bm	yes	63	no	no	15	ok	ok	match	no	groups:matrix+l1bm
+research/experiments/resched/matmul-sweep/42/best.vsm	standalone	-	fp,matrix	yes	39	no	no	9	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/42/h9.vsm	standalone	-	fp,matrix	yes	39	no	no	9	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/44/best.vsm	standalone	-	fp,matrix	yes	31	no	no	10	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/44/h10.vsm	standalone	-	fp,matrix	yes	31	no	no	10	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/44/h11.vsm	standalone	-	fp,matrix	yes	31	no	no	11	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/45/best.vsm	standalone	-	fp,matrix	yes	31	no	no	9	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/45/h9.vsm	standalone	-	fp,matrix	yes	31	no	no	9	ok	ok	match	no	groups:matrix
+research/experiments/resched/matmul-sweep/46/best.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	no	21	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/46/n1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/46/n2.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/46/n3.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/46/r21.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	15	yes	no	21	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/resched/matmul-sweep/47/b2.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	129	yes	no	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/47/b3.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	129	yes	no	10	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/47/best.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	80	yes	no	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/47/d3.vsm	standalone	-	alu_int,fp,matrix,l1bm	yes	80	yes	no	14	ok	ok	match	no	groups:matrix+l1bm;lm_dyn
+research/experiments/resched/matmul-sweep/48/s1.vsm	standalone	-	alu_int,fp,matrix,l1bm,l2bm,mv	yes	527	yes	no	20	asm_fail 134	ok	skip	no	official:asm_fail 134;groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
+research/experiments/resched/mnist-small/1.a-b/base.vsm	solution	problems/1.a-b/testcase.vsm	alu_int,mau	no	15	no	testcase	3	ok	ok	match	yes	
+research/experiments/resched/mnist-small/15.onehot-mini/base.vsm	solution	problems/15.onehot-mini/testcase.vsm	alu_int,mau,l1bm	yes	7	no	testcase	7	ok	ok	match	no	groups:l1bm
+research/experiments/resched/mnist-small/2.fmul7/base.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	5	ok	ok	match	yes	
+research/experiments/resched/mnist-small/2.fmul7/f4_immlm0.vsm	solution	problems/2.fmul7/testcase.vsm	alu_int,mau	no	15	no	testcase	0	asm_fail 134	unsupported	skip	no	official:asm_fail 134
+research/experiments/resched/mnist-small/7.sumcol-mini/base.vsm	solution	problems/7.sumcol-mini/testcase.vsm	fp,mau	no	9	no	testcase	4	ok	ok	match	yes	
+research/experiments/resched/mnist-small/7.sumcol-mini/s3_twolm0.vsm	solution	problems/7.sumcol-mini/testcase.vsm	fp,mau	no	9	no	testcase	1	asm_fail 134	unsupported	skip	no	official:asm_fail 134
+research/experiments/resched/mnist-small/7.sumcol-mini/s4_l1bm.vsm	solution	problems/7.sumcol-mini/testcase.vsm	alu_int,l1bm	yes	7	yes	testcase	4	ok	ok	match	no	groups:l1bm;lm_dyn
+research/experiments/resched/mnist-small/9.sumrow-mini/base.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,mau,matrix	yes	7	no	testcase	6	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/best.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,mau,matrix	yes	7	no	testcase	5	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/c4a.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,matrix	yes	7	no	testcase	4	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/c4b.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,matrix	yes	7	no	testcase	4	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/c5a.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,mau,matrix	yes	7	no	testcase	5	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/p1.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,matrix	yes	7	no	testcase	3	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/p2.vsm	solution	problems/9.sumrow-mini/testcase.vsm	alu_int,fp,matrix	yes	7	no	testcase	3	ok	ok	match	no	groups:matrix
+research/experiments/resched/mnist-small/9.sumrow-mini/tc_tight.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/22.bit-reverse/c9a.vsm	solution	problems/challenge/22.bit-reverse/testcase.vsm	alu_int,matrix,l1bm	yes	3	no	testcase	9	ok	ok	match	no	groups:matrix+l1bm
+research/experiments/resched/small-alu/22.bit-reverse/tc0.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/22.bit-reverse/tc1.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/22.bit-reverse/tc2.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/22.bit-reverse/tc3.vsm	testcase	-	-	no	3	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/24.log2/d7.vsm	solution	problems/challenge/24.log2/testcase.vsm	alu_int,mau,l1bm	yes	15	no	testcase	7	ok	ok	match	no	groups:l1bm
+research/experiments/resched/small-alu/24.log2/tc0.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/24.log2/tc1.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/24.log2/tc2.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+research/experiments/resched/small-alu/7.mul2/d9.vsm	solution	problems/challenge/7.mul2/testcase.vsm	fp,mau,l1bm	yes	47	no	testcase	9	ok	ok	match	no	groups:l1bm
+research/experiments/superopt/best/93w_9b36e271ad.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/base93.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/del_18b_fold32_at_L2.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/t1_L17_host_immT.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/t1b_L21_host_immT.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/t2_imax_25_28_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/t3_imin_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/t4_w25eq8_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/v1_32both_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/v2_56at25_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/v3_32at16_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/v4_32at16_keep.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/experiments/twoblock/const/v5_32at25only_del18.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/preliminary/fizzbuzz-delivery/vsm/aluf_92.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+research/preliminary/fizzbuzz-delivery/vsm/delivery_tail.vsm	standalone	-	l1bm,l2bm,mv	yes	-	no	no	8	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/preliminary/fizzbuzz-delivery/vsm/mvp16384.vsm	standalone	-	mv	no	-	no	no	1	ok	ok	match	no	groups:mv
+research/preliminary/fizzbuzz-delivery/vsm/nine_word.vsm	standalone	-	alu_int,l1bm,l2bm,mv	yes	-	no	no	9	ok	ok	match	no	groups:l1bm+l2bm+mv
+research/preliminary/fizzbuzz-delivery/vsm/one_l2bmd.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+solutions/00_baseline_93.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	93	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+solutions/01_nearmiss_92.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	58	yes	no	92	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_dyn
+solutions/02_fable_47.vsm	standalone	-	alu_int,fp,mau,l1bm,l2bm,mv	yes	1857	yes	no	47	ok	ok	match	no	groups:l1bm+l2bm+mv;lm_max>=256;lm_dyn
+testcases/add_colvec.vsm	testcase	-	-	no	9	no	testcase	0	ok	ok	match	yes	
+testcases/div_row.vsm	testcase	-	-	no	159	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_1024_16.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_16.vsm	testcase	-	-	no	1	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_16_1024.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_16_16.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_256.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_256_1024.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_256_16.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_256_16_l2b.vsm	testcase	-	-	no	63	no	testcase	0	ok	ok	match	yes	
+testcases/dram_dl_256_16p.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_16.vsm	testcase	-	-	no	1	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_16_1024.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_16_16.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_256.vsm	testcase	-	-	no	31	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_256_16.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/dram_ul_256_16p.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+testcases/exp.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/gather_sum.vsm	testcase	-	-	no	159	no	testcase	0	ok	ok	match	yes	
+testcases/mat_sub.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+testcases/matmul_notr_pkg_lm_256_16_16.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+testcases/matmul_tra_pkg_lmdram_16_256_1024.vsm	testcase	-	-	no	95	no	testcase	0	ok	ok	match	yes	
+testcases/matmul_tra_pkg_lmdram_16_256_16.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+testcases/matmul_trb_pkg_lm_256_16_16.vsm	testcase	-	-	no	39	no	testcase	0	ok	ok	match	yes	
+testcases/matmul_trb_pkg_lmdram_256_1024_16.vsm	testcase	-	-	no	47	no	testcase	0	ok	ok	match	yes	
+testcases/max_row.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+testcases/mul_const.vsm	testcase	-	-	no	15	no	testcase	0	ok	ok	match	yes	
+testcases/onehot.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+testcases/relu.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/relu_grad.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/sub_rowvec.vsm	testcase	-	-	no	159	no	testcase	0	ok	ok	match	yes	
+testcases/sum_col.vsm	testcase	-	-	no	7	no	testcase	0	ok	ok	match	yes	
+testcases/sum_row.vsm	testcase	-	-	no	127	no	testcase	0	ok	ok	match	yes	
+viz/core/benchmarks/mnist_train_step.vsm	standalone	-	alu_int,fp,mau,matrix,l1bm,l2bm,mv	yes	527	yes	no	1395	ok	ok	match	no	groups:matrix+l1bm+l2bm+mv;lm_max>=256;lm_dyn
