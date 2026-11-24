@@ -3,6 +3,7 @@
 // mn_pe_lsu (sequencer, address generation, write path, T, mask and base registers)
 // + mn_pe_store (BSRAM). See mn_pe_lsu.v for the step protocol and the host port.
 // For a virtual PE (WP34) instantiate mn_pe_lsu with another store on the same channels.
+// The 4 PEs of a time-multiplexed MAB use mn_mab_mem (rtl/mab, WP30) instead.
 //
 // BSRAM: 8 blocks for LM_AW <= 9 and GRF_AW <= 8 (64 bits wide, 32-bit lanes; WP07 budget).
 module mn_pe_mem #(
@@ -82,7 +83,7 @@ module mn_pe_mem #(
     );
 
     mn_pe_store #(.LM_AW(LM_AW), .GRF_AW(GRF_AW)) u_store (
-        .clk(clk), .rst(rst),
+        .clk(clk), .rst(rst), .pe(2'd0),
         .req_valid(st_req_valid), .req_ready(st_req_ready), .req_we(st_req_we),
         .req_addr(st_req_addr), .req_wdata(st_req_wdata), .req_wmask(st_req_wmask),
         .rsp_valid(st_rsp_valid), .rsp_rdata(st_rsp_rdata)

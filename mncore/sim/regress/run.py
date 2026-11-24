@@ -1,25 +1,35 @@
 #!/usr/bin/env python3
-"""WP20 regression: the corpus programs comparable in the 1-PE mode, on the RTL core.
+"""WP20 / WP30 regression: the corpus programs comparable on the reduced core, on the RTL.
 
-usage: python mncore/sim/regress/run.py [--only TEXT] [-j N] [--official-jobs N]
-           [--skip-official] [--force-official] [--table FILE] [--keep]
+usage: python mncore/sim/regress/run.py [--pes 1|4] [--only TEXT] [-j N] [--official-jobs N]
+           [--skip-official] [--force-official] [--table FILE] [--keep] [--define D]
 
-1. official (WSL, cached in build/<name>/): every corpus.tsv row with pe1 = yes is composed like
-   the golden tools do (goldenlib.load_program) with the probe "pe" (the whole state of PE
-   n0c0b0m0p0 at the end) and run on the official assemble3 (flat, no packer) and emulator.
+--pes 1 (default, WP20): the 1-PE core (mn_core N_PE = 1, LM 512 long words), PE n0c0b0m0p0.
+--pes 4 (WP30): one MAB of 4 PEs on the time-multiplexed core (mn_core N_PE = 4, LM_AW = 8:
+   LM 256 long words per PE), PEs n0c0b0m0p0..p3; results in build/mab/ (official runs with the
+   4-PE probe are cached there).
+
+1. official (WSL, cached in build/<name>/ or build/mab/<name>/): every corpus.tsv row with
+   pe1 = yes is composed like the golden tools do (goldenlib.load_program) with a probe (the
+   whole state of the implemented PEs at the end: "pe" for n0c0b0m0p0; for 4 PEs LM0/LM1/GRF0/GRF1
+   long words 0..255, T and OMR of p0..p3) and run on the official assemble3 (flat, no packer)
+   and emulator, on all 4096 PEs (contract 06 section 3 (b)).
+   pe1 = yes also selects the programs comparable on 1 MAB: only alu_int / fp / mau instructions
+   (no L1BM, L2BM, MV, matrix), LM inside 256 long words, no run-time LM addresses (corpus.py).
+   msl / msr / bfn / bfe stay inside the MAB, so the 4 implemented PEs compute what the chip does.
 2. rtl: official.asm (the emulator's whole input) becomes a tb_core script with the steps of
    `mnhost.py run` (PROTOCOL.md section 6): load the instruction memory in windows of
-   IMEM_DEPTH entries, RUN split at the d lines, d set -> WR_MEM, d get -> RD_MEM. Only
-   PE n0c0b0m0p0 exists; d set / d get of other locations and spaces are skipped, `r` lines
+   IMEM_DEPTH entries, RUN split at the d lines, d set -> WR_MEM, d get -> RD_MEM. Only the
+   implemented PEs exist; d set / d get of other locations and spaces are skipped, `r` lines
    (DRAM data) too. The script runs on iverilog (tb_core, mn_core).
 3. compare: the RTL's d get values become ndmp records like norm_gpfn3 makes them from the
    emulator's dump (word access -> LM0W.., T 2c+k, OMR entry*4+cycle), and are compared with
-   official.ndmp on PE n0c0b0m0p0: LM0 LM1 GRF0 GRF1 (+ W forms) inside the implemented depth
-   (LM 2**LM_AW, GRF 2**GRF_AW long words), T and OMR.
+   official.ndmp on the implemented PEs: LM0 LM1 GRF0 GRF1 (+ W forms) inside the implemented
+   depth (LM 2**LM_AW, GRF 2**GRF_AW long words), T and OMR.
 
 Each program is classified: pass, mismatch(<spaces>), E_UNSUPPORTED <field> (<what>),
-E_RANGE, E_DECODE, timeout, error. Results: build/results.tsv (and --table FILE, a copy that
-can be committed), and a summary by corpus group on stdout.
+E_RANGE, E_DECODE, timeout, error. Results: build/results.tsv (build/mab/results.tsv) (and
+--table FILE, a copy that can be committed), and a summary by corpus group on stdout.
 """
 from __future__ import annotations
 
@@ -45,16 +55,51 @@ import ndmp  # noqa: E402
 import mnhost  # noqa: E402
 import simrun  # noqa: E402  (also puts OSS CAD Suite on PATH)
 
-# must match tb_core / mn_core
+# must match tb_core / mn_core (the 1-PE configuration; configure(4) switches to the MAB)
 IMEM_DEPTH = 512
 LM_LW = 512      # 2**LM_AW long words
 GRF_LW = 256     # 2**GRF_AW long words
 PE_LOC = "n0c0b0m0p0"
 PE_LOC_CODE = 0
+N_PE = 1
+PE_LOCS = [PE_LOC]          # implemented PEs (ndmp location text)
+PROBE = "pe"                # goldenlib probe, or "mab4" (below)
+TB_DEFINES: list = []       # tb_core defines of the configuration
 
 SP_ID = {"LM0": 0x01, "LM1": 0x02, "GRF0": 0x03, "GRF1": 0x04, "T": 0x05, "OMR": 0x10}
 WORD_SPACES = ("LM0", "LM1", "GRF0", "GRF1")
 DEPTH_LW = {"LM0": LM_LW, "LM1": LM_LW, "GRF0": GRF_LW, "GRF1": GRF_LW, "T": 8}
+
+
+def configure(npe: int) -> None:
+    """Switches the module to the 1-PE core (default) or the MAB of 4 PEs (WP30)."""
+    global N_PE, LM_LW, PE_LOCS, PROBE, TB_DEFINES, BUILD
+    if npe == 1:
+        return
+    if npe != 4:
+        raise SystemExit("--pes must be 1 or 4")
+    N_PE = 4
+    LM_LW = 256                    # mn_core N_PE = 4, LM_AW = 8 (contract LM_DEPTH)
+    PE_LOCS = [f"n0c0b0m0p{p}" for p in range(4)]
+    PROBE = "mab4"
+    TB_DEFINES = ["TB_NPE=4"]
+    BUILD = HERE / "build" / "mab"
+    DEPTH_LW.update(LM0=LM_LW, LM1=LM_LW)
+
+
+def probe_text() -> str:
+    """The probe of the configuration: the whole state of the implemented PEs at the end."""
+    if PROBE == "pe":
+        return "".join(line + "\n" for line in gl.probe_lines("pe"))
+    lines = []
+    for pe in PE_LOCS:
+        lines += [f"d get $lm0{pe} {LM_LW}", f"d get $ln0{pe} {LM_LW}", f"d get $lr0{pe} {GRF_LW}",
+                  f"d get $ls0{pe} {GRF_LW}", f"d get $llt{pe} 4", f"d get $omr1{pe} 15"]
+    return "".join(line + "\n" for line in lines)
+
+
+def topology() -> "mnhost.Topology":
+    return mnhost.Topology((1, 1, 1, 1, N_PE))
 
 D_RE = re.compile(r"^d\s+(set|get)([dfh]?)\s+(\S+)\s+(\d+)\s*(.*)$")
 MEM_RE = re.compile(r"^\$(ll|l)?(omr|[rsmntbcpd])(\d*)((?:[ncbmp]\d+)*)$")
@@ -111,10 +156,17 @@ class DLine:
             self.payload = mnhost.parse_payload(rest)
 
     def on_pe(self) -> bool:
-        """Whether this line touches PE n0c0b0m0p0 (the only PE of the 1-PE core)."""
+        """Whether this line touches an implemented PE."""
+        return bool(self.pe_locs())
+
+    def pe_locs(self) -> list:
+        """The implemented PEs this line touches, as (loc code, location text)."""
         if self.space not in SP_ID:
-            return False
-        return bool(mnhost.Topology().locations(self.space if self.space != "OMR" else "T", self.loc))
+            return []
+        out = []
+        for f in topology().locations(self.space if self.space != "OMR" else "T", self.loc):
+            out.append((mnhost.loc_code(**f), mnhost.loc_text("T", f)))
+        return out
 
     def mnhost_op(self) -> "mnhost.DOp":
         return mnhost.DOp(op=self.op, space=self.space, width=self.width, addr=self.addr, loc=self.loc,
@@ -199,16 +251,15 @@ def make_script(entries, events):
         if pos > pc:
             run_range(pc, pos)
             pc = pos
-        if not d.on_pe():
-            continue
-        if d.op == "set":
-            for sp, lw, m, v in set_writes(d):
-                lines.append(f"W {sp:x} {PE_LOC_CODE:x} {lw:x} {m:x} {v:x}")
-        else:
-            tag = len(gets)
-            gets.append((tag, d))
-            for sp, lo, n in get_reads(d):
-                lines.append(f"R {tag:x} {sp:x} {PE_LOC_CODE:x} {lo:x} {n:x}")
+        for code, lt in d.pe_locs():
+            if d.op == "set":
+                for sp, lw, m, v in set_writes(d):
+                    lines.append(f"W {sp:x} {code:x} {lw:x} {m:x} {v:x}")
+            else:
+                tag = len(gets)
+                gets.append((tag, d, lt))
+                for sp, lo, n in get_reads(d):
+                    lines.append(f"R {tag:x} {sp:x} {code:x} {lo:x} {n:x}")
     if len(entries) > pc:
         run_range(pc, len(entries))
     lines.append("E")
@@ -216,9 +267,10 @@ def make_script(entries, events):
 
 
 def rtl_records(gets, reads):
-    """ndmp records of the RTL's d gets, in program order (like norm_gpfn3 on the emulator dump)."""
+    """ndmp records of the RTL's d gets, in program order (like norm_gpfn3 on the emulator dump).
+    gets: (tag, DLine, location text) per d get and implemented PE."""
     recs = []
-    for tag, d in gets:
+    for tag, d, loc in gets:
         sp = SP_ID[d.space]
 
         def lw_val(a):
@@ -236,33 +288,33 @@ def rtl_records(gets, reads):
                         if w is None:
                             continue
                         v = (w >> (4 * c)) & 0xF
-                    recs.append(("OMR", PE_LOC, e * 4 + c, v))
+                    recs.append(("OMR", loc, e * 4 + c, v))
         elif d.space == "T":
             for i in range(d.count):
                 c = (d.addr + i) % 4
                 for k in range(2 if d.width == "ll" else 1):
                     w = lw_val(2 * c + k)
                     if w is not None:
-                        recs.append(("T", PE_LOC, 2 * c + k, w))
+                        recs.append(("T", loc, 2 * c + k, w))
         elif d.width == "w":
             for i in range(d.count):
                 a = d.addr + i
                 w = lw_val(a >> 1)
                 if w is not None:
-                    recs.append((d.space + "W", PE_LOC, a, (w >> 32) if a % 2 == 0 else w & 0xFFFFFFFF))
+                    recs.append((d.space + "W", loc, a, (w >> 32) if a % 2 == 0 else w & 0xFFFFFFFF))
         else:
             per = 2 if d.width == "ll" else 1
             base = d.addr >> 1
             for i in range(d.count * per):
                 w = lw_val(base + i)
                 if w is not None:
-                    recs.append((d.space, PE_LOC, base + i, w))
+                    recs.append((d.space, loc, base + i, w))
     return ndmp.canonical(recs)
 
 
 def keep_record(key) -> bool:
     space, loc, addr = key
-    if loc != PE_LOC:
+    if loc not in PE_LOCS:
         return False
     if space in DEPTH_LW:
         return addr < DEPTH_LW[space]
@@ -280,7 +332,13 @@ def official_stage(rows, jobs: int, force: bool, log):
     todo = []
     for r in rows:
         vsm = gl.MNCORE / r["path"]
-        prog = gl.load_program(vsm, "auto", "pe")
+        if PROBE == "pe":
+            prog = gl.load_program(vsm, "auto", "pe")
+        else:
+            prog = gl.load_program(vsm, "auto", "none")
+            prog.probe = PROBE
+            prog.probe_text = probe_text()
+            prog.meta["probe"] = PROBE
         job = BUILD / prog_name(r["path"])
         key = hashlib.sha1("\0".join([prog.prefix, prog.main_vsm, prog.suffix_vsm, prog.output,
                                       prog.probe_text]).encode()).hexdigest()
@@ -307,6 +365,7 @@ def official_stage(rows, jobs: int, force: bool, log):
 # --------------------------------------------------------------------------------------- rtl
 def compile_tb(log, defines=()) -> Path:
     files, cfg = simrun.parse_files("core")
+    defines = list(TB_DEFINES) + list(defines)
     vvp = BUILD / ("sim" + "".join(f"_{d.replace('=', '')}" for d in defines) + ".vvp")
     cmd = ["iverilog", "-g2012", "-Wall", "-Wno-timescale", "-o", str(vvp)]
     cmd += [f"-D{d}" for d in defines]
@@ -347,7 +406,9 @@ def classify_stop(reason: int, info: int, entry_word):
     return f"E_UNSUPPORTED {name}", what
 
 
-def run_one(row, vvp: Path, timeout: int, keep: bool):
+def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
+    """tag: suffix of the configuration (e.g. _TB_FPALU0) on the RTL files of the job directory,
+    so that runs of different configurations can share the cached official results."""
     name = prog_name(row["path"])
     job = BUILD / name
     res = {"path": row["path"], "groups": row["groups"], "kind": row["kind"], "result": "", "detail": "",
@@ -364,16 +425,17 @@ def run_one(row, vvp: Path, timeout: int, keep: bool):
         res["result"], res["detail"] = "script_error", str(e)
         return res
     res["words"] = len(entries)
-    (job / "rtl.scr").write_text(script, encoding="utf-8", newline="\n")
+    scr = job / f"rtl{tag}.scr"
+    scr.write_text(script, encoding="utf-8", newline="\n")
     try:
-        r = subprocess.run(["vvp", "-n", str(vvp), f"+script={(job / 'rtl.scr').as_posix()}", "+quiet"],
+        r = subprocess.run(["vvp", "-n", str(vvp), f"+script={scr.as_posix()}", "+quiet"],
                            cwd=ROOT, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         res["result"], res["detail"] = "timeout", f"{timeout} s"
         return res
     out = r.stdout
     if keep:
-        (job / "rtl.out").write_text(out, encoding="utf-8", newline="\n")
+        (job / f"rtl{tag}.out").write_text(out, encoding="utf-8", newline="\n")
     reads = {}
     stops = []
     for line in out.splitlines():
@@ -413,19 +475,19 @@ def run_one(row, vvp: Path, timeout: int, keep: bool):
     off, _ = ndmp.read(str(job / "official.ndmp"))
     a = {k: v for k, v in off.items() if keep_record(k)}
     b = {k: v for k, v in rtl.items() if keep_record(k)}
-    ndmp.write(str(job / "rtl.ndmp"), rtl, {"producer": "rtl tb_core", "src": row["path"]})
+    ndmp.write(str(job / f"rtl{tag}.ndmp"), rtl, {"producer": "rtl tb_core", "src": row["path"]})
     mism = sorted(k for k in a.keys() & b.keys() if a[k] != b[k])
     only_a = sorted(set(a) - set(b))
     only_b = sorted(set(b) - set(a))
     res["compared"] = len(a.keys() & b.keys())
     # the program must not use LM beyond the implemented depth (the RTL would trap)
-    beyond = sum(1 for (s, l, ad), v in off.items() if l == PE_LOC and s in ("LM0", "LM1") and ad >= LM_LW and v)
+    beyond = sum(1 for (s, l, ad), v in off.items() if l in PE_LOCS and s in ("LM0", "LM1") and ad >= LM_LW and v)
     if mism or only_a or only_b:
         sp = Counter(k[0] for k in mism + only_a + only_b)
         res["result"] = "mismatch(" + ",".join(sorted(sp)) + ")"
         lines = [f"{k[0]} {k[1]} {k[2]:#06x} official={a.get(k, 0):016x} rtl={b.get(k, 0):016x}"
                  for k in (mism + only_a + only_b)[:20]]
-        (job / "cmp.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (job / f"cmp{tag}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
         res["detail"] = f"{len(mism)} differ, {len(only_a)} only official, {len(only_b)} only rtl"
     elif beyond:
         res["result"] = "mismatch(LM beyond depth)"
@@ -445,6 +507,7 @@ def group_of(row) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--pes", type=int, default=1, help="1: the 1-PE core (WP20); 4: one MAB of 4 PEs (WP30)")
     ap.add_argument("--only", help="only programs whose path contains this text")
     ap.add_argument("-j", "--jobs", type=int, default=8, help="parallel RTL simulations")
     ap.add_argument("--official-jobs", type=int, default=12)
@@ -456,27 +519,41 @@ def main(argv=None) -> int:
     ap.add_argument("--vvp", help="use this compiled tb_core instead of compiling one (e.g. a mutated RTL)")
     ap.add_argument("--define", action="append", default=[],
                     help="iverilog define for tb_core, e.g. TB_FPALU=0 or TB_MAU=0 (reduced cores)")
+    ap.add_argument("--also-lm", action="store_true",
+                    help="also the programs that pe1 leaves out only for their LM addresses (run-time "
+                         "addresses or beyond 256 long words): they pass if they stay inside the LM, "
+                         "else the RTL stops with E_RANGE (results<tag>_lm.tsv)")
     a = ap.parse_args(argv)
 
     def log(s):
         print(s, flush=True)
 
+    configure(a.pes)
     BUILD.mkdir(parents=True, exist_ok=True)
     rows = []
+    lm_only = {"lm_dyn", "lm_max>=256"}
+
+    def selected(r) -> bool:
+        if r.get("pe1") == "yes":
+            return not a.also_lm
+        reasons = set(filter(None, r.get("pe1_reason", "").split(";")))
+        return a.also_lm and r.get("official") == "ok" and bool(reasons) and reasons <= lm_only
+
     with open(ROOT / "mncore" / "tools" / "golden" / "corpus.tsv", encoding="utf-8") as f:
         head = f.readline().rstrip("\n").split("\t")
         for line in f:
             r = dict(zip(head, line.rstrip("\n").split("\t")))
-            if r.get("pe1") == "yes" and (not a.only or a.only in r["path"]):
+            if selected(r) and (not a.only or a.only in r["path"]):
                 rows.append(r)
-    log(f"[regress] {len(rows)} programs with pe1 = yes")
+    log(f"[regress] {len(rows)} programs " + ("left out of pe1 only for LM" if a.also_lm else "with pe1 = yes"))
     if not a.skip_official:
         official_stage(rows, a.official_jobs, a.force_official, log)
     vvp = Path(a.vvp).resolve() if a.vvp else compile_tb(log, a.define)
+    ftag = "".join(f"_{d.replace('=', '')}" for d in a.define)   # RTL files of the configuration
     t0 = time.time()
     results = []
     with cf.ThreadPoolExecutor(max_workers=a.jobs) as ex:
-        futs = {ex.submit(run_one, r, vvp, a.timeout, a.keep): r for r in rows}
+        futs = {ex.submit(run_one, r, vvp, a.timeout, a.keep, ftag): r for r in rows}
         for i, fu in enumerate(cf.as_completed(futs), 1):
             res = fu.result()
             results.append(res)
@@ -486,7 +563,7 @@ def main(argv=None) -> int:
     results.sort(key=lambda r: r["path"])
     cols = ["path", "kind", "groups", "words", "steps", "clocks", "compared", "result", "detail"]
     text = "\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
-    tag = "".join(f"_{d.replace('=', '')}" for d in a.define)
+    tag = "".join(f"_{d.replace('=', '')}" for d in a.define) + ("_lm" if a.also_lm else "")
     (BUILD / f"results{tag}.tsv").write_text(text, encoding="utf-8", newline="\n")
     if a.table:
         Path(a.table).write_text(text, encoding="utf-8", newline="\n")

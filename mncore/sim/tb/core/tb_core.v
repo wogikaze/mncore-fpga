@@ -20,7 +20,9 @@
 //   E                                  end
 //   # ...                              comment
 // All numbers are hex. The last line is PASS (no failed check, no port error) or FAIL.
-// Compile with -DTB_FPALU=0 / -DTB_MAU=0 for the reduced cores (mncore/sim/regress/run.py --define).
+// Compile with -DTB_FPALU=0 / -DTB_MAU=0 for the reduced cores (mncore/sim/regress/run.py --define),
+// -DTB_NPE=4 for the time-multiplexed MAB of 4 PEs (WP30; then LM_AW = 8 unless -DTB_LMAW=n, and
+// -DTB_BFN=0 leaves out bfn / bfe). The 4 PEs are at loc 0..3 (n0c0b0m0p0..p3).
 `timescale 1ns/1ps
 `ifndef TB_FPALU
 `define TB_FPALU 1
@@ -28,8 +30,17 @@
 `ifndef TB_MAU
 `define TB_MAU 1
 `endif
+`ifndef TB_NPE
+`define TB_NPE 1
+`endif
+`ifndef TB_BFN
+`define TB_BFN 1
+`endif
+`ifndef TB_LMAW
+`define TB_LMAW ((`TB_NPE > 1) ? 8 : 9)
+`endif
 module tb_core;
-    localparam IMEM_AW = 9, LM_AW = 9, GRF_AW = 8;
+    localparam IMEM_AW = 9, LM_AW = `TB_LMAW, GRF_AW = 8, NPE = `TB_NPE;
 
     reg clk = 1'b0;
     always #5 clk = ~clk;
@@ -60,7 +71,7 @@ module tb_core;
     wire [16:0] core_trap;
 
     mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW),
-              .FPALU(`TB_FPALU), .MAU(`TB_MAU)) dut (
+              .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN)) dut (
         .clk(clk), .rst(rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),
         .mw_loc(mw_loc), .mw_addr(mw_addr), .mw_data(mw_data), .mw_mask(mw_mask),
@@ -111,7 +122,7 @@ module tb_core;
     endtask
 
     // ------------------------------------------------------------------ script
-    integer fd, rc, maxclk, nchk, nfail, nerr, i, n, ctag, t0;
+    integer fd, rc, maxclk, nchk, nfail, nerr, i, n, ctag, t0, zp;
     reg [8*16-1:0] word;
     reg [7:0]   c;
     reg [447:0] ent;
@@ -122,7 +133,11 @@ module tb_core;
     reg [8*1024-1:0] line;
 
     initial begin
+`ifdef TB_SCRIPT
+        if (!$value$plusargs("script=%s", fname)) fname = `TB_SCRIPT;
+`else
         if (!$value$plusargs("script=%s", fname)) fname = "mncore/sim/tb/core/fixed/all.scr";
+`endif
         if (!$value$plusargs("maxclk=%d", maxclk)) maxclk = 2000000;
         quiet = $test$plusargs("quiet");
         nchk = 0; nfail = 0; nerr = 0;
@@ -149,23 +164,23 @@ module tb_core;
                         repeat (16) @(negedge clk);
                         rst = 1'b0;
                     end
-                    "Z": begin
+                    "Z": for (zp = 0; zp < NPE; zp = zp + 1) begin
                         for (i = 0; i < (1 << GRF_AW); i = i + 1) begin
-                            mem_write(8'h03, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
-                            mem_write(8'h04, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h03, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h04, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
                         end
                         for (i = 0; i < (1 << LM_AW); i = i + 1) begin
-                            mem_write(8'h01, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
-                            mem_write(8'h02, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h01, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h02, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
                         end
                         for (i = 0; i < 8; i = i + 1) begin
-                            mem_write(8'h05, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h05, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
                         end
                         for (i = 1; i < 16; i = i + 1) begin
-                            mem_write(8'h10, 16'd0, i, 8'hff, 64'd0, err); nerr = nerr + err;
+                            mem_write(8'h10, zp, i, 8'hff, 64'd0, err); nerr = nerr + err;
                         end
-                        mem_write(8'h11, 16'd0, 0, 8'hff, 64'd0, err); nerr = nerr + err;
-                        mem_write(8'h11, 16'd0, 1, 8'hff, 64'd0, err); nerr = nerr + err;
+                        mem_write(8'h11, zp, 0, 8'hff, 64'd0, err); nerr = nerr + err;
+                        mem_write(8'h11, zp, 1, 8'hff, 64'd0, err); nerr = nerr + err;
                     end
                     "I": begin
                         rc = $fscanf(fd, "%h %h", a0, ent);
