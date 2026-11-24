@@ -1,0 +1,12 @@
+# WP05 SDRAM controller: sdr_bus64 (contract bus) + sdr_ctrl, checked against a timing-checking SDRAM model.
+# python mncore/tools/simrun.py sdram --lint --synth
+top: tb_sdram
+rtl_top: sdr_bus64
+mncore/rtl/sdram/sdr_tmr.v
+mncore/rtl/sdram/sdr_ctrl.v
+mncore/rtl/sdram/sdr_fifo.v
+mncore/rtl/sdram/sdr_afifo.v
+mncore/rtl/sdram/sdr_bus64.v
+mncore/sim/tb/sdram/tb_sdr_model.v
+mncore/sim/tb/sdram/tb_sdr_env.v
+mncore/sim/tb/sdram/tb_sdram.v

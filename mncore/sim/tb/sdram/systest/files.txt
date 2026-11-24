@@ -1,0 +1,17 @@
+# WP05 board test design (mncore/fpga/sdram_test) with a small memory size, PLL model and SDRAM model.
+# python mncore/tools/simrun.py sdram/systest --lint --synth
+top: tb_sdram_systest
+rtl_top: sdram_test_top
+mncore/rtl/sdram/sdr_tmr.v
+mncore/rtl/sdram/sdr_ctrl.v
+mncore/rtl/sdram/sdr_fifo.v
+mncore/rtl/sdram/sdr_afifo.v
+mncore/rtl/sdram/sdr_bus64.v
+mncore/rtl/sdram/sdr_gw_pll.v
+mncore/rtl/sdram/sdr_gw_clkout.v
+mncore/fpga/sdram_test/sdr_test_uart_tx.v
+mncore/fpga/sdram_test/sdr_test_print.v
+mncore/fpga/sdram_test/sdr_test_ctl.v
+mncore/fpga/sdram_test/sdram_test_top.v
+mncore/sim/tb/sdram/tb_sdr_model.v
+mncore/sim/tb/sdram/systest/tb_sdram_systest.v
