@@ -287,7 +287,6 @@ module mn_alu_int #(
     wire [WP-1:0] rp_q;
     wire          vp;
     wire [63:0]   rot;    // a rotated right by rr in each lane (stage 2)
-    wire          m16_p = rp_q[11], m32_p = rp_q[10];   // lane width of the instruction in P
 
     // rotate right within the lanes by nsh (16-, 32- or 64-bit lanes)
     function [63:0] rotr;
@@ -314,6 +313,7 @@ module mn_alu_int #(
             reg          v;
             reg [63:0]   rq;     // a, rotated in place
             reg [23:0]   rrem;   // rotation still to do, per segment (the segments of a lane agree)
+            wire         m16_p = rp_q[11], m32_p = rp_q[10];   // lane width of the instruction in P
             wire [3:0]   s8 = {|rrem[23:21], |rrem[17:15], |rrem[11:9], |rrem[5:3]};   // >= 8
             wire [3:0]   s1 = ~s8 & {|rrem[20:18], |rrem[14:12], |rrem[8:6], |rrem[2:0]};
             wire [63:0]  r8 = rotr(rq, 8, m16_p, m32_p);
