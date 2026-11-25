@@ -2,7 +2,8 @@
 # the M2 core (N_PE = 4, M2 = 1) as one virtual MAB (N_MAB = 1, LM_AW = 8) on the directed programs of
 # the unit m2 (mncore/sim/tb/m2/fixed/all.scr, expected values from the official emulator or the reduced
 # Rust simulator): the same results as the BSRAM PEs, through the SDRAM store, the context engine and the
-# host engine. The units vpe16 / vpe_lm run the 64 PEs and the chip's LM (mncore/sim/tb/vpe16, vpe_lm).
+# host engine. The units vpe/m64 (N_MAB = 16, LM_AW = 11) and vpe/m64r (N_MAB = 16, LM_AW = 8) run the 64
+# PEs and the chip's LM (gen_vpe.py); vpe/mab and vpe/mat run the WP30 / WP36 programs on one virtual MAB.
 # Lint / synth: mn_vpe_harness (mn_core VPE = 1, N_MAB = 16, LM_AW = 11, the board's units).
 top: tb_core
 rtl_top: mn_vpe_harness

@@ -667,6 +667,10 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
             reads[(int(p[1], 16), int(p[2], 16), int(p[3], 16))] = int(p[4], 16)
         elif p[0] == "S":
             stops.append(p[1:])
+        elif p[0] == "VPE" and len(p) > 1 and p[1] == "words":
+            # WP34: clocks of the context loads / MAB starts / MAB passes / context saves, check-only
+            # passes, SDRAM requests (tb_core prints the totals once)
+            res["vpe"] = "/".join(re.findall(r"\d+", line)[1:])
         elif p[0] in ("ERR", "DERR") or line.startswith("mn_pe_core: ERROR") or line.startswith("FAIL") or                 ": ERROR" in line:
             res["detail"] += (" | " if res["detail"] else "") + line.strip()
     res["seconds"] = round(time.time() - t0, 2)
@@ -917,7 +921,12 @@ def main(argv=None) -> int:
                 r.setdefault(c, "-")
             if r["cls"] == "-":
                 r["cls"] = r["result"]
-    text = "\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
+    if VPE:
+        # WP34: load/start/run/save clocks, check passes, SDRAM requests (run_one); simulation seconds
+        cols += ["vpe", "seconds"]
+        for r in results:
+            r.setdefault("vpe", "-")
+    text ="\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
     tag = utag + "".join(f"_{d.replace('=', '')}" for d in a.define) + ("_lm" if a.also_lm else "") + \
         ("_mat" if a.matrix else "")
     (BUILD / f"results{tag}.tsv").write_text(text, encoding="utf-8", newline="\n")

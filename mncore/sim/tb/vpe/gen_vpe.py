@@ -24,7 +24,8 @@ bfn / bfe) on the 64 PEs with different data, so that the context of every PE (T
 $mauf) goes through the context engine; the L1BM forms across the 16 MABs (l1bmm@m, l1bmm4@i, l1bmd with a
 MAB shift, l1bmr / l1bmr4 reductions of 16 / 4 MABs, $lbi turnaround, $lbf); LM addresses up to the chip's
 2048 long words ($mb / $nb = $peid, T-indirect); stop records: E_RANGE on PEs of later MABs only (m64r),
-E_UNSUPPORTED (?mwrite) after the 64 PEs' range checks.
+E_UNSUPPORTED (?mwrite) after the 64 PEs' range checks; MV transfers (DRAM -> PDM -> DRAM, DRAM n0 checked)
+in flight while the 64 PEs use their LM / GRF (the SDRAM bus shared by the MV unit and the virtual PEs).
 """
 from __future__ import annotations
 
@@ -57,10 +58,12 @@ F = {name: i for i, name in enumerate(rg.FIELDS)}
 UNSUP, RANGE = 2, 1
 
 
-def T(name, body, status=None, init=None, note="", lm_full=False, l1bm=False, cfg="m64"):
+def T(name, body, status=None, init=None, note="", lm_full=False, l1bm=False, cfg="m64", dram=0):
     """status: (reason, info) of the last RUN, info may be a callable(entries) -> int. lm_full: check the
-    whole LM (2048 long words). l1bm: random L1BM data first and the L1BM checked. cfg: the unit."""
-    return dict(name=name, body=body, status=status, init=init, note=note, lm_full=lm_full, l1bm=l1bm, cfg=cfg)
+    whole LM (2048 long words). l1bm: random L1BM data first and the L1BM checked. cfg: the unit. dram:
+    check DRAM n0 long words 0 .. dram-1."""
+    return dict(name=name, body=body, status=status, init=init, note=note, lm_full=lm_full, l1bm=l1bm, cfg=cfg,
+                dram=dram)
 
 
 def last_word(entries):
@@ -148,7 +151,30 @@ def t_init(t_word1):
 
 ERR_PRE = g20.ERR_PRE
 
+# MV transfers (DRAM -> PDM -> DRAM) in flight while words of the 64 PEs read and write their LM / GRF: the
+# MV unit and the virtual PEs share the SDRAM bus (mn_vpe_arb). The official emulator ends a transfer when it
+# is issued, the RTL runs it beside the following words; the PE words do not touch the DRAM / PDM, so the
+# results are the same.
+MV_N = 4096
+MV_PE1 = ["lpassa $lm0v $lr64v", "lpassa $ln0v $ls64v", "iadd $lm8v $ln8v $lr72v", "ixor $lr0v $ls0v $lm128v",
+          "lpassa $ln16v $lm136v", "ior $lm16v $lr8v $ls72v"]
+MV_PE2 = ["lpassa $lm24v $lr80v", "lpassa $ln24v $ls80v", "iadd $lm32v $ln32v $lr88v", "ixor $lr16v $ls16v $lm144v",
+          "lpassa $ln40v $lm152v", "ior $lm40v $lr24v $ls88v"]
+MV_BODY = ([f"mvp/n{MV_N} $d0@0 $p0@0"] + [x for w in MV_PE1 for x in (w, "nop/2")] +
+           [f"mvp/n{MV_N} $p0@0 $d8192@0"] + [x for w in MV_PE2 for x in (w, "nop/2")])
+
+
+def mv_init(name):
+    """default data and DRAM n0 long words 0 .. MV_N-1 (r lines; the script fills them with F)."""
+    out = default_init(name)
+    vals = fill_block(name, "DRAM", 0, MV_N, "", "dram")
+    return out + [f"r 0 {a:09x} 001 {v:016X}" for a, v in enumerate(vals)]
+
+
 TESTS = [
+    # the SDRAM bus shared by the MV unit and the virtual PEs (first: a mutation of the arbiter stops here)
+    T("mv_overlap", MV_BODY, init=mv_init, dram=3 * MV_N,
+      note="MV DRAM -> PDM -> DRAM in flight while the 64 PEs read / write their LM / GRF"),
     # the WP30 / WP20 bodies on 64 PEs (unit vpe/m64)
     T("msl_msr", g30.MSL_BODY),
     T("bfn_bfe", g30.BFN_BODY),
@@ -259,6 +285,8 @@ def get_lines(t):
                                        f"d get $llt{loc} 4", f"d get $omr1{loc} 15")]
     if t["l1bm"]:
         out.append("d get $lb0n0c0b0 1024")
+    if t["dram"]:
+        out.append(f"d get $d0n0 {t['dram']}")
     return out
 
 
@@ -308,6 +336,15 @@ def make_fixed(t, asm_text: str, dmp_path: Path):
             lines.append(f"X {pc:x} {pos - pc:x}")
             lines.append("K 0 0" if pos < len(entries) else f"K {reason:x} {info:x}")
             pc = pos
+        if isinstance(d, rg.RLine):
+            # DRAM data (group 0): an F block, or one W line per long word
+            if (rg.SP_ID["DRAM"], 0) in covered:
+                if pos != 0:
+                    raise ValueError("an F block after the first word")
+                continue
+            for i, v in enumerate(d.payload):
+                lines.append(f"W {rg.SP_ID['DRAM']:x} 0 {d.addr + i:x} ff {v:x}")
+            continue
         if d.op == "set":
             for code, _ in d.pe_locs():
                 if (rg.SP_ID[d.space], code) in covered:
@@ -338,6 +375,10 @@ def make_fixed(t, asm_text: str, dmp_path: Path):
     if t["l1bm"]:
         vals = [data[("L1BM", "n0c0b0", a)] for a in range(1024)]
         lines.append(f"H {rg.SP_ID['L1BM']:x} 0 0 400 {fnv(vals):016x}")
+        n_h += 1
+    if t["dram"]:
+        vals = [data[("DRAM", "n0", a)] for a in range(t["dram"])]
+        lines.append(f"H {rg.SP_ID['DRAM']:x} 0 0 {t['dram']:x} {fnv(vals):016x}")
         n_h += 1
     return "\n".join(lines) + "\n", n_h, len(entries)
 

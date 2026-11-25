@@ -39,8 +39,9 @@ MUTATIONS = [
     ("store_grf_pe", "vpe/mab", STO, "(GRF_BASE | {5'd0, pe, g[0], g_a[7:0]})",
      "(GRF_BASE | {5'd0, pe[5:2], 2'd0, g[0], g_a[7:0]})", "the GRF of each PE"),
     ("store_mab", "vpe/m64", MEM, ".pe({vm, cur_pe})", ".pe({4'd0, cur_pe})", "the memories of each MAB"),
-    ("store_read_ch", "vpe/mab", STO, "assign rsp_valid = b_rsp_valid ? (4'd1 << q_ch) : 4'd0;",
-     "assign rsp_valid = b_rsp_valid ? (4'd1 << g) : 4'd0;", "a read answer to its channel"),
+    # (mn_vpe_store's queue of the channels of the reads in flight is not mutated: mn_pe_lsu with RBS = 1 reads
+    # one memory at a time and waits for all its answers, so the grant is still on the reading channel when
+    # an answer comes; the queue keeps the store right for an LSU that overlaps them)
     ("ctx_no_t_load", "vpe/mab", CTX, "wire [4:0]  grp_l = {(MAU != 0) & cx[8], cx[6], cx[0], cx[2], cx[4]};",
      "wire [4:0]  grp_l = {(MAU != 0) & cx[8], cx[6], 1'b0, cx[2], cx[4]};", "T loaded for a word that reads it"),
     ("ctx_no_aluf_save", "vpe/mab", CTX, "wire [4:0]  grp_s = {(MAU != 0) & cx[9], cx[7], cx[1], cx[3], cx[5]};",
@@ -49,12 +50,14 @@ MUTATIONS = [
      "wire [4:0]  grp_s = {(MAU != 0) & cx[9], cx[7], cx[1], cx[3], 1'b0};", "$mb / $nb saved"),
     ("ctx_no_omr_save", "vpe/mab", CTX, "wire [4:0]  grp_s = {(MAU != 0) & cx[9], cx[7], cx[1], cx[3], cx[5]};",
      "wire [4:0]  grp_s = {(MAU != 0) & cx[9], cx[7], cx[1], 1'b0, cx[5]};", "$omr saved"),
-    ("ctx_omr_entry", "vpe/mab", CTX, "oe     <= save ? omr_e : imr_e;", "oe     <= omr_e;",
+    ("ctx_omr_entry", "vpe/m64", CTX, "oe     <= save ? omr_e : imr_e;", "oe     <= omr_e;",
      "the $omr entry a word reads"),
+    ("vpe_imr_field", "vpe/m64", VPE, "wire [3:0]  w_imr = jw[425-3 -: 4];", "wire [3:0]  w_imr = jw[425-2 -: 4];",
+     "the $omr entry of imr[3:0] (the bug found by the 64-PE tests)"),
     ("ctx_hold", "vpe/mab", CTX, "hold_d <= hp_rsp_rdata;", "hold_d <= 64'd0;",
      "a saved item when the bus waits"),
-    ("cx_t_write_load", "vpe/mab", PE, "c_act & (src_t | (jw[425-90] & c_lm0) | d_t_wr)};",
-     "c_act & (src_t | (jw[425-90] & c_lm0))};", "T loaded before a (masked) T write"),
+    ("cx_t_write_load", "vpe/m64", PE, "c_act & (src_t | (jw[425-90] & c_lm0) | d_t_wr)};",
+     "c_act & (src_t | (jw[425-90] & c_lm0))};", "T loaded before a (masked) T write (another MAB's T)"),
     ("cx_tind_load", "vpe/mab", PE, "c_act & (src_t | (jw[425-90] & c_lm0) | d_t_wr)};",
      "c_act & (src_t | d_t_wr)};", "T loaded for T-indirect"),
     ("vpe_nochk_mab0", "vpe/mab", VPE, "wire        nochk = gchk | (vm != 4'd0) | ((LM_AW >= 11) & ~x_act);",
@@ -76,8 +79,8 @@ MUTATIONS = [
      "wire         stg_hit = stg_ok;", "BS: restaging when a rounded reduction reads the other long word"),
     ("pe_lbs_wait", "vpe/m64", PE, "wire lb_ok = (LBS == 0) | ~BX | (gcode != 4'd13) | (lb_v & (lb_c == iss_c));",
      "wire lb_ok = 1'b1;", "LBS: the $lbf read a clock after its address"),
-    ("arb_route", "vpe", ARB, "assign m0_rsp_valid = s_rsp_valid & ~q_m;", "assign m0_rsp_valid = s_rsp_valid;",
-     "the SDRAM answers to their master (MV / virtual PEs)"),
+    ("arb_route", "vpe/m64", ARB, "assign m0_rsp_valid = s_rsp_valid & ~q_m;", "assign m0_rsp_valid = s_rsp_valid;",
+     "the SDRAM answers to their master (MV transfers beside the PE words: mv_overlap)"),
 ]
 
 
@@ -103,8 +106,9 @@ def run_mutation(m):
     if r.returncode:
         return name, what, "COMPILE ERROR " + (r.stdout + r.stderr)[-300:]
     try:
-        r = subprocess.run(["vvp", "-n", str(vvp), "+quiet", "+maxclk=3000000"], cwd=ROOT, capture_output=True,
-                           text=True, timeout=14400)
+        # +stopfail: the script ends at the first mismatch (a detected mutation does not run the rest)
+        r = subprocess.run(["vvp", "-n", str(vvp), "+quiet", "+stopfail", "+maxclk=3000000"], cwd=ROOT,
+                           capture_output=True, text=True, timeout=14400)
         out = r.stdout
     except subprocess.TimeoutExpired:
         return name, what, "detected (timeout)"

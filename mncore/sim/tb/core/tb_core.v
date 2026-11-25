@@ -308,6 +308,7 @@ module tb_core;
     reg [31:0]  a0, a1, a2, a3, a4;
     reg [63:0]  v, d, hsh, sm;
     reg         err, quiet, done_scr, herr;
+    reg         stopfail;          // +stopfail: end the script at the first mismatch / error (mutation runs)
 
     // splitmix64 (F): the next value; the state advances
     task automatic sm_step(inout [63:0] s, output [63:0] r);
@@ -341,6 +342,7 @@ module tb_core;
 `endif
         if (!$value$plusargs("maxclk=%d", maxclk)) maxclk = 2000000;
         quiet = $test$plusargs("quiet");
+        stopfail = $test$plusargs("stopfail");
         nchk = 0; nfail = 0; nerr = 0;
         fd = $fopen(fname, "r");
         if (fd == 0) begin
@@ -351,7 +353,7 @@ module tb_core;
         rst = 1'b0;
         repeat (5) @(posedge clk);
         done_scr = 1'b0;
-        while (!done_scr && !$feof(fd)) begin
+        while (!done_scr && !$feof(fd) && !(stopfail && (nfail != 0 || nerr != 0))) begin
             rc = $fscanf(fd, " %c", c);
             if (rc != 1) begin
                 done_scr = 1'b1;

@@ -178,7 +178,7 @@ module mn_vpe #(
         .b_req_wdata(cb_wdata), .b_req_wmask(cb_wmask), .b_rsp_valid(cb_rsp), .b_rsp_rdata(sd_rsp_rdata));
 
     // ------------------------------------------------------------------ sequencer
-    wire [3:0]  w_imr = jw[425-2 -: 4];      // imr[3:0] (cx_use[2] is set only for imr[4] = 0, imr != 0)
+    wire [3:0]  w_imr = jw[425-3 -: 4];      // imr[3:0] (cx_use[2] is set only for imr[4] = 0, imr != 0)
     wire [3:0]  w_omr = jw[425-17 -: 4];
     wire [9:0]  cx_full = (MAU != 0) ? 10'h3f3 : 10'h0f3;   // T, BAR, $aluf, ($mauf) both ways
     wire [9:0]  cx_sel  = (CXALL != 0) ? (cx_full | cx_use) : cx_use;
