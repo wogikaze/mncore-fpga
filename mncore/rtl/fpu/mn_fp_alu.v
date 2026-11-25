@@ -17,9 +17,14 @@
 // flags[3] belongs to the MSB-side element (a double sets all four, a single two).
 // out_err = 1 (with z = 0, flags = 0) if the accepted ALUC is not executed by this unit.
 //
-// Handshake: valid/ready, fully pipelined (one bus per clock). A request accepted in cycle t
-// is on the output in cycle t + 5 (t + 4 with RND = 0). The whole pipeline stalls while
-// out_valid && !out_ready (in_ready = !out_valid || out_ready).
+// Handshake: valid/ready, pipelined (one bus per clock). A request accepted in cycle t is on
+// the output in cycle t + 5 (t + 4 with RND = 0), except floor and ftoi (below). The whole
+// pipeline stalls while out_valid && !out_ready (in_ready = !out_valid || out_ready).
+//
+// floor / ftoi shift in place in stage 4 (WP35, area): each element moves right by 8 or by 1
+// per clock until its amount is used up, so a floor / ftoi request takes up to 14 clocks more
+// (7 + 7 for a shift of 63; a single 7 + 3 or less, a half 1 + 7 or less) and the stages behind
+// it wait (in_ready = 0). The result is the same as the one-clock SIMD shifter's.
 //
 // RND = 0 removes the input rounding and its pipeline stage (rounda/roundb ignored): use it
 // when the caller already rounds the operands for both ALUs.
@@ -30,8 +35,8 @@
 // an ALUC the unit does not execute; the caller should report it as unsupported.
 //
 // Pipeline: input register | rounding (RND only) | per-element decisions (mn_fp_alu_lane:
-// 1 + 2 + 4 instances) and SIMD assembly of the cheap results | SIMD right shifter (ftoi
-// magnitude / floor fraction mask) and segmented max/min comparison | incrementer (floor
+// 1 + 2 + 4 instances) and SIMD assembly of the cheap results | segmented max/min comparison;
+// SIMD right shift in place (ftoi magnitude / floor fraction mask) | incrementer (floor
 // round-up, ftoi negation) and final selection | output register. The SIMD datapath is the
 // MSB long word cut at element boundaries (groups of 16 bits: q = 0 is bits 15:0).
 module mn_fp_alu #(
@@ -73,7 +78,7 @@ module mn_fp_alu #(
     genvar l;
 
     localparam [2:0] K_SIMPLE = 3'd0, K_MAX = 3'd1, K_MIN = 3'd2, K_FLOOR = 3'd3,
-                     K_FTOI = 3'd4, K_NONE = 3'd5;
+                     K_FTOI = 3'd4, K_NONE = 3'd5, K_PASS = 3'd6;   // K_PASS: x itself (A path)
     localparam HAS_FT = (LITE == 0);   // floor / ftoi
     localparam HAS_MM = (LITE <= 1);   // max / min
 
@@ -81,7 +86,8 @@ module mn_fp_alu #(
     // pipeline control: all stages advance together
     // ---------------------------------------------------------------------------------------
     reg  v1, v2, v3, v4, v5;
-    wire en = ~v5 | out_ready;
+    wire it_busy;   // stage 4 is shifting (floor / ftoi)
+    wire en = (~v5 | out_ready) & ~it_busy;
     assign in_ready  = en;
     assign out_valid = v5;
 
@@ -94,7 +100,7 @@ module mn_fp_alu #(
         sop = 3'd0;
         kind = K_SIMPLE;
         case (aluop)
-            5'b01010: sop = 3'd0;                                      // passa
+            5'b01010: begin sop = 3'd0; kind = K_PASS; end             // passa
             5'b10011: sop = 3'd1;                                      // packbit
             5'b10100, 5'b10101, 5'b10110, 5'b10111: sop = 3'd2;        // relu0..3
             5'b10000: sop = 3'd3;                                      // rsqrt
@@ -275,7 +281,7 @@ module mn_fp_alu #(
     reg  [63:0] sres;
     always @(*) begin
         case (s2_sop)
-            3'd0:    sres = s2_X;     // passa
+            3'd0:    sres = r_pack;   // passa: not used (K_PASS takes x on the A path)
             3'd1:    sres = r_pack;   // packbit
             3'd2:    sres = r_relu;   // relu0..3
             3'd3:    sres = rs64;     // rsqrt
@@ -303,42 +309,30 @@ module mn_fp_alu #(
     end
 
     // ---------------------------------------------------------------------------------------
-    // stage 4: SIMD right shifter (per element, zero fill), max/min comparison
+    // stage 4: max/min comparison; floor / ftoi shift (in place, see the header)
     // ---------------------------------------------------------------------------------------
     wire [63:0] topm3 = s3_D ? 64'h8000_0000_0000_0000 :
                         s3_F ? 64'h8000_0000_8000_0000 : 64'h8000_8000_8000_8000;
 
-    // Stage k shifts the elements whose amount bit k is set by 2^k. okm keeps the bits whose
-    // source (bit + 2^k) lies in the same element; selm spreads each group's amount bit.
-    reg [63:0] sh6, sh_okm, sh_selm;
-    integer sk;
-    always @(*) begin
-        sh6 = s3_B;
-        for (sk = 0; sk < 6; sk = sk + 1) begin
-            sh_okm = s3_D ? (64'hffff_ffff_ffff_ffff >> (1 << sk)) :
-                     s3_F ? {2{32'hffff_ffff >> (1 << sk)}} : {4{16'hffff >> (1 << sk)}};
-            sh_selm = spread({s3_amt[18 + sk], s3_amt[12 + sk], s3_amt[6 + sk], s3_amt[sk]});
-            sh6 = (sh_selm & (sh6 >> (1 << sk)) & sh_okm) | (~sh_selm & sh6);
-        end
-    end
-
     // max/min: magnitude comparison per element (sign-magnitude keys; zero when the exponent
-    // is 0). In ma + ~mb the carry out of an element is (ma > mb); the element's sign position
-    // holds 0 + 0 so that it receives that carry and passes none to the next element.
+    // is 0), with one carry chain (WP35): ma + ~mb + 1 = ma - mb per element. The element's sign
+    // position holds 1 + 1, so its sum bit is the carry out of the element's magnitude
+    // (ma >= mb) and it passes the +1 to the next element. gt = ge & ~eq, lt = ~ge.
     wire [63:0] zam = {{16{s3_eza[3]}}, {16{s3_eza[2]}}, {16{s3_eza[1]}}, {16{s3_eza[0]}}};
     wire [63:0] zbm = {{16{s3_ezb[3]}}, {16{s3_ezb[2]}}, {16{s3_ezb[1]}}, {16{s3_ezb[0]}}};
     wire [63:0] ma = s3_X & ~zam & ~topm3;
     wire [63:0] mb = s3_B & ~zbm & ~topm3;
     /* verilator lint_off UNUSEDSIGNAL */
-    // only the bits at the element sign positions (the carries) are used
-    wire [63:0] gt_sum = ma + (~mb & ~topm3);   // carry at the sign position: ma > mb
-    wire [63:0] lt_sum = mb + (~ma & ~topm3);   // mb > ma
+    // only the bits at the element sign positions are used
+    wire [63:0] ge_sum = (ma | topm3) + ~mb + 64'd1;
     /* verilator lint_on UNUSEDSIGNAL */
     // per group: the bit at the element's sign position (D: 63; F: 63 / 31; H: 16q + 15)
-    wire [3:0] gt = s3_D ? {4{gt_sum[63]}} : s3_F ? {{2{gt_sum[63]}}, {2{gt_sum[31]}}} :
-                           {gt_sum[63], gt_sum[47], gt_sum[31], gt_sum[15]};
-    wire [3:0] lt = s3_D ? {4{lt_sum[63]}} : s3_F ? {{2{lt_sum[63]}}, {2{lt_sum[31]}}} :
-                           {lt_sum[63], lt_sum[47], lt_sum[31], lt_sum[15]};
+    wire [3:0] ge = s3_D ? {4{ge_sum[63]}} : s3_F ? {{2{ge_sum[63]}}, {2{ge_sum[31]}}} :
+                           {ge_sum[63], ge_sum[47], ge_sum[31], ge_sum[15]};
+    wire [3:0] eq16 = {ma[63:48] == mb[63:48], ma[47:32] == mb[47:32], ma[31:16] == mb[31:16], ma[15:0] == mb[15:0]};
+    wire [3:0] eq = s3_D ? {4{&eq16}} : s3_F ? {{2{&eq16[3:2]}}, {2{&eq16[1:0]}}} : eq16;
+    wire [3:0] gt = ge & ~eq;
+    wire [3:0] lt = ~ge;
     wire [3:0] sx = s3_D ? {4{s3_X[63]}} : s3_F ? {{2{s3_X[63]}}, {2{s3_X[31]}}} :
                            {s3_X[63], s3_X[47], s3_X[31], s3_X[15]};
     wire [3:0] sy = s3_D ? {4{s3_B[63]}} : s3_F ? {{2{s3_B[63]}}, {2{s3_B[31]}}} :
@@ -360,7 +354,8 @@ module mn_fp_alu #(
     wire       k_fl = HAS_FT && (s3_kind == K_FLOOR), k_ft = HAS_FT && (s3_kind == K_FTOI);
     wire [3:0] ft_in = {4{k_ft}} & ~s3_fts & ~s3_ftz;        // ftoi, in range
     wire [3:0] fl_mk = {4{k_fl}} & ~s3_flk & ~s3_fls;        // floor, mask path
-    wire [3:0] c_selA   = {4{s3_kind == K_SIMPLE}} | ({4{k_fl}} & s3_flk) | ({4{is_mm}} & pick);
+    wire [3:0] c_selA   = {4{(s3_kind == K_SIMPLE) | (s3_kind == K_PASS)}} | ({4{k_fl}} & s3_flk) |
+                          ({4{is_mm}} & pick);
     wire [3:0] c_selsh  = (ft_in & ~s3_ftn) | ({4{is_mm}} & ~pick);
     wire [3:0] c_selinc = ft_in & s3_ftn;
     wire [3:0] c_selc   = ({4{k_fl}} & ~s3_flk & s3_fls & sx) | ({4{k_ft}} & s3_fts);
@@ -369,19 +364,54 @@ module mn_fp_alu #(
     // ftoi: only nonzero magnitudes are negated).
     wire [3:0] lsb_g = s3_D ? 4'b0001 : s3_F ? 4'b0101 : 4'b1111;
     wire [3:0] c_incg = lsb_g & ((fl_mk & sx) | (ft_in & s3_ftn));
+    // elements whose shifter output is used: ftoi in range, floor mask path. Their groups get
+    // the amount (the groups of an element have the same one); the others are not shifted.
+    wire [3:0]  sh_need = ft_in | fl_mk;
+    wire [23:0] rem_ld  = {{6{sh_need[3]}}, {6{sh_need[2]}}, {6{sh_need[1]}}, {6{sh_need[0]}}} & s3_amt;
 
     // stage 4 registers. s4_A: the simple result, else x. s4_sh: the shifter output, or y for
     // max / min.
     reg        s4_D, s4_F, s4_uns, s4_fl, s4_none;
     reg [63:0] s4_A, s4_sh, s4_lo;
+    reg [23:0] s4_rem;   // floor / ftoi: shift still to do, per group of 16 bits (6 bits each)
     reg [3:0]  s4_flag, s4_sx, s4_ftn, s4_selA, s4_selsh, s4_selinc, s4_selc, s4_flmk, s4_incg;
+
+    // one shift step per clock: by 8 while the amount is >= 8, then by 1; zero fill at the
+    // element's top (okm: bits whose source lies in the same element)
+    wire [3:0]  st8 = {|s4_rem[23:21], |s4_rem[17:15], |s4_rem[11:9], |s4_rem[5:3]};
+    wire [3:0]  st1 = ~st8 & {|s4_rem[20:18], |s4_rem[14:12], |s4_rem[8:6], |s4_rem[2:0]};
+    assign it_busy = HAS_FT && ((st8 | st1) != 4'd0);
+    wire [63:0] okm1 = s4_D ? 64'h7fff_ffff_ffff_ffff : s4_F ? 64'h7fff_ffff_7fff_ffff : 64'h7fff_7fff_7fff_7fff;
+    wire [63:0] okm8 = s4_D ? 64'h00ff_ffff_ffff_ffff : s4_F ? 64'h00ff_ffff_00ff_ffff : 64'h00ff_00ff_00ff_00ff;
+    wire [63:0] x8   = (s4_sh >> 8) & okm8;
+    wire [63:0] x1   = (s4_sh >> 1) & okm1;
+    // per group of 16 bits: load in en, else shift while its element has an amount left
+    // (written per group so that the hold of the other groups is the flip-flops' enable)
+    integer rg;
+    always @(posedge clk) begin
+        for (rg = 0; rg < 4; rg = rg + 1) begin
+            if (rst)
+                s4_rem[6*rg +: 6] <= 6'd0;
+            else if (en)
+                s4_rem[6*rg +: 6] <= (HAS_FT && v3) ? rem_ld[6*rg +: 6] : 6'd0;
+            else if (st8[rg])
+                s4_rem[6*rg + 3 +: 3] <= s4_rem[6*rg + 3 +: 3] - 3'd1;
+            else if (st1[rg])
+                s4_rem[6*rg +: 3] <= s4_rem[6*rg +: 3] - 3'd1;
+            if (en)
+                s4_sh[16*rg +: 16] <= (is_mm || HAS_FT) ? s3_B[16*rg +: 16] : 16'd0;
+            else if (HAS_FT && (st8[rg] || st1[rg]))
+                s4_sh[16*rg +: 16] <= st8[rg] ? x8[16*rg +: 16] : x1[16*rg +: 16];
+        end
+    end
+
     always @(posedge clk) begin
         if (en) begin
             s4_D <= s3_D; s4_F <= s3_F; s4_uns <= s3_uns;
             s4_fl <= k_fl; s4_none <= (s3_kind == K_NONE);
             s4_A  <= (s3_kind == K_SIMPLE) ? s3_B : s3_X;
-            s4_sh <= is_mm ? s3_B : HAS_FT ? sh6 : 64'd0; s4_lo <= s3_lo;
-            s4_flag <= is_mm ? pick : (s3_kind == K_SIMPLE) ? s3_sflag : 4'b0000;
+            s4_lo <= s3_lo;
+            s4_flag <= is_mm ? pick : ((s3_kind == K_SIMPLE) | (s3_kind == K_PASS)) ? s3_sflag : 4'b0000;
             s4_sx <= sx; s4_ftn <= s3_ftn & {4{k_ft}};
             s4_selA <= c_selA; s4_selsh <= c_selsh; s4_selinc <= c_selinc; s4_selc <= c_selc;
             s4_flmk <= fl_mk; s4_incg <= c_incg;
@@ -448,6 +478,8 @@ module mn_fp_alu #(
             v3 <= (RND != 0) ? v2 : v1;
             v4 <= v3;
             v5 <= v4;
+        end else if (out_ready) begin
+            v5 <= 1'b0;   // stage 4 is shifting: the output drains
         end
     end
     /* verilator lint_off UNUSEDSIGNAL */

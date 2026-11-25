@@ -48,7 +48,6 @@ module mn_fp_alu_lane #(
     wire [EB-1:0] ea = a[W-2:M];
     wire [EB-1:0] eb = b[W-2:M];
     wire          sa = a[W-1];
-    wire [31:0]   ea32 = {{(32 - EB){1'b0}}, ea};
 
     // v >= k for a constant k, as plain logic (a compare operator would become a carry chain)
     function automatic ge_k(input [EB-1:0] v, input [EB:0] k);
@@ -89,17 +88,18 @@ module mn_fp_alu_lane #(
     localparam integer C_FL = (64 - ((BIAS - W + M) % 64)) % 64;
     localparam [5:0] C_FT6 = C_FT[5:0];
     localparam [5:0] C_FL6 = C_FL[5:0];
-    wire [5:0] ea6 = ea32[5:0];
+    wire [5:0] ea6 = ea[5:0];   // EB >= 6
     assign amt = (is_ftoi ? ~ea6 : ea6) + (is_ftoi ? C_FT6 : C_FL6);
 
     // ---- rsqrt: table of the 5-bit mantissa by exponent parity and top 4 bits.
     // out_e = BIAS + (BIAS + 1) / 2 - 1 - ceil(ea / 2); sign 0; zero and infinity not special.
     // The value is in 0 .. 2^EB - 1 for every ea.
+    // ceil(ea / 2) = (ea >> 1) + ea[0]: one subtraction from a constant chosen by ea[0] (WP35)
     localparam integer RS_C = BIAS + (BIAS + 1) / 2 - 1;
-    /* verilator lint_off UNUSEDSIGNAL */
-    wire [31:0] rs_e32 = RS_C - ((ea32 + 32'd1) >> 1);
-    /* verilator lint_on UNUSEDSIGNAL */
-    assign rs_e = rs_e32[EB-1:0];
+    localparam [31:0]  RS_C32 = RS_C;
+    localparam [31:0]  RS_C32M = RS_C - 1;
+    wire [EB-1:0] rs_k = ea[0] ? RS_C32M[EB-1:0] : RS_C32[EB-1:0];
+    assign rs_e = rs_k - {1'b0, ea[EB-1:1]};
     reg [4:0] rs_mr;
     always @(*) begin
         case ({ea[0], a[M-1:M-4]})

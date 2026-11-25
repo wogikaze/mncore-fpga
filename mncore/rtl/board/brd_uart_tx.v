@@ -30,7 +30,10 @@ module brd_uart_tx #(
     reg [7:0]    sh;
 
     wire [DIVW:0] div_e    = {1'b0, div_q8};
-    wire          boundary = busy && (r <= Q1);
+    // r - 1 clock and r - 1 clock + one bit (shared), r <= 1 clock as logic (WP35)
+    wire [DIVW:0] r_m1     = r - Q1;
+    wire [DIVW:0] r_nx     = r_m1 + div_e;
+    wire          boundary = busy && (r[DIVW:9] == {(DIVW-8){1'b0}}) && (~r[8] || (r[7:0] == 8'd0));
     wire          last     = boundary && (bitn == 4'd9);
     wire          f_ready  = !busy || last;
     wire          load     = f_valid && f_ready;
@@ -62,7 +65,7 @@ module brd_uart_tx #(
             if (load) begin
                 // start bit; when chaining, keep the fractional remainder of the previous stop bit
                 busy       <= 1'b1;
-                r          <= busy ? (r + div_e - Q1) : div_e;
+                r          <= busy ? r_nx : div_e;
                 bitn       <= 4'd0;
                 sh         <= f_data;
                 txd        <= 1'b0;
@@ -71,7 +74,7 @@ module brd_uart_tx #(
                 busy <= 1'b0;
                 txd  <= 1'b1;
             end else if (boundary) begin
-                r    <= r + div_e - Q1;
+                r    <= r_nx;
                 bitn <= bitn + 1'b1;
                 if (bitn == 4'd8) begin
                     txd <= 1'b1;                    // stop bit
@@ -80,7 +83,7 @@ module brd_uart_tx #(
                     sh  <= {1'b0, sh[7:1]};
                 end
             end else if (busy) begin
-                r <= r - Q1;
+                r <= r_m1;
             end
         end
     end

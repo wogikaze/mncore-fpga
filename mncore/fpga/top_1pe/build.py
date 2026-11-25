@@ -7,9 +7,11 @@
   python mncore/fpga/top_1pe/build.py --program             # ... and load it into the FPGA SRAM
   python mncore/fpga/top_1pe/build.py --fs mncore/fpga/top_1pe/build/FPALU3/top_1pe.fs   # only load it
 
-FPALU=1 (full FP ALU, LUT4 83 %) and FPALU=2 (no floor / ftoi, 77 %) synthesize but do not place
-(nextpnr's legaliser gives up); FPALU=3 takes 75 %, FPALU=0 71 % (WP21 report). One place & route
-takes 20 to 25 minutes.
+With the WP21 RTL, FPALU=1 (full FP ALU, LUT4 83 %) and FPALU=2 (no floor / ftoi, 77 %) synthesized but
+did not place (nextpnr's legaliser gave up). After the WP35 area work the full core places and routes:
+  python mncore/fpga/top_1pe/build.py --param FPALU=1      # all FP ALU instructions (WP35 report)
+(yosys LUT + ALU + 8 * SSRAM: FPALU=1 14,434, 3 13,100, 2 13,485, 0 12,584). One place & route takes
+20 to 40 minutes (longer while other jobs load the machine).
 
 Steps: yosys `synth_gowin -family gw2a -nowidelut` (contract 06 section 6) -> nextpnr-himbaechel
 (GW2AR-LV18QN88C8/I7, family GW2A-18C, top_1pe.cst) -> gowin_pack. The RTL list is the one of the

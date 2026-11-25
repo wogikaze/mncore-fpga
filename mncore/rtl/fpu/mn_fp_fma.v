@@ -18,6 +18,12 @@
 //     a signed infinity, underflow and exact zero give +0 (SDM 4.1).
 //   - inf + inf = +inf unless both are -inf; inf + x = that inf.
 //
+// UNP = 1 (WP35, used by mn_mau_vec): a, b and c come unpacked as {sign, exponent [62:52],
+// significand [51:0] left-aligned}, with the exponent in its own format (a, b: the operation
+// format; c: double for d, single for f / h), e.g. a single x as {x[31], 3'd0, x[30:23],
+// x[22:0], 29'd0}. The caller then does the format selection once, together with its own
+// conversions, instead of packing here and unpacking again.
+//
 // Fully pipelined: one element per clock. Latency 14: an element sampled with in_valid by
 // clock edge t (into the input registers c0) is in z with out_valid after edge t + 14 (c14).
 // 8 DSP tiles (MULT18X18), registered on both sides. Only the valid bits are reset.
@@ -27,7 +33,8 @@
 // c's leading one sits at 88 + d (d = Uc - Ep), the grid at window bit 0 (d), 47 (f), 60 (h).
 // Without a product (zero, or dropped), c is placed as if d = 0 and Ep is taken as Uc.
 module mn_fp_fma #(
-    parameter TAGW = 1
+    parameter TAGW = 1,
+    parameter UNP  = 0    // 1: unpacked a, b, c (see above)
 ) (
     input  wire            clk,
     input  wire            rst,
@@ -62,17 +69,19 @@ module mn_fp_fma #(
     wire mh0 = (p0 == 2'b10);
     wire mf0 = ~md0 & ~mh0;
 
-    // decode a, b (operation format) and c (double for d, single otherwise)
-    wire        sa0  = md0 ? a0[63] : mf0 ? a0[31] : a0[15];
-    wire        sb0  = md0 ? b0[63] : mf0 ? b0[31] : b0[15];
-    wire [10:0] ea0  = md0 ? a0[62:52] : mf0 ? {3'd0, a0[30:23]} : {5'd0, a0[14:9]};
-    wire [10:0] eb0  = md0 ? b0[62:52] : mf0 ? {3'd0, b0[30:23]} : {5'd0, b0[14:9]};
-    wire [51:0] ma0  = md0 ? a0[51:0] : mf0 ? {a0[22:0], 29'd0} : {a0[8:0], 43'd0};
-    wire [51:0] mb0  = md0 ? b0[51:0] : mf0 ? {b0[22:0], 29'd0} : {b0[8:0], 43'd0};
+    // decode a, b (operation format) and c (double for d, single otherwise); UNP: as a double
+    wire        ud0  = md0 | (UNP != 0);
+    wire        uf0  = mf0 & (UNP == 0);
+    wire        sa0  = ud0 ? a0[63] : uf0 ? a0[31] : a0[15];
+    wire        sb0  = ud0 ? b0[63] : uf0 ? b0[31] : b0[15];
+    wire [10:0] ea0  = ud0 ? a0[62:52] : uf0 ? {3'd0, a0[30:23]} : {5'd0, a0[14:9]};
+    wire [10:0] eb0  = ud0 ? b0[62:52] : uf0 ? {3'd0, b0[30:23]} : {5'd0, b0[14:9]};
+    wire [51:0] ma0  = ud0 ? a0[51:0] : uf0 ? {a0[22:0], 29'd0} : {a0[8:0], 43'd0};
+    wire [51:0] mb0  = ud0 ? b0[51:0] : uf0 ? {b0[22:0], 29'd0} : {b0[8:0], 43'd0};
     wire [10:0] emx0 = md0 ? 11'h7ff : mf0 ? 11'h0ff : 11'h03f;
-    wire        sc0  = md0 ? c0[63] : c0[31];
-    wire [10:0] ec0  = md0 ? c0[62:52] : {3'd0, c0[30:23]};
-    wire [51:0] mc0  = md0 ? c0[51:0] : {c0[22:0], 29'd0};
+    wire        sc0  = ud0 ? c0[63] : c0[31];
+    wire [10:0] ec0  = ud0 ? c0[62:52] : {3'd0, c0[30:23]};
+    wire [51:0] mc0  = ud0 ? c0[51:0] : {c0[22:0], 29'd0};
     wire [10:0] emc0 = md0 ? 11'h7ff : 11'h0ff;
     wire        za0  = (ea0 == 11'd0);
     wire        zb0  = (eb0 == 11'd0);
@@ -237,22 +246,23 @@ module mn_fp_fma #(
         tz3 <= tz2;
         mc3 <= mc2;
     end
-    // coarse shift (multiples of 16)
-    wire [52:0]  sig3 = {1'b1, mc3};
-    wire [142:0] cw3  = {sig3, 90'd0} >> {rs3[7:4], 4'd0};
+    // fine shift (0..15) of the 53-bit significand first, in a 68-bit field (nothing is lost),
+    // then the coarse shift (multiples of 16) in the window: the same as shifting {sig, 90'd0}
+    // by rs, with fewer bits in the fine stage (WP35)
+    wire [67:0]  sf3  = {1'b1, mc3, 15'd0} >> rs3[3:0];
     // jam: some bit of c lands below the grid (a set bit j < nj, i.e. the lowest one)
     wire         jm3  = ($signed({2'b00, tz3}) < $signed(nj3));
 
-    // ================================================================== c4: fine shift
-    reg [142:0] cw4;
-    reg [3:0]   rl4;
+    // ================================================================== c4: coarse shift
+    reg [67:0]  sf4;
+    reg [3:0]   rh4;
     reg         jm4;
     always @(posedge clk) begin
-        cw4 <= cw3;
-        rl4 <= rs3[3:0];
+        sf4 <= sf3;
+        rh4 <= rs3[7:4];
         jm4 <= jm3;
     end
-    wire [142:0] cwf4 = cw4 >> rl4;
+    wire [142:0] cwf4 = {sf4, 75'd0} >> {rh4, 4'd0};
 
     // ================================================================== c5: grid jam
     reg [142:0] cw5;
@@ -271,9 +281,8 @@ module mn_fp_fma #(
 
     // ================================================================== c6: add / subtract
     // x = p + c or p - c (145-bit two's complement) = p + (c ^ sub) + sub. c is inverted
-    // here already; the product only has bits [89:0], so the high part is c's high part
-    // plus the carry of the low part (carry select), and the carry-in enters through an
-    // extra LSB of the low adder.
+    // here already; the carry-in enters through an extra LSB. One carry chain (WP35: the
+    // carry-select halves cost more LUTs; the core clock is far below this stage's limit).
     wire         sub5 = bd[5][B_USP] & bd[5][B_USC] & (bd[5][B_SP] ^ bd[5][B_SC]);
     reg [142:0] cx6;
     reg [89:0]  p6;
@@ -284,12 +293,10 @@ module mn_fp_fma #(
         sub6 <= sub5;
     end
     /* verilator lint_off UNUSEDSIGNAL */
-    // lo6[0] is the carry-in helper bit
-    wire [91:0]  lo6  = {1'b0, p6, 1'b1} + {1'b0, cx6[89:0], sub6};
+    // s6[0] is the carry-in helper bit
+    wire [145:0] s6   = {{2{sub6}}, cx6, 1'b1} + {55'd0, p6, sub6};
     /* verilator lint_on UNUSEDSIGNAL */
-    wire [54:0]  hb6  = {{2{sub6}}, cx6[142:90]};
-    wire [54:0]  hc6  = hb6 + 55'd1;
-    wire [144:0] x6   = {lo6[91] ? hc6 : hb6, lo6[90:1]};
+    wire [144:0] x6   = s6[145:1];
 
     // ================================================================== c7: magnitude
     reg [143:0] x7;
@@ -298,11 +305,8 @@ module mn_fp_fma #(
         x7   <= x6[143:0];
         neg7 <= sub6 & x6[144];
     end
-    // |x| = neg ? ~x + 1 : x, in two 72-bit halves (the low half carries only when it is 0)
-    wire [71:0]  ml7  = (x7[71:0] ^ {72{neg7}}) + {71'd0, neg7};
-    wire [71:0]  mb7  = x7[143:72] ^ {72{neg7}};
-    wire [71:0]  mi7  = mb7 + 72'd1;
-    wire [143:0] m7   = {(neg7 & ~|x7[71:0]) ? mi7 : mb7, ml7};
+    // |x| = neg ? ~x + 1 : x (one carry chain, WP35)
+    wire [143:0] m7   = (x7 ^ {144{neg7}}) + {143'd0, neg7};
     wire         s7   = neg7 ? bd[7][B_SC] : (bd[7][B_USP] ? bd[7][B_SP] : bd[7][B_SC]);
 
     // ================================================================== c8: LZC per 16 bits
