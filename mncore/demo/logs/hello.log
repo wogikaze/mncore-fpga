@@ -1,0 +1,21 @@
+== hello_world on the Tang Nano 20K (2026-11-26 02:54:54) ==
+program   third_party/mncore/problems/challenge/21.hello-world/main.vsm with its testcase
+          9 words (assemble3 flat, no packer); reference: official emulator gpfn3_package_main (WSL) (1.2 s)
+          assemble3 + gpfn3_package_main: 1.0 s
+plan      rule replica: words 0-3 on MAU (MAU+MAUF+SDRAM), words 4-8 on M2aR (L1+L1R+L2+MV+SDRAM)
+          bitstream MAU    mncore/fpga/multi/build/MAU/top_multi.fs (built 2026-11-26 02:41)
+          bitstream M2aR   mncore/fpga/multi/build/M2aR/top_multi.fs (built 2026-11-26 02:54)
+#   loaded MAU in 3.30 s
+#   segment 0: words 0..3 on MAU
+#   loaded M2aR in 3.49 s
+#   segment 1: words 4..8 on M2aR
+board     words 0-3 on MAU, words 4-8 on M2aR
+          7.7 s on the board: 2 bitstream load(s) 6.8 s, state hand-over 0.63 s, RUN / d lines 0.05 s (9 steps, 2 RUNs)
+
+  DRAM n0 [0..1]  48656c6c6f2c2077 6f726c64212afe00
+  first 13 bytes as text:  "Hello, world!"
+
+official  DRAM n0 [0..1]  48656c6c6f2c2077 6f726c64212afe00  "Hello, world!"
+          the board equals the official emulator (2 of 2 long words)
+total     9.2 s
+RESULT: PASS ("Hello, world!", as the official emulator)

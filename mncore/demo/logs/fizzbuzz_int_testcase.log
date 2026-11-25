@@ -1,0 +1,79 @@
+== FizzBuzz (23.fizzbuzz-pe) on the Tang Nano 20K (2026-11-26 02:19:00) ==
+program   mncore/demo/programs/fizzbuzz_int.vsm, input: third_party/mncore/problems/challenge/23.fizzbuzz-pe/testcase.vsm
+          27 words (assemble3 flat, no packer); reference: official emulator gpfn3_package_main (WSL) (2.3 s)
+          assemble3 + gpfn3_package_main: 2.1 s
+plan      words 0-26 on V64 (mncore/fpga/top_vpe: 16 MABs = 64 PEs in the SDRAM, integer ALU, design 0x06)
+          bitstream V64    mncore/fpga/top_vpe/build/V64/top_vpe.fs (built 2026-11-26 02:18)
+board     words 0-26 on V64
+          6.8 s on the board: 1 bitstream load(s) 3.3 s, state hand-over 0.00 s, RUN / d lines 3.22 s (27 steps, 1 RUNs)
+
+  the numbers of the testcase and the board's LM1 (64 PEs; "n=Fizz" where the board replaced n, "n" where it kept it):
+    n0c0b0m0p0: 23655=FizzBuzz 15796 861=Fizz 5391=Fizz 29803 21576=Fizz 11965=Buzz 11285=Buzz
+    n0c0b0m0p1: 22119=Fizz 6266 16851=Fizz 29911 4427 21963=Fizz 14424=Fizz 28021
+    n0c0b0m0p2: 11364=Fizz 27496 16024 8323 1686=Fizz 32053 770=Buzz 26968
+    n0c0b0m0p3: 30188 32158 23334=Fizz 2434 5312 5052=Fizz 6421 17569
+    n0c0b0m1p0: 20940=FizzBuzz 19770=FizzBuzz 28694 6397 29420=Buzz 27481 32305=Buzz 8667=Fizz
+    n0c0b0m1p1: 25659=Fizz 18943 24234=Fizz 18432=Fizz 32220=FizzBuzz 2748=Fizz 25552 26383
+    n0c0b0m1p2: 190=Buzz 31678 19119=Fizz 3006=Fizz 21043 1900=Buzz 24119 1268
+    n0c0b0m1p3: 31552 17913=Fizz 11395=Buzz 3557 3891=Fizz 8839 30741=Fizz 27465=FizzBuzz
+    n0c0b0m2p0: 14503 21778 10628 8793=Fizz 10556 10254=Fizz 8434 10234
+    n0c0b0m2p1: 11017 23898=Fizz 2613=Fizz 23426 25940=Buzz 22620=FizzBuzz 21871 23484=Fizz
+    n0c0b0m2p2: 26055=FizzBuzz 15788 27133 17160=FizzBuzz 12207=Fizz 8227 14542 3153=Fizz
+    n0c0b0m2p3: 26532=Fizz 1586 3944 23940=FizzBuzz 19458=Fizz 1022 11654 10806=Fizz
+    n0c0b0m3p0: 13418 20228 7990=Buzz 9693=Fizz 12991 31122=Fizz 6874 5676=Fizz
+    n0c0b0m3p1: 162=Fizz 4298 26558 996=Fizz 30990=FizzBuzz 32607=Fizz 29488 11535=FizzBuzz
+    n0c0b0m3p2: 29128 7630=Buzz 28375=Buzz 25852 1017=Fizz 24254 22824=Fizz 24277
+    n0c0b0m3p3: 23248 24301 8530=Buzz 17263 9269 21272 12186=Fizz 30937
+    n0c0b0m4p0: 21244 6332 8572 25069 7209=Fizz 5277=Fizz 18447=Fizz 28461=Fizz
+    n0c0b0m4p1: 16449=Fizz 16217 8007=Fizz 2569 21848 29825=Buzz 2028=Fizz 2696
+    n0c0b0m4p2: 26072 15423=Fizz 5259=Fizz 22003 6737 392 13987 29091=Fizz
+    n0c0b0m4p3: 31009 12667 5893 3562 26855=Buzz 31738 6185=Buzz 19484
+    n0c0b0m5p0: 22663 8393 30536 13068=Fizz 15266 19489 23600=Buzz 29175=FizzBuzz
+    n0c0b0m5p1: 2455=Buzz 11838=Fizz 14040=FizzBuzz 25381 30819=Fizz 19116=Fizz 30568 10966
+    n0c0b0m5p2: 24539 9763 5057 32483 14949=Fizz 8111 13774 27267=Fizz
+    n0c0b0m5p3: 20225=Buzz 17413 23770=Buzz 503 6911 12686 25447 23323
+    n0c0b0m6p0: 20873 207=Fizz 21519=Fizz 22362=Fizz 24106 23420=Buzz 17869 24243=Fizz
+    n0c0b0m6p1: 15935=Buzz 17248 19175=Buzz 23793=Fizz 8756 21501=Fizz 12384=Fizz 22404=Fizz
+    n0c0b0m6p2: 18142 14821 7575=FizzBuzz 6375=FizzBuzz 23277=Fizz 1679 19627 21021=Fizz
+    n0c0b0m6p3: 1060=Buzz 23053 29856=Fizz 16199 9915=FizzBuzz 27891=Fizz 19542=Fizz 22300=Buzz
+    n0c0b0m7p0: 10818=Fizz 10922 31277 9790=Buzz 16313 11253=Fizz 2694=Fizz 29468
+    n0c0b0m7p1: 29724=Fizz 13932=Fizz 3628 25940=Buzz 16158=Fizz 10174 21835=Buzz 18048=Fizz
+    n0c0b0m7p2: 26106=Fizz 10231 15708=Fizz 21977 11495=Buzz 26814=Fizz 23777 30081=Fizz
+    n0c0b0m7p3: 30073 1307 28606 6777=Fizz 27252=Fizz 29645=Buzz 22249 9475=Buzz
+    n0c0b0m8p0: 7527=Fizz 25286 21960=FizzBuzz 5531 29321 20798 3749 31969
+    n0c0b0m8p1: 32563 13546 29356 664 1999 7995=FizzBuzz 28022 28320=FizzBuzz
+    n0c0b0m8p2: 30304 17880=FizzBuzz 3305=Buzz 20148=Fizz 21617 18238 13809=Fizz 6586
+    n0c0b0m8p3: 29236 17676=Fizz 19966 32551 11650=Buzz 23939 23665=Buzz 1637
+    n0c0b0m9p0: 20081 27576=Fizz 27729=Fizz 17083 26737 28674=Fizz 4738 14556=Fizz
+    n0c0b0m9p1: 13878=Fizz 855=FizzBuzz 24549=Fizz 5856=Fizz 7393 22913 28051 13950=FizzBuzz
+    n0c0b0m9p2: 21634 21557 18092 27354=Fizz 5792 26310=FizzBuzz 21920=Buzz 30967
+    n0c0b0m9p3: 4932=Fizz 19895=Buzz 203 11448=Fizz 20603 12689 25343 4390=Buzz
+    n0c0b0m10p0: 2328=Fizz 8005=Buzz 19316 7778 198=Fizz 23510=Buzz 1931 11775=FizzBuzz
+    n0c0b0m10p1: 15088 22672 25185=FizzBuzz 27849=Fizz 9340=Buzz 20667=Fizz 11590=Buzz 18896
+    n0c0b0m10p2: 15709 26371 17044 2812 23483 14244=Fizz 6547 25946
+    n0c0b0m10p3: 1987 30207=Fizz 8339 11412=Fizz 2912 1735=Buzz 18228=Fizz 8681
+    n0c0b0m11p0: 19361 18344 5760=FizzBuzz 23079=Fizz 2386 11112=Fizz 4737=Fizz 1803=Fizz
+    n0c0b0m11p1: 8156 8121=Fizz 6617 14258 14487=Fizz 21919 20446 27946
+    n0c0b0m11p2: 30307 16647=Fizz 14076=Fizz 22672 31066 25200=FizzBuzz 9209 16372
+    n0c0b0m11p3: 11836 13169 2050=Buzz 31617=Fizz 5424=Fizz 14590=Buzz 28300=Buzz 20933
+    n0c0b0m12p0: 19493 29856=Fizz 28667 7159 10249 7401=Fizz 19555=Buzz 9875=Buzz
+    n0c0b0m12p1: 15152 18640=Buzz 1155=FizzBuzz 4500=FizzBuzz 6296 22582 27768=Fizz 26273
+    n0c0b0m12p2: 12184 29300=Buzz 12875=Buzz 18033=Fizz 32712=Fizz 5540=Buzz 9638 20584
+    n0c0b0m12p3: 28500=FizzBuzz 24830=Buzz 15587 27760=Buzz 2558 5593 16483 2201
+    n0c0b0m13p0: 14173 2962 14208=Fizz 21358 20818 11970=FizzBuzz 2870=Buzz 27811
+    n0c0b0m13p1: 28368=Fizz 17341 13993 28644=Fizz 24737 5700=FizzBuzz 23329 20878
+    n0c0b0m13p2: 25877 21296 3988 26104 22400=Buzz 30088 13447 1219
+    n0c0b0m13p3: 20881 4736 11297 27312=Fizz 4556 9147=Fizz 8051 12758
+    n0c0b0m14p0: 19831 17430=FizzBuzz 6894=Fizz 18078=Fizz 14374 14566 3437 8755=Buzz
+    n0c0b0m14p1: 10678 5896 19739 30747=Fizz 16610=Buzz 15637 21278 32353
+    n0c0b0m14p2: 31004 7023=Fizz 9152 5601=Fizz 29125=Buzz 27644 7997 9008
+    n0c0b0m14p3: 12947 24068 4643 29888 11313=Fizz 7680=FizzBuzz 8209 23724=Fizz
+    n0c0b0m15p0: 25820=Buzz 18590=Buzz 10717 17454=Fizz 3445=Buzz 10758=Fizz 14435=Buzz 32636
+    n0c0b0m15p1: 30441=Fizz 1061 18712 3421 31217 302 12469 16991
+    n0c0b0m15p2: 19555=Buzz 700=Buzz 21473 25716=Fizz 191 10493 17365=Buzz 2976=Fizz
+    n0c0b0m15p3: 6103 17569 19712 19779=Fizz 24704 26642 1817 32746
+
+Python    FizzBuzz of the inputs: 512 of 512 numbers as the board
+official  official emulator gpfn3_package_main (WSL): the board equals it (256 of 256 long words of LM1)
+total     9.8 s
+RESULT: PASS (512 numbers on 64 PEs, as the official emulator and Python)

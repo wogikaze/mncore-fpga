@@ -1,0 +1,6 @@
+# ndmp v1
+# producer: official emulator gpfn3_package_main (recorded by mncore/demo, d get lines of the testcase)
+# src: third_party/mncore/problems/challenge/21.hello-world/main.vsm
+# kept: locations n0c0b0m0..15 (64 PEs) and n0
+DRAM n0 0x00000000 48656c6c6f2c2077
+DRAM n0 0x00000001 6f726c64212afe00
