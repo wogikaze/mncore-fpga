@@ -28,5 +28,6 @@
 | WP38 | 自動切り替えの実行器 | 5a | 完了 2026-11-26 | 公式の hello_world が mnrun 1 回で最後まで実行できた（複製規則で公式と一致）。M2 の回帰は E_UNSUPPORTED が 82 → 27、値の食い違い 0。残る 27 本は同じ語で複数のユニットを使う。test_mnrun / test_mnhost と multi は lead が再実行して PASS |
 | WP42a | 公開文書の下書き | 5a | 完了 2026-11-25 | README、architecture、isa-notes、divergences（26 件）、日本語版。点検の結果はユーザーの判断待ち（コミットの Gmail、公式の出力の扱い）。パスの片付けは WP42b で行う |
 | WP40 | 統合と適合試験 | 5b | 未着手 | |
-| WP41 | デモ（FizzBuzz） | 5b | 未着手 | |
+| WP39 | 演算器の共有化（M3: 全機能を 1 本に） | 5b | 実行中 | 実機 |
+| WP41 | デモ（hello、FizzBuzz） | 5b | 実行中 | 実機 |
 | WP42b | 公開の仕上げ | 5b | 未着手 | |
