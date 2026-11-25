@@ -235,7 +235,7 @@ class ProgramRun:
         self.dram_fresh = False      # the loaded member's RESET cleared them (no configuration since)
         self.dram_dirty = False      # they may hold something else than the zeros of the clear
         self.dram_now = False        # this segment runs its PDM / DRAM lines at once (it has MV words)
-        self._rcache = None          # dram_flush: long words of a group of d gets, read together
+        self._rcache = None          # gets(): PDM / DRAM long words of a group of d gets, read together
 
     # -- helpers
     @property
@@ -354,39 +354,47 @@ class ProgramRun:
         return False
 
     def dram_flush(self):
-        """Run the waiting PDM / DRAM lines on this member (it has the SDRAM). The d gets between two
-        writes read their long words together (some programs have 16,384 one-word d gets of the DRAM)."""
+        """Run the waiting PDM / DRAM lines on this member (it has the SDRAM)."""
         q, self.dq = self.dq, []
         now, self.dram_now = self.dram_now, True
-        smap = mnhost.SpaceMap(self.dev.info())
-        topo = mnhost.Topology(self.dev.info().topo)
         i = 0
         while i < len(q):
             j = i
             while j < len(q) and q[j].op == "get":
                 j += 1
             if j > i:
-                # the long words of the d gets q[i:j], read in runs, then the d gets from that copy
-                need: dict = {}
-                for d in q[i:j]:
-                    dep = smap.depth(d.space)
-                    for f in topo.locations(d.space, d.loc):
-                        key = (mnhost.SPACES[d.space], mnhost.loc_code(**f))
-                        need.setdefault(key, set()).update(
-                            lw for _, _, lw, _ in mnhost.get_units(d) if lw is not None and lw < dep)
-                self._rcache = {}
-                for (sp, lc), lws in need.items():
-                    c = self._rcache.setdefault((sp, lc), {})
-                    for run in mnhost._addr_runs(lws):
-                        c.update(zip(run, self.dev.read(sp, lc, run[0], len(run), window=WINDOW)))
-                for d in q[i:j]:
-                    self.event(d)
-                self._rcache = None
+                self.gets(q[i:j])
                 i = j
             else:
                 self.event(q[i])
                 i += 1
         self.dram_now = now
+
+    def gets(self, ds: list):
+        """d gets with nothing run or written between them: the PDM / DRAM long words they read now are
+        read together, in runs, before them (some programs have 16,384 one-word d gets of the DRAM: one
+        request each took 8 minutes); event() takes them from that copy."""
+        smap = mnhost.SpaceMap(self.dev.info())
+        topo = mnhost.Topology(self.dev.info().topo)
+        need: dict = {}
+        for d in ds:
+            if d.op != "get" or d.space not in ("PDM", "DRAM") or not (self.dram_now and self.has(d.space)):
+                continue                                     # event() reads it, or queues it
+            dep = smap.depth(d.space)
+            for f in topo.locations(d.space, d.loc):
+                lws = need.setdefault((d.space, mnhost.loc_text(d.space, f)), (f, set()))[1]
+                lws.update(lw for _, _, lw, _ in mnhost.get_units(d) if lw is not None and lw < dep)
+        self._rcache = {}
+        try:
+            for (space, lt), (f, lws) in need.items():
+                c = self._rcache.setdefault((space, lt), {})
+                for run in mnhost._addr_runs(lws):
+                    sp, lc, a0 = smap.target(space, f, run[0])
+                    c.update(zip(run, self.dev.read(sp, lc, a0, len(run), window=WINDOW)))
+            for d in ds:
+                self.event(d)
+        finally:
+            self._rcache = None
 
     # -- d / r lines
     def event(self, d: mnhost.DOp):
@@ -438,9 +446,9 @@ class ProgramRun:
                     if on_dev:
                         sp, lc, a0 = smap.target(space, f, run[0]) if space not in UNIT_DEPTH else \
                             (mnhost.SPACES[space], 0, run[0])
-                        c = self._rcache.get((sp, lc)) if self._rcache else None
+                        c = self._rcache.get((space, mnhost.loc_text(space, f))) if self._rcache else None
                         if c is not None and all(a in c for a in run):
-                            got = [c[a] for a in run]          # read together by dram_flush
+                            got = [c[a] for a in run]          # read together by gets()
                         else:
                             got = self.dev.read(sp, lc, a0, len(run), window=WINDOW)
                     else:
@@ -507,8 +515,15 @@ class ProgramRun:
                         ok = False
                         break
                     pc = pos
-                self.event(d)
-                ei += 1
+                ej = ei                              # the d gets here, before the next RUN or write
+                while ej < len(events) and events[ej][0] <= pc and events[ej][1].op == "get":
+                    ej += 1
+                if ej - ei > 1:
+                    self.gets([e for _, e in events[ei:ej]])
+                    ei = ej
+                else:
+                    self.event(d)
+                    ei += 1
             if ok and pc < seg.b:
                 ok = self.run_range(pc, seg.b)
             self.st.t_run += time.monotonic() - t0

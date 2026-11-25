@@ -315,6 +315,21 @@ class Executor(unittest.TestCase):
         self.assertEqual([r.records[("DRAM", "n0", k)] for k in range(5)], [1, 2, 3, 4, 0])
         self.assertLessEqual(b.dev.nread, 3)
 
+    def test_dram_d_gets_read_together_in_an_mv_segment(self):
+        # an MV word: the PDM / DRAM lines run at once (not queued); the d gets after the last word are
+        # still read together, and a d set between two groups of d gets is seen by the second group
+        ents = [L1_READ, mword(valid=1, mmode=7, mvid=3)]
+        ev = [(0, "r 0 0 2 00000000000000010000000000000002")]
+        ev += [(2, f"d getd $d{k}n0 1") for k in range(200)]
+        ev += [(2, "d set $d1n0 1 00000000000000ee")]
+        ev += [(2, f"d get $d{k}n0 1") for k in range(3)]
+        b = FakeBoard([M2A])
+        pr = mr.ProgramRun(b, program(ents, ev))
+        r = pr.execute()
+        self.assertIsNone(r.stop)
+        self.assertEqual([r.records[("DRAM", "n0", k)] for k in range(3)], [1, 0xee, 0])
+        self.assertLessEqual(b.dev.nread, 4)
+
     def test_stop_ends_the_program(self):
         b = FakeBoard([M2A, MAU])
         pr = mr.ProgramRun(b, program([IMM, wait_word(9), NOP], [(3, "d get $lm0n0c0b0m0p0 1")]))
