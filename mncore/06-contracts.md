@@ -229,6 +229,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 
 - BL616 経由の USB-UART。初期は 1 Mbps、8N1。運用は 2 Mbps を推奨（上限 3 Mbaud。BL616 は実際 3.076M で動くので `SET_BAUD` で合わせる）。
 - ピンは `uart_tx` = 69（FPGA → BL616）、`uart_rx` = 70。
+- **LED（ユーザーの指示、2026-11-25）:** ボードのデザインでは LED 0 だけを最小の明るさ（デューティ 1/1024）で常時点灯し、ほかの LED は消す。接続と動作の確認だけに使う。見本は `mncore/rtl/top/mn_top_1pe.v` の LED の節。
+  - 実機を使う WP は、作業の最後にこの LED の方針に従ったデザインを SRAM に書いておく。
 - **確定仕様は `mncore/rtl/board/PROTOCOL.md`（版 1）。** コマンド番号、空間 ID、エラー応答はそちらが正。
 - 空間 ID: 0 IMEM、1 LM0、2 LM1、3 GRF0、4 GRF1、5 T、6 L1BM、7 L2BM、8 PDM、9 DRAM、15 TEST、0x10 OMR、0x11 BAR（`$mb` / `$nb`）。
 - PE が入力として読むメモリの判定（rd_use）は WP20 の担当。WP14 の `mn_pe_rduse.v` を出発点にし、MAU / L1BM / mwrite の規則を確かめる。
