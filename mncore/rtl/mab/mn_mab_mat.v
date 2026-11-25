@@ -123,14 +123,15 @@ module mn_mab_mat (
         madr = {1'b0, f, prow, wd};
     endfunction
 
-    // exact widening
+    // widening (e): a zero or an infinity keeps its sign and gets a zero mantissa (the matrix
+    // register keeps the bits, so this shows: checked on the emulator)
     function [31:0] h2s(input [15:0] x);
-        h2s = {x[15], (x[14:9] == 6'd0) ? 8'd0 : (x[14:9] == 6'h3f) ? 8'hff : {2'd0, x[14:9]} + 8'd96,
-               x[8:0], 14'd0};
+        h2s = (x[14:9] == 6'd0) ? {x[15], 31'd0} : (x[14:9] == 6'h3f) ? {x[15], 8'hff, 23'd0} :
+              {x[15], {2'd0, x[14:9]} + 8'd96, x[8:0], 14'd0};
     endfunction
     function [63:0] s2d(input [31:0] x);
-        s2d = {x[31], (x[30:23] == 8'd0) ? 11'd0 : (x[30:23] == 8'hff) ? 11'h7ff : {3'd0, x[30:23]} + 11'd896,
-               x[22:0], 29'd0};
+        s2d = (x[30:23] == 8'd0) ? {x[31], 63'd0} : (x[30:23] == 8'hff) ? {x[31], 11'h7ff, 52'd0} :
+              {x[31], {3'd0, x[30:23]} + 11'd896, x[22:0], 29'd0};
     endfunction
 
     // ------------------------------------------------------------------ write process

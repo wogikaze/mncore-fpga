@@ -137,24 +137,24 @@ def init_floats(name):
 # ---------------------------------------------------------------------------------- ?mwrite / ?mread
 RW_D = [
     "dmwrite $lr0v $lx0", "dmwrite $ls0v $ly1", "nop",
-    "dmread $lx0 $lr64v", "dmread $ly2 $ls64v", "dmread $lx3 $lm64v", "dmread $ly1 $ln64v",
+    "dmread $lx0 $lr64v", "dmread $ly2 $ls64v", "dmread $lx3 $lm64v", "dmread $ly1 $ln64v", "nop/2",
     "dmwrite -$lm0v $lx2", "dmwrite $r16ve $ly0", "nop",               # sign, single -> double
     "dmread $lx0 $lr72v", "dmread $ly0 $ls72v",
     "fmread $lx0 $lr80v", "fmread $ly5 $ls80v", "gmread $lx2 $lm80v",   # rows written as d
     "hmread $llx0 $llr88v", "hmread $lly6 $lls88v",
-    "dmwrite $t $lx1", "nop", "dmread $lx1 $ln72v",
+    "dmwrite $t $lx1", "nop", "dmread $lx1 $ln72v", "nop/2",
     "dmwrite $lm8 $ly3", "nop", "dmread $ly0 $ln80v",                   # word source
 ]
 RW_F = [
     "fmwrite $lr0v $lx0", "fmwrite $lr8v $lx4", "gmwrite $ls0v $ly1", "gmwrite $ls8v $ly5", "nop",
-    "fmread $lx0 $lr64v", "fmread $lx4 $ls64v", "gmread $ly1 $lm64v", "gmread $ly6 $ln64v",
+    "fmread $lx0 $lr64v", "fmread $lx4 $ls64v", "gmread $ly1 $lm64v", "gmread $ly6 $ln64v", "nop/2",
     "fmwrite -$lm0v $lx2", "fmwrite $s16ve $ly0", "gmwrite $r40v $lx6", "nop",    # sign, e, word
     "fmread $lx2 $lr72v", "gmread $ly0 $ls72v", "fmread $lx7 $lm72v",
     "dmread $lx1 $ln72v", "hmread $llx4 $llr80v", "hmread $lly10 $lls80v",
 ]
 RW_H = [
     "hmwrite $llr0v $llx0", "hmwrite $llr16v $llx8", "hmwrite $lls0v $ly3", "hmwrite $lls8v $ly13", "nop",
-    "hmread $llx0 $llr64v", "hmread $llx8 $lls64v", "hmread $lly2 $llm64v", "hmread $lly12 $lln64v",
+    "hmread $llx0 $llr64v", "hmread $llx8 $lls64v", "hmread $lly2 $llm64v", "hmread $lly12 $lln64v", "nop/2",
     "hmwrite -$lm0v $lx5", "hmwrite $lln0vr $ly7", "hmwrite $lln16vr $ly12", "nop",       # sign, r
     "hmread $llx4 $llr72v", "hmread $lly6 $lls72v", "hmread $lly0 $llm72v",
     "dmread $lx1 $ln64v", "fmread $ly3 $ln72v", "gmread $lx7 $ln80v",
@@ -163,12 +163,12 @@ RW_MIX = [
     "hmwrite $llr0v $llx0", "hmwrite $llr16v $llx8", "hmwrite $lls0v $lly0", "hmwrite $lls16v $lly8", "nop",
     "dmwrite $lm0v $lx1 ; dmread $ly2 $lr64v",            # write X, read Y at column 2
     "dmwrite $ln0v $ly0 ; dmread $lx3 $ls64v",            # write Y, read X at column 3
-    "fmwrite $lm8v $lx5 ; fmread $ly6 $lm64v",
-    "hmwrite $ln8v $ly9 ; hmread $llx14 $lln64v",          # odd write row, read column 14
-    "hmwrite $llm16v $lly4 ; hmread $llx6 $llr72v",
+    "fmwrite $lm8v $lx5 ; fmread $ly6 $ln64v",
+    "hmwrite $lr8v $ly9 ; hmread $llx14 $llm64v",          # odd write row, read column 14
+    "hmwrite $lls16v $lly4 ; hmread $llx6 $llr72v",
     "lpassa $mreadf $lls72v",                              # $mreadf of the word above
     "nop/2",
-    "hmread $llx0 $llr80v", "hmread $lly0 $lls80v", "hmread $lly8 $llm80v",
+    "hmread $llx0 $llr80v", "hmread $lly0 $lls80v", "hmread $lly8 $lln80v",
     "hmwrite $llr40v $llx3", "nop", "hmread $llx2 $llr88v",   # two rows at an odd address
 ]
 MREADF = [
@@ -270,8 +270,8 @@ def mf_case(rng, prec, kind, opts):
             else:
                 lead = ep + rng.randint(-40, 30)
             v = rand_c(rng, yraw, lead)
-            if kind == "drop" and not opts["extc"]:
-                v = tie_c(rng, 9 if opts["rnd"] else 23, lead)
+            if kind == "drop" and not opts["extc"] and opts["rnd"]:
+                v = tie_c(rng, 9, lead)     # on a half-precision tie: the product decides, unless dropped
             r = rng.random()
             if r < 0.04:
                 v = 0
@@ -402,13 +402,15 @@ MF_MIX = [
     "gbfn $ls8v $nowrite", "gmwrite $aluf $ly4",
     "gbfn $lm0v $nowrite",
     "gmmul $lx $aluf $ln64v",                              # x from $aluf
+    "gbfn $lm0v $nowrite",
     "gmfma $ly $aluf $lr16v $ln72v ; gmread $lx3 $lm64v",   # mfma + mread (X, column 3)
-    "gbfn $lm8v $t",
-    "gmfma $lx $t $ls16v $ln80v ; gmwrite $lr24v $ly0",     # mfma (X) + mwrite (Y)
-    "gmmul $ly $t $nowrite", "fvpassa $mauf $lm72v",       # the result through $mauf
-    "gmread $lx1 $nowrite",
+    "nop/2",
+    "gbfn $lm8v $t", "nop/2",
+    "gmfma $lx $t $ls16v $ln80v ; gmwrite $lr24v $ly0",     # mfma (X) + mwrite (Y, not a block)
+    "gmmul $lx $t $nowrite", "fvpassa $mauf $lm72v",       # the result through $mauf
+    "gmread $ly1 $nowrite",
     "gmfma $lx $t $lr16v $ln88v/1010 ; lpassa $mreadf $lm80v",   # ALU reading $mreadf, mask
-    "gmfma/0110 $ly $t $lr16v $ln96v", "fvpassa $mauf $lm88v",  # zero flush of the MAU result
+    "gmfma/0110 $lx $t $lr16v $ln96v", "fvpassa $mauf $lm88v",  # zero flush of the MAU result
     "nop/3",
 ]
 
@@ -468,10 +470,10 @@ TESTS = [
     T("mfma_h", MF_H, init=MF_H_INIT),
     T("mfma_hr", MF_HR, init=MF_HR_INIT),
     T("mfma_mix", MF_MIX, init=mf_mix_init),
-    T("e_unsup_dmfma", ERR_PRE + ["dmfmau $lx $lr0v $ls0v $lm0v"], status=(UNSUP, F["pe_mauc_dmode"])),
+    T("e_unsup_dmfma", ERR_PRE + ["dmfmau $lx $lr0v $ls0v $nowrite"], status=(UNSUP, F["pe_mauc_dmode"])),
     T("e_range_mwrite", ERR_PRE + ["hmwrite $lmt0v $ly0"], init=t_init(TIND_PE2), status=(RANGE, last_word),
       note="the LM source of ?mwrite is out of range on PE 2 only (cycle 2): no PE writes"),
-    T("e_range_mfma_x", ERR_PRE + ["gmmul $lx $lmt0v $lr96v"], init=t_init(TIND_PE1), status=(RANGE, last_word),
+    T("e_range_mfma_x", ERR_PRE + ["gmmul $lx $lmt0v $nowrite"], init=t_init(TIND_PE1), status=(RANGE, last_word),
       note="the x of ?mmul is out of range on PE 1 only: E_RANGE before any write"),
 ]
 
