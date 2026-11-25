@@ -1,0 +1,16 @@
+{
+  "comment": "WP38: the bitstream set of mnrun.py (mncore/fpga/multi/README.md). Each member is mn_top_multi with these parameters (build.py --member <name>; the bitstream is build/<name>/top_multi.fs). UNITS 2: L1BM + L2BM + MV, 1: L1BM only (files_l1.txt), 0: none. SDRAM 0: no SDRAM controller (the SDRAM in self refresh, no PDM / DRAM spaces). When several members can run a segment, the first in this order is taken (unless one of them is loaded already).",
+  "design_id": "0x05",
+  "members": [
+    {"name": "M2a",   "params": {"UNITS": 2, "SDRAM": 1, "FPALU": 0, "MAU": 0, "BFN": 0, "MAT": 0, "REPLICA": 0, "L1_RRN": 2},
+     "desc": "integer ALU, L1BM, L2BM, MV (the M2a of WP37), zero rule"},
+    {"name": "M2aR",  "params": {"UNITS": 2, "SDRAM": 1, "FPALU": 0, "MAU": 0, "BFN": 0, "MAT": 0, "REPLICA": 1, "L1_RRN": 2},
+     "desc": "M2a with the replica rule (WP37 M2a-R)"},
+    {"name": "MAU",   "params": {"UNITS": 0, "SDRAM": 1, "FPALU": 0, "MAU": 1, "BFN": 0, "MAT": 0, "REPLICA": 0, "L1_RRN": 2},
+     "desc": "one MAB: integer ALU and the vector MAU, with the SDRAM (PDM / DRAM)"},
+    {"name": "MAUF3", "params": {"UNITS": 0, "SDRAM": 0, "FPALU": 3, "MAU": 1, "BFN": 0, "MAT": 0, "REPLICA": 0, "L1_RRN": 2},
+     "desc": "one MAB: integer ALU, MAU, FP ALU without floor / ftoi / fmax / fmin (FPALU 3); no SDRAM controller"},
+    {"name": "L1MAU", "params": {"UNITS": 1, "SDRAM": 0, "FPALU": 0, "MAU": 1, "BFN": 0, "MAT": 0, "REPLICA": 0, "L1_RRN": 0},
+     "desc": "L1BM (no reductions) and the MAU in one bitstream, zero rule; no L2BM / MV / SDRAM controller"}
+  ]
+}

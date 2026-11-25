@@ -1,0 +1,7 @@
+# ndmp v1
+# producer: mnrun (0-0:M2a 1-1:MAU 2-2:M2a)
+# src: mncore\fpga\multi\logs\hw_tagprog.asm
+GRF0 n0c0b0m0p0 0x0000 0000000000000000
+GRF0 n0c0b0m0p0 0x0001 0000000000000000
+GRF0 n0c0b0m0p1 0x0000 0000000000000000
+GRF0 n0c0b0m0p1 0x0001 0000000000000000

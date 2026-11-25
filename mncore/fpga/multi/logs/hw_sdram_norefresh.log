@@ -1,0 +1,8 @@
+#   DRAM 0x0 +16384: 20 long words differ (20 bits)
+#   DRAM 0x7c000 +16384: 23 long words differ (23 bits)
+#   PDM 0x0 +16384: 33 long words differ (33 bits)
+# FAIL: 49152 long words, 28.5 s without refresh (top_mab.fs loaded, 10.0 s waited)
+#   DRAM 0x0 +16384: 930 long words differ (957 bits)
+#   DRAM 0x7c000 +16384: 930 long words differ (962 bits)
+#   PDM 0x0 +16384: 975 long words differ (1005 bits)
+# FAIL: 49152 long words, 77.0 s without refresh (top_mab.fs loaded, 60.0 s waited)

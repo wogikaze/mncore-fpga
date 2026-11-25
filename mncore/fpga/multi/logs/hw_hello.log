@@ -1,0 +1,30 @@
+# 2026-11-25 21:41:07 mnrun.py run (zero rule, members M2a + MAU)
+#   loaded MAU in 11.34 s
+#   segment 0: words 0..3 on MAU
+#   loaded M2a in 13.42 s
+#   segment 1: words 4..8 on M2a
+# 9 entries, 2 segments (0..3 MAU, 4..8 M2a), 1 switches, 2 loads, 2 RUNs, 9 steps, 15632 ndmp lines, 30.3 s (load 24.76 s, save 0.95 s, restore 0.1 s)
+vs official: 15632 compared, 12 differ, 0 only official, 0 only board
+   DRAM n0 0x0 official=48656c6c6f2c2077 board=3a655e6c612c1277
+   DRAM n0 0x1 official=6f726c64212afe00 board=61725e64132af362
+   DRAM n0 0x2 official=6f726c64212afe00 board=61725e64132af362
+   DRAM n0 0x3 official=6f726c64212afe00 board=61725e64132af362
+   L1BM n0c0b0 0x30 official=4265666c692c1a77 board=3a655e6c612c1277
+   L1BM n0c0b0 0x31 official=697266641b2afb62 board=61725e64132af362
+vs rust: 15632 compared, 0 differ, 0 only rust, 0 only board
+DRAM n0 [0] 3a655e6c612c1277 [1] 61725e64132af362: b':e^la,\x12war^d\x13'
+# 2026-11-25 22:53:45 mnrun.py --rule replica run (members M2aR + MAU / MAUF3)
+#   loaded MAU in 3.62 s
+#   segment 0: words 0..3 on MAU
+#   loaded M2aR in 3.53 s
+#   segment 1: words 4..8 on M2aR
+# 9 entries, 2 segments (0-3:MAU 4-8:M2aR), 1 switches, 2 loads, 2 RUNs, 9 steps, 15632 ndmp lines, 10.4 s (load 7.16 s, save 0.55 s, restore 0.08 s)
+vs official: 15632 compared, 0 differ, 0 only official, 0 only board
+vs rust: 15632 compared, 12 differ, 0 only rust, 0 only board
+   DRAM n0 0x0 rust=3a655e6c612c1277 board=48656c6c6f2c2077
+   DRAM n0 0x1 rust=61725e64132af362 board=6f726c64212afe00
+   DRAM n0 0x2 rust=61725e64132af362 board=6f726c64212afe00
+   DRAM n0 0x3 rust=61725e64132af362 board=6f726c64212afe00
+   L1BM n0c0b0 0x30 rust=3a655e6c612c1277 board=4265666c692c1a77
+   L1BM n0c0b0 0x31 rust=61725e64132af362 board=697266641b2afb62
+DRAM n0 [0] 48656c6c6f2c2077 [1] 6f726c64212afe00: b'Hello, world!'

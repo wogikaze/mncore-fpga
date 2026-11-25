@@ -1,0 +1,7 @@
+#   segment 0: words 0..0 on M2a
+#   loaded MAU in 12.41 s
+#   segment 1: words 1..1 on MAU
+#   loaded M2a in 10.41 s
+#   restored MV tags {9: 1}
+#   segment 2: words 2..2 on M2a
+# 3 entries, 3 segments (0..0 M2a, 1..1 MAU, 2..2 M2a), 2 switches, 2 loads, 3 RUNs, 3 steps, 4 ndmp lines, 27.9 s (load 22.82 s, save 3.24 s, restore 0.08 s)

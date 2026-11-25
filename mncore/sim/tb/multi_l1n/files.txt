@@ -1,0 +1,57 @@
+# WP38: the L1MAU member (mn_top_multi UNITS = 1 with the stubs of mn_l2bm / mn_mv, L1_RRN = 0, SDRAM = 0,
+# MAU = 1) through its UART pin (mncore/sim/tb/multi/tb_multi.v). Script
+# mncore/sim/tb/multi/fixed/u1n.scr (gen_multi.py). See mncore/sim/tb/multi/files.txt.
+top: tb_multi
+rtl_top: mn_top_multi
+incdir: mncore/rtl/dec
+define: TB_UNITS=1
+define: TB_MAU=1
+define: TB_L1RRN=0
+define: TB_SDRAM=0
+define: TB_SCRIPT="mncore/sim/tb/multi/fixed/u1n.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/fpga/multi/stub/mn_l2bm.v
+mncore/fpga/multi/stub/mn_mv.v
+mncore/rtl/core/mn_core.v
+mncore/rtl/sdram/sdr_tmr.v
+mncore/rtl/sdram/sdr_ctrl.v
+mncore/rtl/sdram/sdr_fifo.v
+mncore/rtl/sdram/sdr_afifo.v
+mncore/rtl/sdram/sdr_bus64.v
+mncore/rtl/sdram/sdr_gw_pll.v
+mncore/rtl/sdram/sdr_gw_clkout.v
+mncore/rtl/board/brd_ram_1r1w.v
+mncore/rtl/board/brd_fifo.v
+mncore/rtl/board/brd_uart_rx.v
+mncore/rtl/board/brd_uart_tx.v
+mncore/rtl/board/brd_host_if.v
+mncore/fpga/multi/mn_top_multi.v
+mncore/sim/tb/sdram/tb_sdr_model.v
+mncore/sim/tb/multi/tb_multi.v
