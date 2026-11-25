@@ -1,0 +1,19 @@
+== FizzBuzz (23.fizzbuzz-pe) on the Tang Nano 20K (2026-11-26 02:35:35) ==
+program   third_party/mncore/problems/challenge/23.fizzbuzz-pe/main.vsm, input: third_party/mncore/problems/challenge/23.fizzbuzz-pe/testcase.vsm
+          9 words (assemble3 flat, no packer); reference: official emulator gpfn3_package_main (WSL) (2.8 s)
+          assemble3 + gpfn3_package_main: 2.5 s
+plan      words 0-8 on L1MAU (L1+MAU+MAUF)
+          bitstream L1MAU  mncore/fpga/multi/build/L1MAU/top_multi.fs (built 2026-11-26 02:35)
+board     words 0-8 on L1MAU
+          4.0 s on the board: 1 bitstream load(s) 3.4 s, state hand-over 0.00 s, RUN / d lines 0.40 s (9 steps, 1 RUNs)
+
+  the numbers of the testcase and the board's LM1 (4 PEs; "n=Fizz" where the board replaced n, "n" where it kept it):
+    n0c0b0m0p0: 23655=FizzBuzz 15796 861=Fizz 5391=Fizz 29803 21576=Fizz 11965=Buzz 11285=Buzz
+    n0c0b0m0p1: 22119=Fizz 6266 16851=Fizz 29911 4427 21963=Fizz 14424=Fizz 28021
+    n0c0b0m0p2: 11364=Fizz 27496 16024 8323 1686=Fizz 32053 770=Buzz 26968
+    n0c0b0m0p3: 30188 32158 23334=Fizz 2434 5312 5052=Fizz 6421 17569
+
+Python    FizzBuzz of the inputs: 32 of 32 numbers as the board
+official  official emulator gpfn3_package_main (WSL): the board equals it (16 of 16 long words of LM1)
+total     8.2 s
+RESULT: PASS (32 numbers on 4 PEs, as the official emulator and Python)
