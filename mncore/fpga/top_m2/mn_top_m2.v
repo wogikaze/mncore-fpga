@@ -22,9 +22,8 @@
 // Function-specific bitstreams (mncore/wp/WP-3x.md): FPALU / MAU / BFN / MAT select the arithmetic
 // units (mn_core), REPLICA the rule of the reductions and gathers across the absent MABs / L1Bs.
 //
-// LEDs (active low): 0 heartbeat, 1 UART RX activity, 2 UART TX activity, 3 link error, 4 core or
-// MV running (or the SDRAM clear), 5 the last RUN stopped with an error or the SDRAM address error.
-// Button S1 (pin 88) resets the whole design, including the baud rate.
+// LED: only LED 0, steadily on at the lowest brightness (connection / alive check; contract 06
+// section 7). Button S1 (pin 88) resets the whole design, including the baud rate.
 `default_nettype none
 module mn_top_m2 #(
     parameter CLK_HZ        = 27000000,
@@ -56,7 +55,7 @@ module mn_top_m2 #(
     parameter integer PSDA      = 11,         // the PLL phase of the SDRAM clock (rtl/sdram/README.md)
     parameter integer CL        = 2,
     parameter integer RDX       = 1,
-    parameter LED_STRETCH   = 22
+    parameter LED_DIM_BITS  = 10            // LED 0 duty = 1 / 2**LED_DIM_BITS
 ) (
     input  wire        clk,
     input  wire        btn_rst,
@@ -201,29 +200,18 @@ module mn_top_m2 #(
         .sd_rsp_valid(sd_rsp_valid), .sd_rsp_rdata(sd_rsp_rdata), .sd_err_addr(err_addr),
         .unit_busy(unit_busy), .unit_err(unit_err));
 
-    // ---------------------------------------------------------------- LEDs
-    // the activity stretchers count down to 0 (an equality test, no comparator chain)
-    localparam [LED_STRETCH-1:0] S_ZERO = {LED_STRETCH{1'b0}};
-    localparam [LED_STRETCH-1:0] S_FULL = {LED_STRETCH{1'b1}};
-    reg [24:0] hb;
-    reg [LED_STRETCH-1:0] s_rx, s_tx, s_err, s_run;
-    always @(posedge clk) begin
-        if (rst) begin
-            hb <= 25'd0; s_rx <= S_ZERO; s_tx <= S_ZERO; s_err <= S_ZERO; s_run <= S_ZERO;
-        end else begin
-            hb <= hb + 1'b1;
-            s_rx  <= dbg_rx_byte ? S_FULL : (s_rx != S_ZERO) ? s_rx - 1'b1 : S_ZERO;
-            s_tx  <= dbg_tx_byte ? S_FULL : (s_tx != S_ZERO) ? s_tx - 1'b1 : S_ZERO;
-            s_err <= dbg_err     ? S_FULL : (s_err != S_ZERO) ? s_err - 1'b1 : S_ZERO;
-            s_run <= (core_busy | unit_busy) ? S_FULL : (s_run != S_ZERO) ? s_run - 1'b1 : S_ZERO;
-        end
-    end
+    // ---------------------------------------------------------------- LED
+    // Only LED 0 is lit, steadily, at the lowest brightness (duty 1 / 2**LED_DIM_BITS): it just shows
+    // that the design is loaded and running. The other LEDs stay off (contract 06 section 7, the
+    // user's request of 2026-11-25; the same LED section as mn_top_1pe / mn_top_mab).
     /* verilator lint_off UNUSEDSIGNAL */
-    wire unused_top = init_done;
+    wire led_unused = dbg_rx_byte ^ dbg_tx_byte ^ dbg_err ^ dbg_probation ^ init_done ^ unit_busy ^ unit_err;
     /* verilator lint_on UNUSEDSIGNAL */
-    wire stop_err = (~core_busy & (core_reason != 8'd0)) | unit_err;
-    wire [5:0] on = {stop_err, s_run != S_ZERO, (s_err != S_ZERO) | dbg_probation, s_tx != S_ZERO,
-                     s_rx != S_ZERO, hb[24]};
-    assign led = ~on;
+    reg [LED_DIM_BITS-1:0] dim;
+    always @(posedge clk) begin
+        if (rst) dim <= {LED_DIM_BITS{1'b0}};
+        else     dim <= dim + 1'b1;
+    end
+    assign led = {5'b11111, ~(dim == {LED_DIM_BITS{1'b0}})};
 endmodule
 `default_nettype wire
