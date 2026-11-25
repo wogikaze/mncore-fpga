@@ -69,3 +69,10 @@
 - lwrite=1 の語は必ず PE → L1BM の転送をする（isel=111 なら値は 0）。折り返しの読み出しは、最後に `` を書いた転送の並びを使う。
 - l1bmd のずらしは `ladr[5:2]` だけを使う。
 - 縮約の e / r は max / min にも効く。r は max / min では ALU の `r` の丸め。詳細は `mncore/rtl/l1bm/README.md`。
+
+## lead による追記（WP32 で確定、2026-11-25）
+
+- `l2bm@n` は集合 {n} の bor の縮約。`l2bm_opcode` に 1100 が入るのはこのため。結合、L2BM → L1BM、`l2bmi` は opcode / dmode を見ない。
+- `l2bmdars` では `l2bm_l1adr`〜`l2bm_opcode` の 12bit が {DAR アドレス 10bit, L2B 番号 2bit}。L2B 番号は bit 0 だけを使う。
+- 直前の j 語にも `l2bmdars` があると、DAR のアドレスと L2B は最初の語のものを保つ。m 語は連続を切らない。ll = 00 を含むほかの j 語は切る。
+- **要修正**: デコーダの `unsup_vec[83]` / `[88]` は語の種類によらず立つため、`l2bmdars` の正しい語まで E_UNSUPPORTED になる。WP37 で yaml を直し、`gen_dec.py` で生成し直す。詳細は `mncore/rtl/l2bm/README.md` と `mncore/status/WP-32.md`。
