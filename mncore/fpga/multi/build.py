@@ -160,7 +160,9 @@ def build(name: str, prm: dict, listfile: Path, a) -> int:
         clk = p["clocks"]
         core = [f for n, f in clk.items() if n != "sclk"]
         sdr = [f for n, f in clk.items() if n == "sclk"]
-        ok = bool(core) and min(core) >= a.core_mhz and bool(sdr) and min(sdr) >= a.sdr_mhz
+        # SDRAM = 0: no controller, no SDRAM clock to check
+        sdr_ok = (bool(sdr) and min(sdr) >= a.sdr_mhz) if prm.get("SDRAM", "1") != "0" else not sdr
+        ok = bool(core) and min(core) >= a.core_mhz and sdr_ok
         lines.append(f"seed {seed}: Fmax " + ", ".join(f"{n} {f} MHz" for n, f in clk.items()) +
                      f" -> {'PASS' if ok else 'FAIL'} (core >= {a.core_mhz}, SDRAM sclk >= {a.sdr_mhz})")
         lines.append(f"  utilisation: {util}")

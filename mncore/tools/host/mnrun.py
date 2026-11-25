@@ -555,7 +555,8 @@ def regress_main(a, board: Board, log) -> int:
         res["steps"] = r.stats["steps"]
         for k in ("switches", "loads", "t_load", "t_save", "t_restore", "t_run"):
             res[k] = r.stats[k]
-        res["segments"] = " ".join(f"{s_a}-{s_b - 1}:{nm}" for s_a, s_b, nm in r.stats["segments"])
+        res["segments"] = " ".join(f"{s_a}-{s_b - 1}:{nm}" if s_b > s_a else f"end:{nm}"
+                                   for s_a, s_b, nm in r.stats["segments"])
         rst = (job / "rust.status").read_text().strip() if (job / "rust.status").exists() else "missing"
         if r.stop is not None and r.stop.reason != 4:
             s = r.stop
@@ -768,15 +769,14 @@ def main(argv=None) -> int:
         pr = ProgramRun(board, prog, log, a.verbose)
         r = pr.execute()
         lines = r.lines()
-        out = "# ndmp v1\n# producer: mnrun (" + " ".join(f"{x}-{y - 1}:{nm}" for x, y, nm in r.stats["segments"]) + \
-              f")\n# src: {a.asm}\n" + "".join(l + "\n" for l in lines)
+        segs = " ".join(f"{x}-{y - 1}:{nm}" if y > x else f"end:{nm}" for x, y, nm in r.stats["segments"])
+        out = "# ndmp v1\n# producer: mnrun (" + segs + f")\n# src: {a.asm}\n" + "".join(l + "\n" for l in lines)
         if a.output:
             Path(a.output).write_text(out, encoding="utf-8", newline="\n")
         else:
             sys.stdout.write(out)
         s = r.stats
-        log(f"# {len(prog.entries)} entries, {len(pr.plan.segments)} segments "
-            f"({', '.join(f'{x}..{y - 1} {nm}' for x, y, nm in s['segments'])}), {s['switches']} switches, "
+        log(f"# {len(prog.entries)} entries, {len(pr.plan.segments)} segments ({segs}), {s['switches']} switches, "
             f"{s['loads']} loads, {s['runs']} RUNs, {s['steps']} steps, {len(lines)} ndmp lines, "
             f"{time.monotonic() - t0:.1f} s (load {s['t_load']} s, save {s['t_save']} s, restore {s['t_restore']} s)")
         if not pr.plan.complete:
