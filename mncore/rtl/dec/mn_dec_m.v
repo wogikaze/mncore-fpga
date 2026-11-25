@@ -43,11 +43,11 @@ module mn_dec_m (
 
     // unsupported values
     assign mv_unsup_vec[0] = 1'b0;  // valid
-    assign mv_unsup_vec[1] = mv_valid & (mv_mmode == 3'b111);  // mmode: value not in the enum table: 111
-    assign mv_unsup_vec[2] = mv_valid & (mv_tmode == 3'b110 || mv_tmode == 3'b111);  // tmode: value not in the enum table: 110, 111
+    assign mv_unsup_vec[1] = 1'b0;  // mmode
+    assign mv_unsup_vec[2] = 1'b0;  // tmode
     assign mv_unsup_vec[3] = 1'b0;  // destid
     assign mv_unsup_vec[4] = 1'b0;  // srcid
-    assign mv_unsup_vec[5] = mv_valid & (mv_dmode == 2'b11);  // dmode: value not in the enum table: 11
+    assign mv_unsup_vec[5] = 1'b0;  // dmode
     assign mv_unsup_vec[6] = 1'b0;  // mvid
     assign mv_unsup_vec[7] = 1'b0;  // indirect
     assign mv_unsup_vec[8] = 1'b0;  // adra
@@ -55,9 +55,6 @@ module mn_dec_m (
     assign mv_unsup_vec[10] = 1'b0;  // nw
     assign mv_unsup_vec[11] = 1'b0;  // priority
     assign mv_err_field =
-        mv_unsup_vec[1] ? 4'd1 :
-        mv_unsup_vec[2] ? 4'd2 :
-        mv_unsup_vec[5] ? 4'd5 :
         4'd0;
     assign mv_err_kind = (|mv_unsup_vec) ? `MN_DEC_E_UNSUPPORTED : `MN_DEC_OK;
 endmodule

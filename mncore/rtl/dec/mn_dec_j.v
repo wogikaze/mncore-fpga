@@ -402,12 +402,12 @@ module mn_dec_j (
     assign unsup_vec[80] = 1'b0;  // l1bm_gwrite
     assign unsup_vec[81] = 1'b0;  // l1bm_gadr
     assign unsup_vec[82] = 1'b0;  // l2bm_lwrite
-    assign unsup_vec[83] = exec & (l2bm_bdmode == 2'b11);  // l2bm_bdmode: value not in the enum table: 11
+    assign unsup_vec[83] = exec & (l2bm_lwrite == 1'b1) & (l2bm_bdmode == 2'b11);  // l2bm_bdmode: value not in the enum table: 11 (only when l2bm_lwrite = 1)
     assign unsup_vec[84] = 1'b0;  // l2bm_ladr
     assign unsup_vec[85] = 1'b0;  // l2bm_l1adr
     assign unsup_vec[86] = 1'b0;  // l2bm_immode
     assign unsup_vec[87] = 1'b0;  // l2bm_dmode
-    assign unsup_vec[88] = exec & (l2bm_opcode == 4'b0011 || l2bm_opcode == 4'b0100 || l2bm_opcode == 4'b0101 || l2bm_opcode == 4'b0110 || l2bm_opcode == 4'b0111 || l2bm_opcode == 4'b1011 || l2bm_opcode == 4'b1110 || l2bm_opcode == 4'b1111);  // l2bm_opcode: value not in the enum table: 0011, 0100, 0101, 0110, 0111, 1011, 1110, 1111
+    assign unsup_vec[88] = exec & (l2bm_lwrite == 1'b1) & (l2bm_opcode == 4'b0011 || l2bm_opcode == 4'b0100 || l2bm_opcode == 4'b0101 || l2bm_opcode == 4'b0110 || l2bm_opcode == 4'b0111 || l2bm_opcode == 4'b1011 || l2bm_opcode == 4'b1110 || l2bm_opcode == 4'b1111);  // l2bm_opcode: value not in the enum table: 0011, 0100, 0101, 0110, 0111, 1011, 1110, 1111 (only when l2bm_lwrite = 1)
     assign unsup_vec[89] = 1'b0;  // l2bm_darsend
     assign unsup_vec[90] = 1'b0;  // l2bm_darwrite
     assign unsup_vec[91] = 1'b0;  // wd

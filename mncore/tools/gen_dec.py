@@ -295,9 +295,9 @@ def unsup_block(kind: str, checks: list[dict], nfields: int, ind: str) -> list[s
             g = " & ".join(x if x.isidentifier() else f"({x})" for x in c["gates"])
             expr = f"({c['cond']})" if not g else f"{g} & ({c['cond']})"
             L.append(f"{ind}assign {pre}unsup_vec[{i}] = {expr};  // {f.name}: {c['why']}")
-    # lowest index first
-    chain = " :\n".join(f"{ind}    {pre}unsup_vec[{i}] ? {iw}'d{i}" for i in sorted(byidx))
-    L.append(f"{ind}assign {pre}err_field =\n{chain} :\n{ind}    {iw}'d0;")
+    # lowest index first (no checks at all: the field is always 0; WP37, m.yaml has none left)
+    chain = "".join(f"{ind}    {pre}unsup_vec[{i}] ? {iw}'d{i} :\n" for i in sorted(byidx))
+    L.append(f"{ind}assign {pre}err_field =\n{chain}{ind}    {iw}'d0;")
     if kind == "j":
         L.append(f"{ind}assign err_kind = unsup_vec[0] ? `MN_DEC_E_DECODE :")
         L.append(f"{ind}                  (|unsup_vec) ? `MN_DEC_E_UNSUPPORTED : `MN_DEC_OK;")

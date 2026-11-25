@@ -56,13 +56,17 @@ localparam [2:0] MN_M_MMODE_P2P = 3'b011;
 localparam [2:0] MN_M_MMODE_D2P = 3'b100;
 localparam [2:0] MN_M_MMODE_C2P = 3'b101;
 localparam [2:0] MN_M_MMODE_C2D = 3'b110;
+localparam [2:0] MN_M_MMODE_NONE = 3'b111;
 localparam [2:0] MN_M_TMODE_SINGLE = 3'b000;
 localparam [2:0] MN_M_TMODE_PARALLEL = 3'b001;
 localparam [2:0] MN_M_TMODE_B2 = 3'b010;
 localparam [2:0] MN_M_TMODE_B4 = 3'b011;
 localparam [2:0] MN_M_TMODE_B = 3'b100;
 localparam [2:0] MN_M_TMODE_D = 3'b101;
+localparam [2:0] MN_M_TMODE_NONE6 = 3'b110;
+localparam [2:0] MN_M_TMODE_NONE7 = 3'b111;
 localparam [1:0] MN_M_DMODE_DL = 2'b00;
 localparam [1:0] MN_M_DMODE_FI = 2'b01;
 localparam [1:0] MN_M_DMODE_HS = 2'b10;
+localparam [1:0] MN_M_DMODE_NONE = 2'b11;
 /* verilator lint_on UNUSEDPARAM */

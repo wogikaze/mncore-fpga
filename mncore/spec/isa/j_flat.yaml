@@ -941,10 +941,12 @@ fields:
     csv_name: "l2bm.bdmode"
     desc: "L2BM 命令式の種別。"
     ref: ["SDM 3.6.7", "Scrapbox 機械語「L1BMとL2BMの追加制御組合せ」"]
+    enum_when: {field: l2bm_lwrite, val: "1"}
     enum:
       - {val: "00", name: dist, desc: "分配・結合（l2bmd）"}
       - {val: "01", name: bcast, desc: "放送・縮約・個別転送（l2bmb / l2bmr… / l2bm@）"}
       - {val: "10", name: bcast2, desc: "分配放送・結合縮約（l2bmb2 / l2bmr2…）"}
+    notes: "enum は lwrite = 1 の語にだけ当てはまる（WP37）。gwrite = 1、lwrite = 0 で 11 の語は公式では何もしない（WP32）。lwrite = 1 で 11 は公式が異常終了する。gwrite = lwrite = 1 で 00 以外も異常終了するが、その判定は mn_l2bm の chk_unsup が行う。"
   - name: l2bm_ladr
     pos: 213
     width: 11
@@ -992,6 +994,7 @@ fields:
     csv_name: "l2bm.opcode"
     desc: "L2BM 縮約の演算（rrn_opcode）。"
     ref: ["SDM 3.5.5", "SDM 3.6.7.6"]
+    enum_when: {field: l2bm_lwrite, val: "1"}
     enum:
       - {val: "0000", name: fadd, desc: "fadd（浮動小数点加算）。縮約でない転送でも 0000"}
       - {val: "0001", name: max, desc: "max"}
@@ -1001,7 +1004,7 @@ fields:
       - {val: "1010", name: and, desc: "and（論理積）"}
       - {val: "1100", name: bor, desc: "bor（ビット論理和）"}
       - {val: "1101", name: or, desc: "or（論理和）"}
-    notes: "縮約でない転送（l2bmd、l2bm@）でも 1100 が入る。"
+    notes: "縮約でない転送（l2bmd、l2bm@）でも 1100 が入る。l2bm@n は集合 {n} の bor の縮約（WP32）。enum は lwrite = 1 の語にだけ当てはまる（WP37）: l2bmdars（lwrite = 0）ではこの欄が DAR アドレスの下位 2bit と L2B 番号を運ぶ（例 l2bmdars $lc0@.0 $dar1 は 0100）。lwrite = 1 の語でも、公式が演算を見るのは縮約（gwrite = 0、bdmode 01 / 10）だけで、結合と l2bmi は見ない。その区別は mn_l2bm の chk_unsup が行う。"
   - name: l2bm_darsend
     pos: 236
     width: 1
