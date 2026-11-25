@@ -67,9 +67,11 @@ def reads_forwarding(word: int, fp: dict) -> list[str]:
         return []
     out = []
     aluop = f("pe_aluc_aluop")
-    if aluop != 0b11111 and f("pe_aluc_isela") in (11, 12, 13, 14):
+    # an ALU operation unless "none" (dmode 11 with aluop 0, the decoder's ALU group) or imm
+    alu_on = not (f("pe_aluc_dmode") == 0b11 and aluop == 0) and aluop != 0b11111
+    if alu_on and f("pe_aluc_isela") in (11, 12, 13, 14):
         out.append(f"pe_aluc_isela {f('pe_aluc_isela')}")
-    if aluop != 0b11111 and f("pe_aluc_iselb") >= 5:
+    if alu_on and f("pe_aluc_iselb") >= 5:
         out.append(f"pe_aluc_iselb {f('pe_aluc_iselb')}")
     if f("pe_mauc_enfma") or f("pe_mauc_mw"):
         for k in ("pe_mauc_isela", "pe_mauc_iselb", "pe_mauc_iselc"):

@@ -582,7 +582,17 @@ def parse_asm(text: str) -> AsmProgram:
             prog.events.append((len(prog.entries), parse_dline(line)))
         elif tag == "r" and len(line) > 2 and line[1] == " ":
             prog.rlines.append(line)       # DRAM data (assemble3 echoes the .vsm data lines)
-            prog.events.append((len(prog.entries), parse_rline(line)))
+            op = parse_rline(line)
+            pos = len(prog.entries)
+            prev = prog.events[-1] if prog.events else None
+            # consecutive r lines at the same place that continue the previous one's addresses become one
+            # DRAM write (one WR_MEM pipeline instead of a command per line; programs have up to 2**17)
+            if (prev is not None and prev[0] == pos and prev[1].text.startswith("r ") and
+                    prev[1].loc == op.loc and prev[1].addr + prev[1].count == op.addr):
+                prev[1].payload.extend(op.payload)
+                prev[1].count += op.count
+            else:
+                prog.events.append((pos, op))
         elif tag in "iq":
             raise ValueError(f"line {ln}: '{tag}' words are not supported (use --instruction-mode flat "
                              f"--disable-packer)")

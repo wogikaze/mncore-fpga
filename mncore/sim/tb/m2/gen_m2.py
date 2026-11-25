@@ -58,9 +58,13 @@ LIST = [
     "directed/lbf_src.vsm",
     "directed/replica_forms.vsm",
 ]
-# replica rule: the official emulator is the reference of every program
+# replica rule: the official emulator is the reference of every program (SPMD programs: every MAB /
+# L1B holds the same data, so the copies give the official 4096-PE result)
 LIST_REPLICA = [
-    "problems/challenge/21.hello-world/main.vsm",
+    "problems/challenge/21.hello-world/main.vsm",       # "Hello, world!" in DRAM n0
+    "problems/25.dram-ul-16/main.vsm",                  # DRAM -> PDM -> L2BM -> L1BM, l2bmd / l1bmd
+    "problems/challenge/13.mod3/main.vsm",              # L1BM reductions
+    "problems/challenge/6.fadd-mul/main.vsm",
     "directed/replica_forms.vsm",
 ]
 

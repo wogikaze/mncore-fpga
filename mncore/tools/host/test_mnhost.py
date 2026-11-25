@@ -89,6 +89,19 @@ class AsmParsing(unittest.TestCase):
         with self.assertRaises(ValueError):
             mh.parse_asm("i 0101")
 
+    def test_rlines_merged(self):
+        """WP37: consecutive r lines with continuing addresses are one DRAM write; a gap, another group
+        or a word between them starts a new one."""
+        text = "\n".join(["r 0 000000010 001 " + "1" * 16, "r 0 000000011 002 " + "2" * 32,
+                          "r 0 000000020 001 " + "3" * 16, "r 1 000000021 001 " + "4" * 16, J0,
+                          "r 0 000000022 001 " + "5" * 16])
+        p = mh.parse_asm(text)
+        self.assertEqual(len(p.rlines), 5)
+        ops = [(pos, d.space, d.loc, d.addr, d.count) for pos, d in p.events]
+        self.assertEqual(ops, [(0, "DRAM", {"n": 0}, 0x10, 3), (0, "DRAM", {"n": 0}, 0x20, 1),
+                               (0, "DRAM", {"n": 1}, 0x21, 1), (1, "DRAM", {"n": 0}, 0x22, 1)])
+        self.assertEqual(p.events[0][1].payload, [0x1111111111111111, 0x2222222222222222, 0x2222222222222222])
+
     def test_topology(self):
         t = mh.Topology((1, 1, 2, 1, 4))
         self.assertEqual(len(t.locations("LM0", {})), 8)
