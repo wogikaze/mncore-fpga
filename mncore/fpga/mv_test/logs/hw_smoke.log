@@ -1,0 +1,5 @@
+# mv hwrun 2026-11-25 12:00:20: design 0x33, 27000000 Hz, 2000000 baud, imem 512, topo (1, 1, 1, 0, 0), depths 0:4096, 6:1024, 7:2048, 8:131072, 9:524288, 2 tests x 1
+[1:1/2] ok   p2d              1.6 s
+[1:2/2] ok   hello_mv         2.1 s
+# 2 runs in 4 s, 0 failed; link: crc_err 0 frame_err 0 overrun 0 timeout 0, host retries 0
+PASS
