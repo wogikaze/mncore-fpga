@@ -1,0 +1,40 @@
+# WP36: the matrix register of the MAB (?mwrite, ?mread / $mreadf, matrix MAU) on the
+# time-multiplexed 4-PE core (mn_core N_PE = 4, MAT = 1, LM_AW = 8), run through its host ports by
+# tb_core (mncore/sim/tb/core). The default script mncore/sim/tb/mat/fixed/all.scr holds directed
+# programs whose expected values come from the official emulator (gen_mat.py, WSL). The corpus
+# regression is mncore/sim/regress/run.py --pes 4 --matrix (--define TB_MAT=1).
+# Lint / synth: mn_mab_mat (the matrix unit); mn_core with MAT = 1 is linted by lint_cfg.py.
+top: tb_core
+rtl_top: mn_mab_mat
+incdir: mncore/rtl/dec
+define: TB_NPE=4
+define: TB_MAT=1
+define: TB_SCRIPT="mncore/sim/tb/mat/fixed/all.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/core/mn_core.v
+mncore/sim/tb/core/tb_core.v

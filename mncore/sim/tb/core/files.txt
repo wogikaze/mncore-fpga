@@ -28,6 +28,8 @@ mncore/rtl/pe/mn_pe_store.v
 mncore/rtl/pe/mn_pe_lsu.v
 mncore/rtl/pe/mn_pe_mem.v
 mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
 mncore/rtl/pe/mn_pe_core.v
 mncore/rtl/mab/mn_mab.v
 mncore/rtl/core/mn_core.v

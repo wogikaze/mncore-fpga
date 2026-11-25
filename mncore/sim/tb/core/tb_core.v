@@ -23,6 +23,7 @@
 // Compile with -DTB_FPALU=0 / -DTB_MAU=0 for the reduced cores (mncore/sim/regress/run.py --define),
 // -DTB_NPE=4 for the time-multiplexed MAB of 4 PEs (WP30; then LM_AW = 8 unless -DTB_LMAW=n, and
 // -DTB_BFN=0 leaves out bfn / bfe). The 4 PEs are at loc 0..3 (n0c0b0m0p0..p3).
+// -DTB_MAT=1 adds the matrix register and matrix MAU of the MAB (WP36, with TB_NPE=4).
 `timescale 1ns/1ps
 `ifndef TB_FPALU
 `define TB_FPALU 1
@@ -35,6 +36,9 @@
 `endif
 `ifndef TB_BFN
 `define TB_BFN 1
+`endif
+`ifndef TB_MAT
+`define TB_MAT 0
 `endif
 `ifndef TB_LMAW
 `define TB_LMAW ((`TB_NPE > 1) ? 8 : 9)
@@ -71,7 +75,7 @@ module tb_core;
     wire [16:0] core_trap;
 
     mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW),
-              .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN)) dut (
+              .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN), .MAT(`TB_MAT)) dut (
         .clk(clk), .rst(rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),
         .mw_loc(mw_loc), .mw_addr(mw_addr), .mw_data(mw_data), .mw_mask(mw_mask),

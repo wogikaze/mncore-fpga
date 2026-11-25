@@ -12,6 +12,10 @@
 // block-float unit out (bfn / bfe stop with E_UNSUPPORTED). An E_RANGE stops the word before
 // any PE writes; core_trap is the detail of the PE that trapped (its number is mn_mab's
 // trap_pe, not a port of mn_core, whose ports stay those of brd_host_if).
+// MAT = 1 (N_PE = 4, WP36) adds the matrix register of the MAB (rtl/mab/mn_mab_mat.v): ?mwrite,
+// ?mread / $mreadf and the matrix MAU in f / g / h (d stays E_UNSUPPORTED pe_mauc_dmode). The
+// matrix register is cleared by reset (like the official emulator's initial state); it has no
+// host space.
 //
 // Instruction memory (space 0x00 IMEM): 2**IMEM_AW entries of 448 bits (PROTOCOL.md section 3:
 //   [447:446] type 01 j / 10 m, [425:0] jw, m words in [81:0]); lane k (0..6) of entry e is
@@ -63,6 +67,7 @@ module mn_core #(
     parameter MAU     = 1,           // 0: no MAU (mn_mau_vec)
     parameter N_PE    = 1,           // 1: one PE (M1); 4: one MAB, time-multiplexed (WP30)
     parameter BFN     = 1,           // N_PE = 4: bfn / bfe (mn_fp_alu_bfn)
+    parameter MAT     = 0,           // N_PE = 4: matrix register, ?mwrite / ?mread / matrix MAU (WP36)
     parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0), or of PE 0 of the MAB
 ) (
     input  wire         clk,
@@ -279,6 +284,7 @@ module mn_core #(
             wire [1:0] trap_pe;   // the PE of an E_RANGE (not a port: the ports are brd_host_if's)
             /* verilator lint_on UNUSEDSIGNAL */
             mn_mab #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
+                     .MAT(MAT),
                      .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
                      .POS_M({28'd0, PE_LOC[5:2]}), .POS_P(0)) u_mab (
                 .clk(clk), .rst(rst),
