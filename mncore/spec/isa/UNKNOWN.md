@@ -76,3 +76,10 @@
 - `l2bmdars` では `l2bm_l1adr`〜`l2bm_opcode` の 12bit が {DAR アドレス 10bit, L2B 番号 2bit}。L2B 番号は bit 0 だけを使う。
 - 直前の j 語にも `l2bmdars` があると、DAR のアドレスと L2B は最初の語のものを保つ。m 語は連続を切らない。ll = 00 を含むほかの j 語は切る。
 - **要修正**: デコーダの `unsup_vec[83]` / `[88]` は語の種類によらず立つため、`l2bmdars` の正しい語まで E_UNSUPPORTED になる。WP37 で yaml を直し、`gen_dec.py` で生成し直す。詳細は `mncore/rtl/l2bm/README.md` と `mncore/status/WP-32.md`。
+
+## lead による追記（WP36 で確定、2026-11-25。公式で 166 例）
+
+- readh: mw = 0 では転置読み出しの面が readh ? X : Y。mw = 1 では書き込みの面が readh ? X : Y で、転置読み出しはその反対の面。行列 MAU の面は常に readh ? Y : X。
+- ma: mw = 0 では読み出しの列、mw = 1 では書き込みの行。mw = 1 のときの読み出しの列は {signa, signc, passa, zeroc} に入る。
+- mdw_side: h の 2 行書き込みと、d の行列 MAU の u / d の切り替え。読み出しには効かない。
+- h の読み出しの列と 2 行書き込みの行は偶数に切り捨てる。

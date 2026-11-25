@@ -19,6 +19,12 @@
    - L2BM まわりの Rust Sim と公式の食い違い（WP32）:
      - 連続する `l2bmdars` では、公式は最初の語の DAR アドレスと L2B を保つ。Rust は毎回設定し直す。
      - 語の中の L1BM への書き込みの順序は、公式ではサイクルごとに PE 側、L2BM 側の順。Rust は .vsm に書いた順。
+   - 行列まわりの Rust Sim と公式の食い違い（WP36）。詳細は `mncore/status/WP-36.md`。
+     - h の加数の格子: 公式は Ep − 26、Sim は Ep − 16。
+     - 積を捨てる規則（h 30、d 57）が Sim にない。
+     - ?mwrite の e で、公式は −0 の符号を残す。
+     - h の 2 行書き込みの奇数行: 公式は偶数に切り捨てる。
+     - h の拡張表現の積: 公式はシフトして丸める。
    - `$lbf` の暗黙の更新: 公式は L1BM の欄がない語でも `$lbf` を更新するが、RTL は合わせない。assemble3 はその後の `$lbf` の読み出しを拒否するため、アセンブルしたプログラムでは結果に差が出ない（lead の判断）。
    - `$mreadf` は、公式では nop / noforward 以外の全ステップで更新される（WP20）。Rust Sim は ?mread のないステップで 0 にする。
    - ユニット単位の演算では食い違いが 4 種ある（§5、WP03）。
@@ -85,6 +91,7 @@
     - PDM: 0x80000〜0x9FFFF（`PDM_DEPTH` = 2^17 長語）。
     - 0xA0000〜0xFFFFF は空き（WP34 の仮想 PE、命令の先読み）。
     - チップの大きさでの折り返し: L2BM 2^15、PDM 2^19、DRAM 2^29。L2BM のアドレスは 64 長語単位。
+  - 行列レジスタ（X / Y の 2 面）は MAB ごとに 1 つ持ち、リセットで 0 にする。ホストから読み書きする空間はない。
   - DAR はグループごとに持ち、縮小しない（1024 × 32bit）。N_L2B = 1 では `@.1` は 0 を読む。
   - L2BM の M2 の構成は `N_L1B=1`、`RRN=2`、`DAR=0`（BSRAM 8）。DAR を入れると +3（MV の間接参照に要る。WP33 で判断）。
   - L1BM の E_RANGE の対象は、欄のある語の読み出し（存在する PE の分）と、me=1 の書き込み。
@@ -204,6 +211,10 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - 構成 B（FPALU=3、BFN=1）: LUT4 71%、49 MHz。
   - 全部入りは yosys の換算で 105% になり、載らない。
   - L1BM と L2BM を足すと、BSRAM は 45/46 の見込み。
+- 行列（WP36、`MAT=1`）は LUT 換算 +2,763、BSRAM +3、DSP +1。
+  - 行列入りの実機構成（FPALU 0、MAU 0、BFN 1、MAT 1）は LUT4 72%、BSRAM 36/46、43.6 MHz。
+  - MAU か FP ALU と同時に載せると、yosys の見積もりで約 75%。
+- MV（WP33）は LUT 約 1,100、BSRAM 0。
 - 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
 
 ### RAM と DSP の書き方
@@ -247,7 +258,7 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - 細目の正は `PROTOCOL.md`。
 - 命令メモリは 7 レーンを順に書く。
 - デザイン ID: 0x02 は `mn_top_1pe`、0x03 は `mn_top_mab`（1 MAB）。
-  - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
+  - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN、bit 6 = MAT。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
 - `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。
 - 実機での回帰は `python mncore/fpga/top_1pe/hwrun.py --all --fpalu <n>` で行う。
 - 単語の `d get` には dtype が必須。
