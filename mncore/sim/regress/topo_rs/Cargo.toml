@@ -1,0 +1,14 @@
+[package]
+name = "topo-rs"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Runs a VSM program on the viz/core Rust simulator on a reduced topology and prints its d get output as ndmp records (WP37)"
+
+[dependencies]
+# The reference simulator (WP06: Sim::with_topology). Referenced by path so that the submodule stays unmodified.
+mncore-sim = { path = "../../../../third_party/mncore/viz/core" }
+
+[[bin]]
+name = "topo_dump"
+path = "src/main.rs"

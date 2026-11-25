@@ -33,6 +33,13 @@
 // those words stop with E_UNSUPPORTED (pe_mauc_mmode / pe_mauc_mw) and $mreadf reads 0.
 //
 // Host port: mn_pe_core's; hp_pe is the PE (N_PE = 4).
+//
+// BM = 1 (N_PE = 4, WP37): mn_core's L1BM / L2BM units take part in the word (mn_pe_core BM). A word
+// with a unit part (x_act) always gets the check-only pass; when it has passed (no E_RANGE, no
+// E_UNSUPPORTED, also from the units: x_unsup), ugo pulses for one clock before the normal pass
+// starts, and mn_core starts the units with it. In the normal pass, PE cur_pe (= the PE of the step)
+// gives its L1BM operands (ls_*), takes its L1BM -> PE values (lr_*) and reads / writes its $lbf
+// (lb_*). ugo also pulses for a word without the check-only pass (at its start).
 `default_nettype none
 module mn_mab #(
     parameter LM_AW  = 8,
@@ -42,6 +49,7 @@ module mn_mab #(
     parameter N_PE   = 4,   // 1 or 4
     parameter BFN    = 1,   // N_PE = 4: bfn / bfe
     parameter MAT    = 0,   // N_PE = 4: the matrix register and matrix MAU (WP36)
+    parameter BM     = 0,   // N_PE = 4: the L1BM / L2BM units of mn_core (WP37)
     parameter integer POS_N = 0,   // chip coordinates of the MAB (contract 06 section 3)
     parameter integer POS_C = 0,
     parameter integer POS_B = 0,
@@ -61,6 +69,27 @@ module mn_mab #(
     output wire [1:0]   trap_cycle,
     output wire [11:0]  trap_addr,
     output wire [1:0]   trap_pe,
+    // ---- L1BM / L2BM units of mn_core (BM = 1): see mn_pe_core
+    output wire         ugo,         // 1 clock: the check-only pass is over, the normal pass begins
+    output wire [1:0]   cur_pe,      // the PE of the step
+    input  wire         x_act,
+    input  wire         x_unsup,
+    input  wire [6:0]   x_field,
+    input  wire         lu_src,
+    input  wire         lu_lbf,
+    output wire         ls_we,
+    output wire [1:0]   ls_cycle,
+    output wire [127:0] ls_data,
+    output wire         lr_req,
+    input  wire         lr_ready,
+    output wire [1:0]   lr_cycle,
+    input  wire         lr_valid,
+    input  wire [127:0] lr_data,
+    output wire [1:0]   lb_rcycle,
+    input  wire [127:0] lb_rdata,
+    output wire         lb_we,
+    output wire [1:0]   lb_wcycle,
+    output wire [127:0] lb_wdata,
     input  wire         hp_req_valid,
     output wire         hp_req_ready,
     input  wire         hp_req_we,
@@ -92,7 +121,7 @@ module mn_mab #(
     wire [3:0]   mt_flags;
 
     mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
-                 .MAT(MAT),
+                 .MAT(MAT), .BM(BM),
                  .POS_N(POS_N), .POS_C(POS_C), .POS_B(POS_B), .POS_M(POS_M), .POS_P(POS_P)) u_pe (
         .clk(clk), .rst(rst),
         .start(c_start), .ready(c_ready), .jw(jw), .pe(c_pe), .rd_only(c_rdo),
@@ -107,6 +136,10 @@ module mn_mab #(
         .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_hen(mr_hen), .ma_upd(ma_upd), .ma_hen(ma_hen),
         .fr_req(fr_req), .fr_sel(fr_sel), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val),
         .fr_acc(fr_acc),
+        .x_act(x_act), .x_unsup(x_unsup), .x_field(x_field), .lu_src(lu_src), .lu_lbf(lu_lbf),
+        .ls_we(ls_we), .ls_cycle(ls_cycle), .ls_data(ls_data),
+        .lr_req(lr_req), .lr_ready(lr_ready), .lr_cycle(lr_cycle), .lr_valid(lr_valid), .lr_data(lr_data),
+        .lb_rcycle(lb_rcycle), .lb_rdata(lb_rdata), .lb_we(lb_we), .lb_wcycle(lb_wcycle), .lb_wdata(lb_wdata),
         .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we), .hp_pe(hp_pe),
         .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
         .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
@@ -156,6 +189,8 @@ module mn_mab #(
             assign c_rdo    = 1'b0;
             assign trap_pe  = 2'd0;
             assign xz_z     = 128'd0;
+            assign ugo      = start & c_ready;
+            assign cur_pe   = 2'd0;
             /* verilator lint_off UNUSEDSIGNAL */
             wire unused_one = ^{xpe_op, prechk, xg_valid, xg_cycle, xg_x, xz_cycle, mat_busy};
             /* verilator lint_on UNUSEDSIGNAL */
@@ -173,6 +208,7 @@ module mn_mab #(
             reg        d_q;
             reg  [1:0] st_q, tpe_q;
             reg  [6:0] fld_q;
+            reg        ugo_q;      // the normal pass begins (after the check-only pass)
             wire       bf_fin;     // the block-float conversion of the 4 cycles is done
 
             assign ready    = (m == M_IDLE) & c_ready & ~mat_busy;
@@ -183,6 +219,8 @@ module mn_mab #(
             assign c_start  = (m == M_GO);
             assign c_pe     = p;
             assign c_rdo    = pass_r;
+            assign ugo      = ugo_q;
+            assign cur_pe   = p;
 
             always @(posedge clk) begin
                 if (rst) begin
@@ -196,14 +234,17 @@ module mn_mab #(
                     st_q   <= 2'd0;
                     fld_q  <= 7'd0;
                     tpe_q  <= 2'd0;
+                    ugo_q  <= 1'b0;
                 end else begin
-                    d_q <= 1'b0;
+                    d_q   <= 1'b0;
+                    ugo_q <= 1'b0;
                     case (m)
                         M_IDLE: if (start && c_ready) begin
                             op_q   <= xpe_op;
                             p      <= 2'd0;
                             pass_r <= prechk;
                             uns    <= 1'b0;
+                            ugo_q  <= ~prechk;
                             m      <= M_GO;
                         end
                         M_GO: if (c_ready) m <= M_WAIT;   // mn_pe_core takes the start
@@ -228,6 +269,7 @@ module mn_mab #(
                                 end else begin
                                     pass_r <= 1'b0;
                                     p      <= 2'd0;
+                                    ugo_q  <= 1'b1;
                                     m      <= (op_q == 2'd3) ? M_BF : M_GO;
                                 end
                             end else if (c_st == 2'd2) begin

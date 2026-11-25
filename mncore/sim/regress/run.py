@@ -7,6 +7,19 @@ usage: python mncore/sim/regress/run.py [--pes 1|4] [--only TEXT] [-j N] [--offi
 --matrix (WP36, with --pes 4 --define TB_MAT=1): the programs that pe1 leaves out only for the
    matrix group (?mwrite / ?mread / ?mfma / msl / msr) instead of pe1 = yes.
 
+--m2 (WP37): the M2 core (mn_core N_PE = 4, M2 = 1: one MAB, L1B, L2B and group with the L1BM,
+   L2BM and MV units; tb_core of the unit m2 with the behavioural SDRAM memory), on the programs
+   that pe1 leaves out for the l1bm / l2bm / mv groups (and their run-time LM addresses), not the
+   matrix ones (--matrix adds those too, with --define TB_MAT=1). Results in build/m2/.
+   The probe adds L1BM n0c0b0 (1024 long words), L2BM n0c0 (2048) and DRAM n0 (8192); `r` lines
+   become DRAM writes. Each program is also run on the Rust simulator on the reduced topology (zero
+   rule, contract 06 section 3 (a); mncore/sim/regress/topo_rs, `topo_dump`), and the RTL is compared
+   with both: "pass b" = the official equals the reduced Rust run and the RTL equals both (the data
+   stays inside the implemented units), "pass c" = they differ and the RTL equals the reduced Rust
+   run (the zero rule), "pass b (rust differs)" = the RTL equals the official only (a known
+   divergence of the Rust simulator). PDM is not compared (the official d get $p shows the DRAM).
+   --define TB_REPLICA=1 (the replica rule, WP-3x) compares with the official only (pass / mismatch).
+
 --pes 1 (default, WP20): the 1-PE core (mn_core N_PE = 1, LM 512 long words), PE n0c0b0m0p0.
 --pes 4 (WP30): one MAB of 4 PEs on the time-multiplexed core (mn_core N_PE = 4, LM_AW = 8:
    LM 256 long words per PE), PEs n0c0b0m0p0..p3; results in build/mab/ (official runs with the
@@ -66,20 +79,31 @@ PE_LOC = "n0c0b0m0p0"
 PE_LOC_CODE = 0
 N_PE = 1
 PE_LOCS = [PE_LOC]          # implemented PEs (ndmp location text)
-PROBE = "pe"                # goldenlib probe, or "mab4" (below)
+PROBE = "pe"                # goldenlib probe, or "mab4" / "m2" (below)
 TB_DEFINES: list = []       # tb_core defines of the configuration
+UNIT = "core"               # simrun unit whose files make the testbench
+M2 = False                  # the M2 core (WP37)
+# the reduced topology of the M2 core for the Rust simulator (WP06 sim_run syntax; topo_dump)
+TOPO_M2 = "l2b=1,l1b=1,mab=1,lm=256,grf=256,l1bm=1024,l2bm=2048,pdm=131072,dram=524288"
+DRAM_PROBE = 8192           # DRAM n0 long words of the M2 probe
+MAXCLK = 0                  # tb_core +maxclk per RUN (0: its default)
 
 SP_ID = {"LM0": 0x01, "LM1": 0x02, "GRF0": 0x03, "GRF1": 0x04, "T": 0x05, "OMR": 0x10}
 WORD_SPACES = ("LM0", "LM1", "GRF0", "GRF1")
 DEPTH_LW = {"LM0": LM_LW, "LM1": LM_LW, "GRF0": GRF_LW, "GRF1": GRF_LW, "T": 8}
+# the spaces of the M2 units (WP37): added by configure(4, m2=True)
+UNIT_SP_ID = {"L1BM": 0x06, "L2BM": 0x07, "PDM": 0x08, "DRAM": 0x09}
+UNIT_DEPTH = {"L1BM": 1024, "L2BM": 2048, "PDM": 1 << 17, "DRAM": 1 << 19}
+UNIT_LOCS = {"L1BM": "n0c0b0", "L2BM": "n0c0", "PDM": "n0", "DRAM": "n0"}
 
 
-def configure(npe: int) -> None:
-    """Switches the module to the 1-PE core (default) or the MAB of 4 PEs (WP30)."""
-    global N_PE, LM_LW, PE_LOCS, PROBE, TB_DEFINES, BUILD
-    if npe == 1:
+def configure(npe: int, m2: bool = False) -> None:
+    """Switches the module to the 1-PE core (default), the MAB of 4 PEs (WP30) or the M2 core (the
+    MAB with the L1BM, L2BM and MV units, WP37)."""
+    global N_PE, LM_LW, PE_LOCS, PROBE, TB_DEFINES, BUILD, UNIT, M2, MAXCLK
+    if npe == 1 and not m2:
         return
-    if npe != 4:
+    if npe != 4 and not m2:
         raise SystemExit("--pes must be 1 or 4")
     N_PE = 4
     LM_LW = 256                    # mn_core N_PE = 4, LM_AW = 8 (contract LM_DEPTH)
@@ -88,6 +112,15 @@ def configure(npe: int) -> None:
     TB_DEFINES = ["TB_NPE=4"]
     BUILD = HERE / "build" / "mab"
     DEPTH_LW.update(LM0=LM_LW, LM1=LM_LW)
+    if m2:
+        M2 = True
+        PROBE = "m2"
+        UNIT = "m2"
+        TB_DEFINES = []            # the defines of the unit m2 (files.txt)
+        BUILD = HERE / "build" / "m2"
+        SP_ID.update(UNIT_SP_ID)
+        DEPTH_LW.update(UNIT_DEPTH)
+        MAXCLK = 50_000_000
 
 
 def probe_text() -> str:
@@ -98,6 +131,9 @@ def probe_text() -> str:
     for pe in PE_LOCS:
         lines += [f"d get $lm0{pe} {LM_LW}", f"d get $ln0{pe} {LM_LW}", f"d get $lr0{pe} {GRF_LW}",
                   f"d get $ls0{pe} {GRF_LW}", f"d get $llt{pe} 4", f"d get $omr1{pe} 15"]
+    if PROBE == "m2":
+        lines += [f"d get $lb0n0c0b0 {UNIT_DEPTH['L1BM']}", f"d get $lc0n0c0 {UNIT_DEPTH['L2BM']}",
+                  f"d get $d0n0 {DRAM_PROBE}"]
     return "".join(line + "\n" for line in lines)
 
 
@@ -163,17 +199,35 @@ class DLine:
         return bool(self.pe_locs())
 
     def pe_locs(self) -> list:
-        """The implemented PEs this line touches, as (loc code, location text)."""
+        """The implemented PEs (or L1B / L2B / group of the M2 units) this line touches, as
+        (loc code, location text)."""
         if self.space not in SP_ID:
             return []
+        sp = self.space if self.space != "OMR" else "T"
         out = []
-        for f in topology().locations(self.space if self.space != "OMR" else "T", self.loc):
-            out.append((mnhost.loc_code(**f), mnhost.loc_text("T", f)))
+        for f in topology().locations(sp, self.loc):
+            out.append((mnhost.loc_code(**f), mnhost.loc_text(sp, f)))
         return out
 
     def mnhost_op(self) -> "mnhost.DOp":
         return mnhost.DOp(op=self.op, space=self.space, width=self.width, addr=self.addr, loc=self.loc,
                           count=self.count, payload=self.payload, text=self.text)
+
+
+class RLine:
+    """An `r` line (DRAM data, contract 06 section 2): r <group> <addr hex> <count hex> <long words>.
+    The M2 core has group 0 only; it becomes WR_MEM of space 9 (DRAM n0)."""
+
+    def __init__(self, text: str):
+        self.text = text.split("#", 1)[0].strip()
+        f = self.text.split()
+        if len(f) != 5 or f[0] != "r":
+            raise ValueError(f"cannot parse r line: {text}")
+        self.group, self.addr, n = int(f[1]), int(f[2], 16), int(f[3], 16)
+        if len(f[4]) != 16 * n:
+            raise ValueError(f"r line payload is not {n} long words: {text}")
+        self.payload = [int(f[4][16 * i:16 * i + 16], 16) for i in range(n)]
+        self.op = "r"
 
 
 def parse_official_asm(text: str):
@@ -189,7 +243,9 @@ def parse_official_asm(text: str):
         elif tag == "d":
             events.append((len(entries), DLine(line)))
         elif tag == "r":
-            n_r += 1    # DRAM data: there is no DRAM in the 1-PE core
+            n_r += 1    # DRAM data: there is no DRAM in the 1-PE / 4-PE cores
+            if M2:
+                events.append((len(entries), RLine(line)))
         else:
             raise ValueError(f"line {ln}: unknown line {line[:30]!r}")
     return entries, events, n_r
@@ -203,6 +259,13 @@ def get_reads(d: DLine):
         return [(SP_ID["OMR"], e, 1) for e in ents]
     if d.space == "T":
         return [(SP_ID["T"], 0, 8)]
+    if d.space in UNIT_SP_ID:
+        # long words; L1BM $llb<a> reads a + i and a + i + 4 (WP02)
+        lws = set(range(d.addr, d.addr + d.count))
+        if d.space == "L1BM" and d.width == "ll":
+            lws |= set(range(d.addr + 4, d.addr + d.count + 4))
+        lws = sorted(a for a in lws if a < DEPTH_LW[d.space])
+        return [(SP_ID[d.space], r[0], len(r)) for r in mnhost._addr_runs(lws)]
     if d.width == "w":
         lo, hi = d.addr >> 1, (d.addr + d.count - 1) >> 1
     else:
@@ -220,7 +283,14 @@ def set_writes(d: DLine):
     if d.space == "OMR":
         raise ValueError("d set of a mask register is not handled")
     out = []
-    for lw, v, m in mnhost.long_words(d.mnhost_op()):
+    if d.space == "L1BM" and d.width == "ll":
+        # $llb<a>: long words a + i (payload 2i) and a + i + 4 (payload 2i + 1)
+        items = []
+        for i in range(d.count):
+            items += [(d.addr + i, d.payload[2 * i], 0xFF), (d.addr + i + 4, d.payload[2 * i + 1], 0xFF)]
+    else:
+        items = mnhost.long_words(d.mnhost_op())
+    for lw, v, m in items:
         if d.space in DEPTH_LW and lw >= DEPTH_LW[d.space]:
             raise ValueError(f"d set beyond the implemented depth: {d.text}")
         out.append((SP_ID[d.space], lw, m, v))
@@ -254,6 +324,14 @@ def make_script(entries, events):
         if pos > pc:
             run_range(pc, pos)
             pc = pos
+        if isinstance(d, RLine):
+            # DRAM data of group 0 (the M2 core has no other group)
+            if d.group == 0:
+                for i, v in enumerate(d.payload):
+                    if d.addr + i >= DEPTH_LW["DRAM"]:
+                        raise ValueError(f"r line beyond the implemented DRAM: {d.text}")
+                    lines.append(f"W {SP_ID['DRAM']:x} 0 {d.addr + i:x} ff {v:x}")
+            continue
         for code, lt in d.pe_locs():
             if d.op == "set":
                 for sp, lw, m, v in set_writes(d):
@@ -299,6 +377,14 @@ def rtl_records(gets, reads):
                     w = lw_val(2 * c + k)
                     if w is not None:
                         recs.append(("T", loc, 2 * c + k, w))
+        elif d.space in UNIT_SP_ID:
+            lws = [d.addr + i for i in range(d.count)]
+            if d.space == "L1BM" and d.width == "ll":
+                lws = [a for i in range(d.count) for a in (d.addr + i, d.addr + i + 4)]
+            for a in lws:
+                w = lw_val(a)
+                if w is not None:
+                    recs.append((d.space, loc, a, w))
         elif d.width == "w":
             for i in range(d.count):
                 a = d.addr + i
@@ -317,6 +403,9 @@ def rtl_records(gets, reads):
 
 def keep_record(key) -> bool:
     space, loc, addr = key
+    if M2 and space in UNIT_SP_ID:
+        # PDM is not compared: the official d get $p shows the DRAM (contract 06 section 1)
+        return space != "PDM" and loc == UNIT_LOCS[space] and addr < DEPTH_LW[space]
     if loc not in PE_LOCS:
         return False
     if space in DEPTH_LW:
@@ -331,20 +420,29 @@ def prog_name(path: str) -> str:
     return gl.safe_name(gl.MNCORE / path)
 
 
+def load_prog(path: str):
+    """The program as the official run composes it (goldenlib), with the probe of the configuration."""
+    vsm = gl.MNCORE / path
+    if PROBE == "pe":
+        return gl.load_program(vsm, "auto", "pe")
+    prog = gl.load_program(vsm, "auto", "none")
+    prog.probe = PROBE
+    prog.probe_text = probe_text()
+    prog.meta["probe"] = PROBE
+    return prog
+
+
+def prog_key(prog) -> str:
+    return hashlib.sha1("\0".join([prog.prefix, prog.main_vsm, prog.suffix_vsm, prog.output,
+                                   prog.probe_text]).encode()).hexdigest()
+
+
 def official_stage(rows, jobs: int, force: bool, log):
     todo = []
     for r in rows:
-        vsm = gl.MNCORE / r["path"]
-        if PROBE == "pe":
-            prog = gl.load_program(vsm, "auto", "pe")
-        else:
-            prog = gl.load_program(vsm, "auto", "none")
-            prog.probe = PROBE
-            prog.probe_text = probe_text()
-            prog.meta["probe"] = PROBE
+        prog = load_prog(r["path"])
         job = BUILD / prog_name(r["path"])
-        key = hashlib.sha1("\0".join([prog.prefix, prog.main_vsm, prog.suffix_vsm, prog.output,
-                                      prog.probe_text]).encode()).hexdigest()
+        key = prog_key(prog)
         kf = job / "key.txt"
         if (not force and gl.read_status(job) == "ok" and kf.exists() and kf.read_text().strip() == key
                 and (job / "official.asm").exists()):
@@ -365,10 +463,69 @@ def official_stage(rows, jobs: int, force: bool, log):
         log(f"[official] done in {time.time() - t:.0f} s")
 
 
+# --------------------------------------------------------------------------------------- rust (M2)
+TOPO_DUMP = HERE / "topo_rs" / "target" / "release" / ("topo_dump.exe" if os.name == "nt" else "topo_dump")
+
+
+def build_topo_dump(log) -> Path:
+    """cargo build --release of mncore/sim/regress/topo_rs (topo_dump: the Rust simulator on a reduced
+    topology, with the d get records of WP02's golden_dump)."""
+    r = subprocess.run([gl.cargo(), "build", "--release", "--quiet", "--manifest-path",
+                        str(HERE / "topo_rs" / "Cargo.toml")], capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        sys.stderr.write(r.stdout + r.stderr)
+        raise SystemExit("topo_rs build failed")
+    log("[rust] built topo_dump")
+    return TOPO_DUMP
+
+
+def rust_one(path: str, topo: str, force: bool) -> str:
+    """Runs one program on topo_dump; writes rust.ndmp and rust.status (ok / range <word> /
+    unsupported / parse_error / error<rc> / timeout) into its job directory. Returns the status."""
+    prog = load_prog(path)
+    job = BUILD / prog_name(path)
+    job.mkdir(parents=True, exist_ok=True)
+    key = prog_key(prog) + "|" + topo
+    kf, sf = job / "rust_key.txt", job / "rust.status"
+    if not force and kf.exists() and sf.exists() and kf.read_text().strip() == key:
+        return sf.read_text().strip()
+    try:
+        r = subprocess.run([str(TOPO_DUMP), "--topology", topo, "-"], input=prog.rust_source().encode("utf-8"),
+                           capture_output=True, timeout=1800, env=dict(os.environ, RAYON_NUM_THREADS="1"))
+        err = r.stderr.decode("utf-8", "replace")
+        if r.returncode == 0:
+            st = "ok"
+        elif r.returncode == 5:
+            m = re.search(r"RANGE word=(\d+)", err)
+            st = f"range {m.group(1) if m else '?'}"
+        else:
+            st = {2: "unsupported", 3: "parse_error"}.get(r.returncode, f"error{r.returncode}")
+        body = r.stdout.decode("utf-8").replace("\r\n", "\n")
+    except subprocess.TimeoutExpired:
+        st, body, err = "timeout", "", ""
+    (job / "rust.ndmp").write_text("# ndmp v1\n# producer: topo_dump " + topo + "\n" + body, encoding="utf-8",
+                                   newline="\n")
+    (job / "rust.log").write_text(err, encoding="utf-8", newline="\n")
+    sf.write_text(st + "\n")
+    kf.write_text(key + "\n")
+    return st
+
+
+def rust_stage(rows, jobs: int, force: bool, log):
+    t = time.time()
+    with cf.ThreadPoolExecutor(max_workers=jobs) as ex:
+        sts = list(ex.map(lambda r: rust_one(r["path"], TOPO_M2, force), rows))
+    c = Counter(st.split()[0] for st in sts)
+    log(f"[rust] {len(rows)} programs on {TOPO_M2} in {time.time() - t:.0f} s: " +
+        ", ".join(f"{k} {v}" for k, v in sorted(c.items())))
+
+
 # --------------------------------------------------------------------------------------- rtl
 def compile_tb(log, defines=()) -> Path:
-    files, cfg = simrun.parse_files("core")
-    defines = list(TB_DEFINES) + list(defines)
+    files, cfg = simrun.parse_files(UNIT)
+    unit_defs = [d for d in cfg.get("define", []) if not d.startswith("TB_SCRIPT")] if UNIT != "core" else []
+    defines = list(TB_DEFINES) + unit_defs + list(defines)
     vvp = BUILD / ("sim" + "".join(f"_{d.replace('=', '')}" for d in defines) + ".vvp")
     cmd = ["iverilog", "-g2012", "-Wall", "-Wno-timescale", "-o", str(vvp)]
     cmd += [f"-D{d}" for d in defines]
@@ -433,7 +590,8 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
     scr = job / f"rtl{tag}.scr"
     scr.write_text(script, encoding="utf-8", newline="\n")
     try:
-        r = subprocess.run(["vvp", "-n", str(vvp), f"+script={scr.as_posix()}", "+quiet"],
+        r = subprocess.run(["vvp", "-n", str(vvp), f"+script={scr.as_posix()}", "+quiet"] +
+                           ([f"+maxclk={MAXCLK}"] if MAXCLK else []),
                            cwd=ROOT, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
         res["result"], res["detail"] = "timeout", f"{timeout} s"
@@ -468,6 +626,13 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
             entry = entries[idx] if idx is not None else None
             res["result"], what = classify_stop(reason, info, entry)
             res["detail"] = (what + " " if what else "") + f"at word {idx}"
+            if M2:
+                rst = (job / "rust.status").read_text().strip() if (job / "rust.status").exists() else "missing"
+                res["rust"] = rst
+                if reason == 1 and rst == f"range {idx}":
+                    res["cls"] = "E_RANGE as rust"
+                else:
+                    res["cls"] = res["result"]
             return res
     if len(stops) < len(runs):
         res["result"] = "error"
@@ -481,6 +646,8 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
     a = {k: v for k, v in off.items() if keep_record(k)}
     b = {k: v for k, v in rtl.items() if keep_record(k)}
     ndmp.write(str(job / f"rtl{tag}.ndmp"), rtl, {"producer": "rtl tb_core", "src": row["path"]})
+    if M2:
+        m2_compare(res, job, a, b, tag)
     mism = sorted(k for k in a.keys() & b.keys() if a[k] != b[k])
     only_a = sorted(set(a) - set(b))
     only_b = sorted(set(b) - set(a))
@@ -500,6 +667,48 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
     else:
         res["result"] = "pass"
     return res
+
+
+def diff(a: dict, b: dict):
+    mism = sorted(k for k in a.keys() & b.keys() if a[k] != b[k])
+    return mism, sorted(set(a) - set(b)), sorted(set(b) - set(a))
+
+
+def m2_compare(res: dict, job: Path, off: dict, rtl: dict, tag: str) -> None:
+    """M2 (WP37): the RTL against the official (cut to the implemented units) and the Rust simulator
+    on the reduced topology (the zero rule). Sets res["rust"], res["vs_rust"], res["off_rust"], res["cls"]."""
+    rst = (job / "rust.status").read_text().strip() if (job / "rust.status").exists() else "missing"
+    res["rust"] = rst
+    pass_o = not any(diff(off, rtl))
+    if rst != "ok":
+        res["vs_rust"], res["off_rust"] = "-", "-"
+        res["cls"] = "pass (official; rust " + rst + ")" if pass_o else "mismatch (rust " + rst + ")"
+        return
+    rd, _ = ndmp.read(str(job / "rust.ndmp"))
+    rust = {k: v for k, v in rd.items() if keep_record(k)}
+    m_r, oa_r, ob_r = diff(rust, rtl)
+    pass_r = not (m_r or oa_r or ob_r)
+    m_or, oa_or, ob_or = diff(off, rust)
+    closed = not (m_or or oa_or or ob_or)
+    sp = sorted({k[0] for k in m_or + oa_or + ob_or})
+    res["off_rust"] = "same" if closed else "differ(" + ",".join(sp) + ")"
+    res["vs_rust"] = "pass" if pass_r else "mismatch(" + ",".join(sorted({k[0] for k in m_r + oa_r + ob_r})) + ")"
+    if pass_r and not pass_o:
+        lines = [f"{k[0]} {k[1]} {k[2]:#06x} rust={rust.get(k, 0):016x} rtl={rtl.get(k, 0):016x}"
+                 for k in (m_r + oa_r + ob_r)[:20]]
+        (job / f"cmp_rust{tag}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    elif not pass_r:
+        lines = [f"{k[0]} {k[1]} {k[2]:#06x} rust={rust.get(k, 0):016x} rtl={rtl.get(k, 0):016x}"
+                 for k in (m_r + oa_r + ob_r)[:20]]
+        (job / f"cmp_rust{tag}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if closed and pass_o:
+        res["cls"] = "pass b"
+    elif pass_r and not closed:
+        res["cls"] = "pass c"
+    elif pass_o:
+        res["cls"] = "pass b (rust differs)"
+    else:
+        res["cls"] = "mismatch"
 
 
 # --------------------------------------------------------------------------------------- main
@@ -533,18 +742,43 @@ def main(argv=None) -> int:
                          "matrix group (?mwrite / ?mread / ?mfma, also msl / msr; with --also-lm also "
                          "for their LM addresses). Use with --pes 4 --define TB_MAT=1 "
                          "(results<tag>_mat.tsv)")
+    ap.add_argument("--m2", action="store_true",
+                    help="WP37: the M2 core (L1BM, L2BM, MV units) on the programs left out of pe1 for the "
+                         "l1bm / l2bm / mv groups (and their LM addresses); with --matrix also those with "
+                         "the matrix group. Also runs the reduced-topology Rust simulator (zero rule)")
+    ap.add_argument("--skip-rust", action="store_true", help="M2: use the cached Rust results only")
+    ap.add_argument("--force-rust", action="store_true")
+    ap.add_argument("--list", help="only the corpus paths in this file (one per line, '#' comments)")
     a = ap.parse_args(argv)
 
     def log(s):
         print(s, flush=True)
 
-    configure(a.pes)
+    configure(a.pes, a.m2)
     BUILD.mkdir(parents=True, exist_ok=True)
     rows = []
     lm_only = {"lm_dyn", "lm_max>=256"}
+    only_paths = None
+    if a.list:
+        only_paths = {ln.split("#", 1)[0].strip() for ln in Path(a.list).read_text(encoding="utf-8").splitlines()}
+        only_paths.discard("")
+
+    def m2_ok(reasons: set) -> bool:
+        groups = set()
+        rest = set()
+        for x in reasons:
+            if x.startswith("groups:"):
+                groups |= set(x.split(":", 1)[1].split("+"))
+            else:
+                rest.add(x)
+        allowed = {"l1bm", "l2bm", "mv"} | ({"matrix"} if a.matrix else set())
+        return bool(groups) and groups <= allowed and rest <= lm_only and \
+            (a.matrix or "matrix" not in groups) and bool(groups & {"l1bm", "l2bm", "mv"})
 
     def selected(r) -> bool:
         reasons = set(filter(None, r.get("pe1_reason", "").split(";")))
+        if a.m2:
+            return r.get("official") == "ok" and m2_ok(reasons)
         if a.matrix:
             allowed = {"groups:matrix"} | (lm_only if a.also_lm else set())
             return r.get("official") == "ok" and "groups:matrix" in reasons and reasons <= allowed
@@ -556,13 +790,19 @@ def main(argv=None) -> int:
         head = f.readline().rstrip("\n").split("\t")
         for line in f:
             r = dict(zip(head, line.rstrip("\n").split("\t")))
-            if selected(r) and (not a.only or a.only in r["path"]):
+            if selected(r) and (not a.only or a.only in r["path"]) and \
+                    (only_paths is None or r["path"] in only_paths):
                 rows.append(r)
     what = ("left out of pe1 only for the matrix group" + (" (and LM)" if a.also_lm else "")) if a.matrix else \
         ("left out of pe1 only for LM" if a.also_lm else "with pe1 = yes")
+    if a.m2:
+        what = "left out of pe1 for the l1bm / l2bm / mv groups" + (" (with matrix)" if a.matrix else "")
     log(f"[regress] {len(rows)} programs {what}")
     if not a.skip_official:
         official_stage(rows, a.official_jobs, a.force_official, log)
+    if a.m2 and not a.skip_rust:
+        build_topo_dump(log)
+        rust_stage(rows, a.jobs, a.force_rust, log)
     vvp = Path(a.vvp).resolve() if a.vvp else compile_tb(log, a.define)
     ftag = "".join(f"_{d.replace('=', '')}" for d in a.define)   # RTL files of the configuration
     t0 = time.time()
@@ -577,6 +817,13 @@ def main(argv=None) -> int:
     log(f"[rtl] {len(rows)} programs in {time.time() - t0:.0f} s")
     results.sort(key=lambda r: r["path"])
     cols = ["path", "kind", "groups", "words", "steps", "clocks", "compared", "result", "detail"]
+    if a.m2:
+        cols += ["rust", "off_rust", "vs_rust", "cls"]
+        for r in results:
+            for c in ("rust", "off_rust", "vs_rust", "cls"):
+                r.setdefault(c, "-")
+            if r["cls"] == "-":
+                r["cls"] = r["result"]
     text = "\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
     tag = "".join(f"_{d.replace('=', '')}" for d in a.define) + ("_lm" if a.also_lm else "") + \
         ("_mat" if a.matrix else "")
@@ -589,6 +836,8 @@ def main(argv=None) -> int:
     for r in results:
         res = r["result"]
         cls = res.split("(")[0] if res.startswith("mismatch") else res
+        if a.m2 and "TB_REPLICA=1" not in a.define:
+            cls = r["cls"]
         by[group_of(r)][cls] += 1
     classes = sorted({c for g in by.values() for c in g}, key=lambda c: (c != "pass", c))
     log("")
@@ -596,13 +845,15 @@ def main(argv=None) -> int:
     for g in sorted(by):
         log(g + "\t" + "\t".join(str(by[g][c]) for c in classes) + f"\t{sum(by[g].values())}")
     tot = Counter(r["result"].split("(")[0] if r["result"].startswith("mismatch") else r["result"] for r in results)
+    if a.m2 and "TB_REPLICA=1" not in a.define:
+        tot = Counter(r["cls"] for r in results)
     log("all\t" + "\t".join(str(tot[c]) for c in classes) + f"\t{len(results)}")
     reasons = Counter((r["result"], r["detail"].split(" at word")[0]) for r in results if r["result"] != "pass")
     if reasons:
         log("")
         for (res, det), n in sorted(reasons.items(), key=lambda x: -x[1]):
             log(f"{n:4d}  {res}  {det}")
-    npass = tot["pass"]
+    npass = sum(n for c, n in tot.items() if c.startswith("pass"))
     log(f"\nPASS {npass}/{len(results)}" if npass == len(results) else f"\n{npass}/{len(results)} pass")
     return 0
 

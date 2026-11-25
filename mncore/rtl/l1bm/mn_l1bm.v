@@ -38,13 +38,22 @@
 //   MABs m >= N_MAB do not exist: they send 0 to PE -> L1BM transfers (contract section 3) and
 //   get nothing. With N_MAB = 1, $lbi keeps only positions 0..3 of both planes (the others are
 //   always 0).
+//   REPLICA = 1 (WP37, the replica rule of mncore/wp/WP-3x.md; N_MAB a power of 2): a MAB m that
+//   does not exist is a copy of MAB m mod N_MAB. It sends that MAB's values to PE -> L1BM
+//   transfers and reductions (l1bmm@m, l1bmm4@i, l1bmd, l1bmr, l1bmr4: the inputs are the
+//   implemented values repeated), and the $lbi positions it would write read as those of the
+//   copied MAB (position mod 2**LBW). It still gets nothing (writes to it are dropped). With
+//   RRN = 2 a reduction is that of 16 (l1bmr) or 4 (l1bmr4) copies of MAB 0's value: fadd /
+//   iadd scale it by 2**4 / 2**2 (exactly, like the network: the copies have one exponent), the
+//   other operations keep it (and / or: 0 or 1).
 `default_nettype none
 module mn_l1bm #(
     parameter N_MAB = 1,    // MABs of the L1B (1..16), MAB 0 .. N_MAB-1 exist (contract N_MAB)
     parameter AW    = 10,   // L1BM depth = 2**AW long words (contract L1BM_DEPTH; chip 13)
     parameter RRN   = 1,    // 1: reduction network mn_l1bm_rrn (any N_MAB); 2: N_MAB = 1 only, one
                             // value and zeros per lane (small); 0: none, l1bmr / l1bmr4 E_UNSUPPORTED
-    parameter CLEAR = 1     // 1: after reset, clear the L1BM and $lbi (2**AW clocks, idle = 0)
+    parameter CLEAR = 1,    // 1: after reset, clear the L1BM and $lbi (2**AW clocks, idle = 0)
+    parameter REPLICA = 0   // 1: absent MABs are copies of the implemented ones (WP37, see above)
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -288,7 +297,8 @@ module mn_l1bm #(
     // turnaround: $lbi position of PE (m, p) in the layout of the transfer that wrote $lbi
     wire [5:0] t_pos = (t_bmode == 2'b10) ? (t_wl ? {1'b0, res_mab[3:2], 1'b0, res_pe} : {2'b00, res_mab[3:2], res_pe}) :
                        (t_bmode == 2'b11) ? (t_adr + {res_mab, res_pe}) : {4'd0, res_pe};
-    wire       t_in  = (t_pos < (1 << LBW));
+    // REPLICA: a position beyond the kept ones belongs to a copy of the MAB of position mod 2**LBW
+    wire       t_in  = (REPLICA != 0) | (t_pos < (1 << LBW));
     assign li_raddr = {res_cycle, t_pos[LBW-1:0]};
     // L1BM -> PE from the L1BM: the MSB long word address of PE (m, p), cycle c
     reg  [12:0] r_ahi;
@@ -394,7 +404,10 @@ module mn_l1bm #(
     wire [1:0] in_ln  = r_xt ? (r_rn ? kj : {k_k, kj[0]}) : r_rn ? {1'b0, kj[0]} : kj;   // lane index
     // a rounded result is one long word: the second one (wl = 1) is 0
     wire        k_nos = (l1bm_isel == 3'd7);          // no PE operand: zero data
-    wire [63:0] in_w  = (({1'b0, rr_mab} < NM) & ~k_nos) ? (in_lo ? sb_rdata[63:0] : sb_rdata[127:64]) : 64'd0;
+    // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops the MAB bits
+    // that N_MAB does not have, so the source buffer gives that MAB's value)
+    wire        rr_ex = (REPLICA != 0) | ({1'b0, rr_mab} < NM);
+    wire [63:0] in_w  = (rr_ex & ~k_nos) ? (in_lo ? sb_rdata[63:0] : sb_rdata[127:64]) : 64'd0;
     wire [1:0] in_fmt = r_xt ? 2'd2 : r_fmt;                       // width of the input lane
     wire [63:0] in_lane = lane_of(in_w, in_fmt, in_ln);
     assign rr_val = r_xt ? h2s(in_lane[15:0]) : in_lane;
@@ -403,12 +416,13 @@ module mn_l1bm #(
     genvar zg;
     generate
         for (zg = 0; zg < 4; zg = zg + 1) begin : g_zg
-            assign rr_zg[zg] = (4 * zg >= N_MAB);
+            assign rr_zg[zg] = (REPLICA == 0) && (4 * zg >= N_MAB);
         end
     endgenerate
     wire k_red  = l1bm_rmode;
-    // an item of value 0: a 4x4 group without MABs, or the second long word of a rounded result
-    wire k_zero = k_red & ((k_m4 & ({1'b0, k_g, 2'b00} >= NM)) | (r_rn & k_k));
+    // an item of value 0: a 4x4 group without MABs (not with REPLICA: copies), or the second long
+    // word of a rounded result
+    wire k_zero = k_red & (((REPLICA == 0) & k_m4 & ({1'b0, k_g, 2'b00} >= NM)) | (r_rn & k_k));
 
     function [63:0] lane_of(input [63:0] w, input [1:0] f, input [1:0] j);
         begin
@@ -464,7 +478,12 @@ module mn_l1bm #(
             assign rr_done = rr_d;
             assign rr_busy = rr_d;
             assign rr_idx  = 4'd0;
-            assign rr_res  = rrn_one(rop, r_fmt, r_rn & r_fadd, rr_val);
+            // REPLICA: 16 copies (l1bmr, two stages of 4) or 4 copies (l1bmr4) of the value
+            if (REPLICA != 0) begin : g_rep
+                assign rr_res = rrn_rep(rop, r_fmt, r_rn & r_fadd, k_m4 ? 3'd2 : 3'd4, rr_val);
+            end else begin : g_zero
+                assign rr_res = rrn_one(rop, r_fmt, r_rn & r_fadd, rr_val);
+            end
             wire unused_rr = ^rr_zg;
         end else if (RRN == 0) begin : g_norrn
             // no reductions: chk_unsup stops every l1bmr / l1bmr4 word
@@ -516,6 +535,47 @@ module mn_l1bm #(
         end
     endfunction
 
+    // RRN = 2, REPLICA: one lane of a reduction of 2**sh copies of one value (viz/core rrn.rs with
+    // equal inputs): fadd adds the copies exactly (one exponent) and rounds once, so it is the value
+    // with its exponent + sh (an all-ones exponent: infinity), then rounded like one value (rrn_one:
+    // a zero exponent field gives 0, out_half rounds to half); iadd shifts it (lane wrap); max / min
+    // / band / bor keep it; and / or give 1 when it is not 0.
+    function [63:0] rrn_rep(input [2:0] op, input [1:0] f, input oh, input [2:0] sh, input [63:0] v);
+        reg        s, ez, ef;
+        reg [10:0] e, em;
+        reg [11:0] es;
+        reg [63:0] w;
+        begin
+            s  = (f == 2'd0) ? v[63] : (f == 2'd2) ? v[15] : v[31];
+            e  = (f == 2'd0) ? v[62:52] : (f == 2'd2) ? {5'd0, v[14:9]} : {3'd0, v[30:23]};
+            em = (f == 2'd0) ? 11'd2047 : (f == 2'd2) ? 11'd63 : 11'd255;
+            ez = (e == 11'd0);
+            ef = (e == em);
+            es = {1'b0, e} + {9'd0, sh};
+            w  = v;
+            if (!ez && !ef) begin
+                if (es >= {1'b0, em}) begin    // overflow: infinity of the format
+                    w = (f == 2'd0) ? {s, 11'h7ff, 52'd0} : (f == 2'd2) ? {48'd0, s, 6'h3f, 9'd0} :
+                                      {32'd0, s, 8'hff, 23'd0};
+                end else begin
+                    case (f)
+                        2'd0:    w[62:52] = es[10:0];
+                        2'd2:    w[14:9]  = es[5:0];
+                        default: w[30:23] = es[7:0];
+                    endcase
+                end
+            end
+            case (op)
+                3'd0:    rrn_rep = rrn_one(3'd0, f, oh, w);                   // fadd
+                3'd3:    rrn_rep = (f == 2'd0) ? (v << sh) :                   // iadd
+                                   (f == 2'd2) ? {48'd0, v[15:0] << sh} : {32'd0, v[31:0] << sh};
+                3'd5,
+                3'd7:    rrn_rep = {63'd0, v != 64'd0};                       // and, or
+                default: rrn_rep = v;                                         // max, min, band, bor
+            endcase
+        end
+    endfunction
+
     assign rr_out = (r_rn & ~r_fadd) ? rnd_r(rr_res[31:0]) : rr_res;
 
     // the value of the current item (0 while clearing after reset)
@@ -525,7 +585,8 @@ module mn_l1bm #(
     wire        k_lane_last = (kj == kj_last);
     // an item is written in the clock where its value is ready
     wire        k_wr   = (ph == P_COMMIT) & (k_dir | k_zero | (krun & rr_done & k_lane_last));
-    wire        k_vz   = clr_on | (k_dir ? (({1'b0, k_mab} >= NM) | k_nos) : k_zero);
+    // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops its MAB bits)
+    wire        k_vz   = clr_on | (k_dir ? (((REPLICA == 0) & ({1'b0, k_mab} >= NM)) | k_nos) : k_zero);
     wire [63:0] k_val  = k_vz ? 64'd0 : ~k_dir ? kw_n : k_k ? sb_rdata[63:0] : sb_rdata[127:64];
     assign sb_raddr = sidx(k_red ? rr_mab : k_mab, k_p, kc);
 
@@ -624,6 +685,8 @@ module mn_l1bm #(
 
 `ifndef SYNTHESIS
     initial if ((RRN == 2) && (N_MAB != 1)) $display("mn_l1bm: ERROR RRN = 2 needs N_MAB = 1");
+    initial if ((REPLICA != 0) && ((N_MAB & (N_MAB - 1)) != 0))
+        $display("mn_l1bm: ERROR REPLICA needs N_MAB to be a power of 2");
     always @(posedge clk) begin
         if (!rst && res_req && !res_ready)
             $display("mn_l1bm: ERROR res_req while not ready");

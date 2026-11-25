@@ -42,6 +42,12 @@
 //   Order within a word: every read sees the state before the word; the L1BM writes go cycle
 //   by cycle, the L1BM unit's PE -> L1BM writes of cycle c before the L2BM writes of cycle c
 //   (so an L2BM write is dropped where the PE side writes the same address in a later cycle).
+//   REPLICA = 1 (WP37, the replica rule of mncore/wp/WP-3x.md; N_L1B a power of 2): an L1B b that
+//   does not exist is a copy of L1B b mod N_L1B when it is read: it sends that L1B's values to
+//   reductions (l2bmr, l2bmr2, l2bm@), gathers and as the source of l2bmi; writes to it are still
+//   dropped. With RRN = 2 a reduction of the n members of the set among its inputs is that of n
+//   copies of L1B 0's value (n = 2**popcount(immode) for l2bmr; 0, 1 or 2 for l2bmr2): fadd / iadd
+//   scale it by n exactly, the other operations keep it (and / or: 0 or 1), no member: identities.
 `default_nettype none
 module mn_l2bm #(
     parameter N_L1B = 1,    // L1Bs of the L2B (1..8), L1B 0 .. N_L1B-1 exist (contract N_L1B)
@@ -50,7 +56,8 @@ module mn_l2bm #(
     parameter RRN   = 1,    // 1: reductions on mn_l1bm_rrn (any N_L1B); 2: N_L1B = 1 only, one
                             // value with zeros / identities per lane (small); 0: bor only (l2bm@)
     parameter DAR   = 1,    // 1: DAR (1024 x 32) and DAR buffer (512 x 32); 0: none (E_UNSUPPORTED)
-    parameter CLEAR = 1     // 1: after reset, clear the L2BM, the DAR and its buffer (idle = 0)
+    parameter CLEAR = 1,    // 1: after reset, clear the L2BM, the DAR and its buffer (idle = 0)
+    parameter REPLICA = 0   // 1: absent L1Bs are copies of the implemented ones (WP37, see above)
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -115,8 +122,8 @@ module mn_l2bm #(
 );
 `include "mn_jfields.vh"
 
-    localparam integer NLI = N_L1B;
-    localparam [3:0]   NL  = NLI[3:0];
+    // REPLICA with one L1B: every member of a reduction is a copy of L1B 0 (fetched once)
+    localparam REP1 = (REPLICA != 0) && (N_L1B == 1);
 
     // ------------------------------------------------------------------ word decode
     /* verilator lint_off UNUSEDSIGNAL */
@@ -136,16 +143,22 @@ module mn_l2bm #(
     // the set (l1adr / immode) and the L1Bs that exist
     wire [7:0] mem;
     wire [7:0] pres;
+    wire [7:0] prd;
     genvar gb;
     generate
         for (gb = 0; gb < 8; gb = gb + 1) begin : g_set
             localparam [2:0] B = gb;
             assign mem[gb]  = ((B & keep) == (l2bm_l1adr & keep));
             assign pres[gb] = (gb < N_L1B);
+            assign prd[gb]  = (gb < N_L1B) || (REPLICA != 0);   // can be read (REPLICA: copies)
         end
     endgenerate
     wire [7:0] pm = pres & mem;                  // L1Bs of the set that exist
     wire [7:0] pd = pres & ~mem;                 // l2bmi: destinations that exist
+    wire [7:0] pr = prd & mem;                   // L1Bs of the set that send their values
+    // REPLICA: the L1B that a read of L1B b reaches (b mod N_L1B)
+    localparam integer LMI = N_L1B - 1;
+    localparam [2:0]   L1M = (REPLICA != 0) ? LMI[2:0] : 3'd7;
 
     // operations of the word
     wire o_dars = ex & ds;
@@ -196,7 +209,7 @@ module mn_l2bm #(
         sd     = 3'd0;
         for (ib = 0; ib < 8; ib = ib + 1) begin
             sd = (l2bm_l1adr & keep) | (ib[2:0] & l2bm_immode);
-            if (pd[ib] && ({1'b0, sd} < NL)) any_ps = 1'b1;
+            if (pd[ib] && prd[sd]) any_ps = 1'b1;
         end
     end
 
@@ -241,7 +254,7 @@ module mn_l2bm #(
         if (o_l2l1 & (|pm)) begin
             l1acc = 1'b1;
             l1max = (bd == 2'b00) ? ({3'd0, g8} + 16'd31) : ({3'd0, g16} + 16'd63);
-        end else if (o_red & (|pm)) begin
+        end else if (o_red & (|pr)) begin
             l1acc = 1'b1;
             l1max = {3'd0, g16} + 16'd63;
         end else if (o_gath) begin
@@ -313,6 +326,7 @@ module mn_l2bm #(
     reg  [3:0]  fq;         // reduction input being fetched
     reg  [1:0]  lj;         // reduction lane
     reg  [63:0] wbuf;       // the long word being moved; the reduction result being assembled
+    reg         rep_got;    // REPLICA, one L1B: the value of the copies is fetched (once per long word)
     reg  [15:0] clr_a;
     reg  [9:0]  dw_a;       // DAR write address
     reg  [8:0]  db_r;       // DAR buffer read address
@@ -401,7 +415,7 @@ module mn_l2bm #(
     // ------------------------------------------------------------------ L1BM master port
     assign lb_req_valid = run & ((st == S_L1Q) | (st == S_L1W));
     assign lb_req_we    = (st == S_L1W);
-    assign lb_req_l1b   = (st == S_L1W) ? u : q_l1b;
+    assign lb_req_l1b   = (st == S_L1W) ? u : (q_l1b & L1M);    // a read of a copy reaches its L1B
     assign lb_req_addr  = {10'd0, (st == S_L1W) ? a1w : q_adr};
     assign lb_req_wdata = wbuf;
     assign lb_req_wmask = 8'hff;
@@ -480,7 +494,7 @@ module mn_l2bm #(
                 .clk(clk), .we(ib_we), .waddr(f_b), .wdata(lb_rsp_rdata), .raddr(rr_b), .rdata(ib_rd));
         end
     endgenerate
-    wire [63:0] rr_val = mem[rr_b] ? (pres[rr_b] ? lane_of(ib_rd, rfmt, lj) : 64'd0) : ident(rop, rfmt);
+    wire [63:0] rr_val = mem[rr_b] ? (prd[rr_b] ? lane_of(ib_rd, rfmt, lj) : 64'd0) : ident(rop, rfmt);
 
     wire        rr_start = run & (st == S_RS) & (job == J_RED);
     wire        rr_done;
@@ -504,8 +518,20 @@ module mn_l2bm #(
             wire        z  = (bd == 2'b01) ? (|mem[7:1]) : mem[{u[1:0], 1'b1}];
             assign rr_done = 1'b0;
             assign rr_idx  = 3'd0;
-            assign rr_res  = red1w(rop, rfmt, x0, z);
-            wire unused_rr = ^{rr_start, rr_val, lj_last};
+            if (REPLICA != 0) begin : g_rep
+                // the members of the set among the inputs are copies of L1B 0 (wbuf: its value):
+                // l2bmr 2**popcount(immode) of them, l2bmr2 those of L1Bs 2g, 2g + 1
+                wire        m1 = mem[{u[1:0], 1'b0}];
+                wire        m2 = mem[{u[1:0], 1'b1}];
+                wire [2:0]  pc = {2'd0, l2bm_immode[0]} + {2'd0, l2bm_immode[1]} + {2'd0, l2bm_immode[2]};
+                wire        any = (bd == 2'b01) | m1 | m2;
+                wire [2:0]  sh  = (bd == 2'b01) ? pc : {2'd0, m1 & m2};
+                assign rr_res = any ? redrw(rop, rfmt, wbuf, sh) : identw(rop, rfmt);
+                wire unused_rr = ^{rr_start, rr_val, lj_last, x0, z};
+            end else begin : g_zero
+                assign rr_res  = red1w(rop, rfmt, x0, z);
+                wire unused_rr = ^{rr_start, rr_val, lj_last};
+            end
         end else begin : g_norrn
             // bor only: the OR of the inputs, made while they are fetched
             assign rr_done = 1'b0;
@@ -576,6 +602,61 @@ module mn_l2bm #(
         end
     endfunction
 
+    // RRN = 2, REPLICA: every lane of the reduction of 2**sh copies of the long word x (viz/core
+    // rrn.rs with equal inputs): fadd adds the copies exactly and rounds once to the same format, so
+    // the lane keeps its value with the exponent + sh (0 for a zero exponent field, infinity without
+    // mantissa for an all-ones one or on overflow); iadd shifts the lane (wraps); max / min / band /
+    // bor keep it; and / or give 1 in its LSB when it is not 0.
+    function [63:0] redrw(input [2:0] op, input [1:0] f, input [63:0] x, input [2:0] sh);
+        integer    q;
+        reg [63:0] r;
+        reg [10:0] e;
+        reg [11:0] es;
+        begin
+            r = x;
+            case (op)
+                3'd0: begin                                        // fadd
+                    case (f)
+                        2'd0: begin
+                            e = x[62:52]; es = {1'b0, e} + {9'd0, sh};
+                            if (e == 11'd0) r = 64'd0;
+                            else if (e == 11'h7ff || es >= 12'd2047) r = {x[63], 11'h7ff, 52'd0};
+                            else r[62:52] = es[10:0];
+                        end
+                        2'd1: for (q = 0; q < 2; q = q + 1) begin
+                            e = {3'd0, x[62 - 32 * q -: 8]}; es = {1'b0, e} + {9'd0, sh};
+                            if (e == 11'd0) r[63 - 32 * q -: 32] = 32'd0;
+                            else if (e == 11'd255 || es >= 12'd255) r[63 - 32 * q -: 32] = {x[63 - 32 * q], 8'hff, 23'd0};
+                            else r[62 - 32 * q -: 8] = es[7:0];
+                        end
+                        default: for (q = 0; q < 4; q = q + 1) begin
+                            e = {5'd0, x[62 - 16 * q -: 6]}; es = {1'b0, e} + {9'd0, sh};
+                            if (e == 11'd0) r[63 - 16 * q -: 16] = 16'd0;
+                            else if (e == 11'd63 || es >= 12'd63) r[63 - 16 * q -: 16] = {x[63 - 16 * q], 6'h3f, 9'd0};
+                            else r[62 - 16 * q -: 6] = es[5:0];
+                        end
+                    endcase
+                end
+                3'd3: begin                                        // iadd: each lane times 2**sh
+                    case (f)
+                        2'd0:    r = x << sh;
+                        2'd1:    for (q = 0; q < 2; q = q + 1) r[63 - 32 * q -: 32] = x[63 - 32 * q -: 32] << sh;
+                        default: for (q = 0; q < 4; q = q + 1) r[63 - 16 * q -: 16] = x[63 - 16 * q -: 16] << sh;
+                    endcase
+                end
+                3'd5, 3'd7: begin                                  // and, or: 1 when the lane is not 0
+                    case (f)
+                        2'd0:    r = {63'd0, x != 64'd0};
+                        2'd1:    for (q = 0; q < 2; q = q + 1) r[63 - 32 * q -: 32] = {31'd0, x[63 - 32 * q -: 32] != 32'd0};
+                        default: for (q = 0; q < 4; q = q + 1) r[63 - 16 * q -: 16] = {15'd0, x[63 - 16 * q -: 16] != 16'd0};
+                    endcase
+                end
+                default: r = x;                                    // max, min, band, bor
+            endcase
+            redrw = r;
+        end
+    endfunction
+
     // ------------------------------------------------------------------ sequencer
     wire [9:0]  dar_a   = {l2bm_l1adr, l2bm_immode, l2bm_dmode, l2bm_opcode[3:2]};
     localparam integer CLR_N = (AW > 10) ? (1 << AW) : 1024;
@@ -598,6 +679,7 @@ module mn_l2bm #(
             ds_l2b      <= 1'b0;
             c <= 2'd0; u <= 3'd0; k <= 4'd0; fq <= 4'd0; lj <= 2'd0;
             wbuf <= 64'd0;
+            rep_got <= 1'b0;
         end else begin
             done        <= 1'b0;
             b_rsp_valid <= b_rgo;
@@ -636,15 +718,15 @@ module mn_l2bm #(
                                 J_DARS: if (dl2b_run) begin wbuf <= 64'd0; st <= S_DB0; end
                                         else st <= S_L2R;
                                 J_DARW: st <= S_DW;
-                                J_GATH: if (pres[u]) st <= S_L1Q;
+                                J_GATH: if (prd[u]) st <= S_L1Q;
                                         else begin wbuf <= 64'd0; st <= S_L2W; end
-                                J_RED:  begin fq <= 4'd0; wbuf <= 64'd0; st <= S_FET; end
+                                J_RED:  begin fq <= 4'd0; wbuf <= 64'd0; rep_got <= 1'b0; st <= S_FET; end
                                 J_L2L1: if (it_skip) next_u;
                                         else if (it_late) next_k;
                                         else st <= S_L2R;
                                 default: if (it_skip) next_u;                 // J_IMC
                                         else if (it_late) next_k;
-                                        else if ({1'b0, i_src} < NL) st <= S_L1Q;
+                                        else if (prd[i_src]) st <= S_L1Q;
                                         else begin wbuf <= 64'd0; st <= S_L1W; end
                             endcase
                         end
@@ -666,6 +748,7 @@ module mn_l2bm #(
                                 // RRN = 0: the bor of the inputs; RRN = 2: the one input (L1B 0);
                                 // RRN = 1: the inputs are in the buffer ib
                                 if (RRN != 1) wbuf <= wbuf | lb_rsp_rdata;
+                                rep_got <= 1'b1;
                                 fq <= fq + 4'd1;
                                 st <= S_FET;
                             end else begin
@@ -686,7 +769,7 @@ module mn_l2bm #(
                             if (fq > f_last) begin
                                 lj <= 2'd0;
                                 st <= (RRN == 0) ? S_L2W : S_RS;
-                            end else if (pm[f_b]) begin
+                            end else if (pr[f_b] & ~(REP1 & rep_got)) begin
                                 st <= S_L1Q;
                             end else begin
                                 fq <= fq + 4'd1;

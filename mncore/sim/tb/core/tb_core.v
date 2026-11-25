@@ -24,6 +24,10 @@
 // -DTB_NPE=4 for the time-multiplexed MAB of 4 PEs (WP30; then LM_AW = 8 unless -DTB_LMAW=n, and
 // -DTB_BFN=0 leaves out bfn / bfe). The 4 PEs are at loc 0..3 (n0c0b0m0p0..p3).
 // -DTB_MAT=1 adds the matrix register and matrix MAU of the MAB (WP36, with TB_NPE=4).
+// -DTB_M2=1 adds the L1BM, L2BM and MV units (WP37, with TB_NPE=4; -DTB_REPLICA=1 the replica rule)
+// and the behavioural SDRAM bus memory tb_sdmem (mncore/sim/tb/m2) for the PDM / DRAM; C also
+// clears that memory (the board design clears the DRAM / PDM after reset, mn_core SDCLR). The spaces
+// 0x06 L1BM, 0x07 L2BM, 0x08 PDM, 0x09 DRAM go through W / R like the others.
 `timescale 1ns/1ps
 `ifndef TB_FPALU
 `define TB_FPALU 1
@@ -42,6 +46,12 @@
 `endif
 `ifndef TB_LMAW
 `define TB_LMAW ((`TB_NPE > 1) ? 8 : 9)
+`endif
+`ifndef TB_M2
+`define TB_M2 0
+`endif
+`ifndef TB_REPLICA
+`define TB_REPLICA 0
 `endif
 module tb_core;
     localparam IMEM_AW = 9, LM_AW = `TB_LMAW, GRF_AW = 8, NPE = `TB_NPE;
@@ -73,9 +83,14 @@ module tb_core;
     wire [15:0] core_pc;
     wire [31:0] core_steps;
     wire [16:0] core_trap;
+    wire        sd_req_valid, sd_req_ready, sd_req_we, sd_rsp_valid, sd_err_addr, unit_busy, unit_err;
+    wire [22:0] sd_req_addr;
+    wire [63:0] sd_req_wdata, sd_rsp_rdata;
+    wire [7:0]  sd_req_wmask;
 
     mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW),
-              .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN), .MAT(`TB_MAT)) dut (
+              .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN), .MAT(`TB_MAT),
+              .M2(`TB_M2), .REPLICA(`TB_REPLICA)) dut (
         .clk(clk), .rst(rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),
         .mw_loc(mw_loc), .mw_addr(mw_addr), .mw_data(mw_data), .mw_mask(mw_mask),
@@ -83,8 +98,24 @@ module tb_core;
         .mr_loc(mr_loc), .mr_addr(mr_addr), .mr_rsp_valid(mr_rsp_valid), .mr_rsp_data(mr_rsp_data),
         .run_start(run_start), .run_pc(run_pc), .run_count(run_count),
         .core_busy(core_busy), .core_reason(core_reason), .core_info(core_info),
-        .core_pc(core_pc), .core_steps(core_steps), .core_trap(core_trap)
+        .core_pc(core_pc), .core_steps(core_steps), .core_trap(core_trap),
+        .sd_req_valid(sd_req_valid), .sd_req_ready(sd_req_ready), .sd_req_we(sd_req_we),
+        .sd_req_addr(sd_req_addr), .sd_req_wdata(sd_req_wdata), .sd_req_wmask(sd_req_wmask),
+        .sd_rsp_valid(sd_rsp_valid), .sd_rsp_rdata(sd_rsp_rdata), .sd_err_addr(sd_err_addr),
+        .unit_busy(unit_busy), .unit_err(unit_err)
     );
+`ifdef TB_SDMEM
+    // the PDM / DRAM (WP37, files of mncore/sim/tb/m2)
+    tb_sdmem #(.AW(20)) u_sdmem (
+        .clk(clk), .rst(rst), .req_valid(sd_req_valid), .req_ready(sd_req_ready), .req_we(sd_req_we),
+        .req_addr(sd_req_addr), .req_wdata(sd_req_wdata), .req_wmask(sd_req_wmask),
+        .rsp_valid(sd_rsp_valid), .rsp_rdata(sd_rsp_rdata), .err_addr(sd_err_addr));
+`else
+    assign sd_req_ready = 1'b0;
+    assign sd_rsp_valid = 1'b0;
+    assign sd_rsp_rdata = 64'd0;
+    assign sd_err_addr  = 1'b0;
+`endif
 
     integer clocks = 0;
     always @(posedge clk) clocks <= clocks + 1;
@@ -165,6 +196,9 @@ module tb_core;
                     "C": begin
                         @(negedge clk);
                         rst = 1'b1;
+`ifdef TB_SDMEM
+                        u_sdmem.clear;     // the board clears the DRAM / PDM after RESET (SDCLR)
+`endif
                         repeat (16) @(negedge clk);
                         rst = 1'b0;
                     end
