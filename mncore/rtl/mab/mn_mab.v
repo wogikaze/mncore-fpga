@@ -27,6 +27,11 @@
 // BFN = 0 leaves out bfn / bfe (mn_fp_alu_bfn, about 3,000 LUT; WP13): they stop with
 // E_UNSUPPORTED pe_aluc_aluop.
 //
+// MAT = 1 (N_PE = 4, WP36): the matrix register of the MAB and its units (mn_mab_mat): ?mwrite,
+// ?mread / $mreadf and the matrix MAU (f, g, h). mn_pe_core asks it for the work of each step
+// (the x of an mfma is gathered in the check-only pass, which every mfma word gets). MAT = 0:
+// those words stop with E_UNSUPPORTED (pe_mauc_mmode / pe_mauc_mw) and $mreadf reads 0.
+//
 // Host port: mn_pe_core's; hp_pe is the PE (N_PE = 4).
 `default_nettype none
 module mn_mab #(
@@ -36,6 +41,7 @@ module mn_mab #(
     parameter MAU    = 1,
     parameter N_PE   = 4,   // 1 or 4
     parameter BFN    = 1,   // N_PE = 4: bfn / bfe
+    parameter MAT    = 0,   // N_PE = 4: the matrix register and matrix MAU (WP36)
     parameter integer POS_N = 0,   // chip coordinates of the MAB (contract 06 section 3)
     parameter integer POS_C = 0,
     parameter integer POS_B = 0,
@@ -76,8 +82,17 @@ module mn_mab #(
     wire         prechk, xg_valid;
     wire [1:0]   xg_cycle, xz_cycle;
     wire [127:0] xg_x, xz_z;
+    // matrix unit (MAT = 1)
+    wire         mg_valid, mt_req, mw_req, mt_done, mw_done, mr_req, mr_rdy, mr_acc, mr_upd, ma_upd;
+    wire         fr_req, fr_sel, fr_rdy, fr_acc, mat_busy;
+    wire [1:0]   mg_cycle, mt_cycle, mr_cycle, fr_cycle;
+    wire [63:0]  mg_x;
+    wire [127:0] mt_y, mw_b, mt_z, mr_val, fr_val;
+    wire [7:0]   mr_hen, ma_hen;
+    wire [3:0]   mt_flags;
 
     mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
+                 .MAT(MAT),
                  .POS_N(POS_N), .POS_C(POS_C), .POS_B(POS_B), .POS_M(POS_M), .POS_P(POS_P)) u_pe (
         .clk(clk), .rst(rst),
         .start(c_start), .ready(c_ready), .jw(jw), .pe(c_pe), .rd_only(c_rdo),
@@ -85,11 +100,49 @@ module mn_mab #(
         .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
         .xpe_op(xpe_op), .prechk(prechk), .xg_valid(xg_valid), .xg_cycle(xg_cycle), .xg_x(xg_x),
         .xz_cycle(xz_cycle), .xz_z(xz_z),
+        .mg_valid(mg_valid), .mg_cycle(mg_cycle), .mg_x(mg_x),
+        .mt_req(mt_req), .mw_req(mw_req), .mt_cycle(mt_cycle), .mt_y(mt_y), .mw_b(mw_b),
+        .mt_done(mt_done), .mt_z(mt_z), .mt_flags(mt_flags), .mw_done(mw_done),
+        .mr_req(mr_req), .mr_cycle(mr_cycle), .mr_rdy(mr_rdy), .mr_val(mr_val),
+        .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_hen(mr_hen), .ma_upd(ma_upd), .ma_hen(ma_hen),
+        .fr_req(fr_req), .fr_sel(fr_sel), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val),
+        .fr_acc(fr_acc),
         .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we), .hp_pe(hp_pe),
         .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
         .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
         .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
     );
+
+    generate
+        if (N_PE > 1 && MAT != 0) begin : g_mat
+            mn_mab_mat #(.MAUF(MAU == 0)) u_mat (
+                .clk(clk), .rst(rst), .busy(mat_busy), .jw(jw), .pe(c_pe),
+                .xg_valid(mg_valid), .xg_cycle(mg_cycle), .xg_x(mg_x),
+                .mt_req(mt_req), .mt_cycle(mt_cycle), .mt_y(mt_y),
+                .mt_done(mt_done), .mt_z(mt_z), .mt_flags(mt_flags),
+                .mw_req(mw_req), .mw_cycle(mt_cycle), .mw_b(mw_b), .mw_done(mw_done),
+                .mr_req(mr_req), .mr_cycle(mr_cycle), .mr_rdy(mr_rdy), .mr_val(mr_val),
+                .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_hen(mr_hen), .ma_upd(ma_upd), .ma_hen(ma_hen),
+                .fr_req(fr_req), .fr_sel(fr_sel), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val),
+                .fr_acc(fr_acc));
+        end else begin : g_nomat
+            assign mat_busy = 1'b0;
+            assign mt_done  = 1'b0;
+            assign mt_z     = 128'd0;
+            assign mt_flags = 4'd0;
+            assign mw_done  = 1'b0;
+            assign mr_rdy   = 1'b0;
+            assign mr_val   = 128'd0;
+            assign fr_rdy   = 1'b0;
+            assign fr_val   = 128'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // no matrix unit: mn_pe_core makes no requests (MAT = 0)
+            wire unused_mat = ^{mg_valid, mg_cycle, mg_x, mt_req, mw_req, mt_cycle, mt_y, mw_b, mr_req,
+                                mr_cycle, mr_acc, mr_upd, mr_hen, ma_upd, ma_hen, fr_req, fr_sel, fr_cycle,
+                                fr_acc};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
 
     generate
         if (N_PE == 1) begin : g_one
@@ -104,7 +157,7 @@ module mn_mab #(
             assign trap_pe  = 2'd0;
             assign xz_z     = 128'd0;
             /* verilator lint_off UNUSEDSIGNAL */
-            wire unused_one = ^{xpe_op, prechk, xg_valid, xg_cycle, xg_x, xz_cycle};
+            wire unused_one = ^{xpe_op, prechk, xg_valid, xg_cycle, xg_x, xz_cycle, mat_busy};
             /* verilator lint_on UNUSEDSIGNAL */
         end else begin : g_mab
             localparam XW = (BFN != 0) ? 128 : 64;   // exchange buffer width
@@ -122,7 +175,7 @@ module mn_mab #(
             reg  [6:0] fld_q;
             wire       bf_fin;     // the block-float conversion of the 4 cycles is done
 
-            assign ready    = (m == M_IDLE) & c_ready;
+            assign ready    = (m == M_IDLE) & c_ready & ~mat_busy;
             assign done     = d_q;
             assign st       = st_q;
             assign st_field = fld_q;

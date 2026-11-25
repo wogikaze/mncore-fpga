@@ -56,8 +56,10 @@
 // had the unit, after its zero flush (mn_pe_lsu zf_*); ll = 11 (noforward) steps and nop
 // steps (not sent here) leave them unchanged. Checked on the official emulator (WP20):
 //   - $mreadf is updated by every step that is not nop / noforward: the MAUC fields always
-//     encode a matrix register read (a word without ?mread reads `dmread $ly0`). The matrix
-//     register is never written here (?mwrite is unsupported), so $mreadf is 0.
+//     encode a matrix register read (a word without ?mread reads `dmread $ly0`). Without the
+//     matrix unit (MAT = 0) the matrix register is never written (?mwrite is unsupported), so
+//     $mreadf is 0; with it (MAT = 1, WP36) mn_mab_mat keeps $mreadf, zero-flushed like the
+//     others (zero_sel 11, checked on the emulator).
 //   - $lbf only changes with an L1BM -> PE transfer (unsupported here): it stays 0.
 //   - Reading $aluf / $mauf after a step without that unit is an error in the emulator, so
 //     the old value is kept.
@@ -75,6 +77,20 @@
 //
 // Host port: mn_pe_lsu's (WR_MEM / RD_MEM; PROTOCOL.md spaces 1..5, 0x10 OMR, 0x11 BAR),
 // usable between steps; hp_pe is the PE (N_PE = 4).
+//
+// MAT = 1 (N_PE = 4, WP36): the matrix register of the MAB (mn_mab_mat in mn_mab) through the
+// mt_* / mw_* / mr_* / fr_* / mg_* ports:
+//   - ?mfma / ?mmul (f, g, h; d stays E_UNSUPPORTED pe_mauc_dmode): the check-only pass gathers
+//     the MAU input a (x) of every cycle (mg_*); the normal step gathers c (y) and issues the
+//     cycle to the matrix unit (mt_req .. mt_done) instead of mn_mau_vec; its result goes
+//     through the MAU result buffer like a MAU result ($mauf, isel 00).
+//   - ?mwrite: the normal step gathers the MAU input b (rounded for h `r`, like the ALU inputs)
+//     and gives it to the matrix unit (mw_req .. mw_done), which writes its part of the rows.
+//   - the transposed read: every normal step asks the matrix unit for the read of the cycle
+//     being collected (mr_req .. mr_rdy, the isel 11 result); with the forwarding update it is
+//     stored zero-flushed (zero_sel 11) as $mreadf (mr_acc / mr_upd / mr_mask).
+//   - $mreadf as the ALU input x: the gather waits for the matrix unit (fr_req .. fr_rdy).
+//   MAT = 0 (or N_PE = 1): as before (matrix MAU and ?mwrite E_UNSUPPORTED, $mreadf = 0).
 `default_nettype none
 module mn_pe_core #(
     parameter LM_AW  = 9,   // LM0/LM1 depth = 2**LM_AW long words per PE (contract LM_DEPTH; chip 11)
@@ -85,6 +101,7 @@ module mn_pe_core #(
     parameter MAU    = 1,   // 0: no MAU (mn_mau_vec); its instructions are unsupported
     parameter N_PE   = 1,   // 1: one PE (M1); 4: the PEs of a MAB, time-multiplexed (WP30)
     parameter BFN    = 1,   // N_PE = 4: bfn / bfe are executed (mn_mab has mn_fp_alu_bfn)
+    parameter MAT    = 0,   // N_PE = 4: the matrix register (mn_mab has mn_mab_mat, WP36)
     parameter integer POS_N = 0,   // chip coordinates of this PE (contract 06 section 3): group 0..3
     parameter integer POS_C = 0,   //   L2B 0..1
     parameter integer POS_B = 0,   //   L1B 0..7
@@ -114,6 +131,34 @@ module mn_pe_core #(
     output wire [127:0] xg_x,
     output wire [1:0]   xz_cycle,    // normal step of an xpe_op word: its ALU result of
     input  wire [127:0] xz_z,        //   cycle xz_cycle
+    // ---- MAB matrix unit (MAT = 1, N_PE = 4)
+    output wire         mg_valid,    // check-only step: MAU input a (x of an mfma) of cycle mg_cycle
+    output wire [1:0]   mg_cycle,
+    output wire [63:0]  mg_x,
+    output wire         mt_req,      // normal step: mfma of cycle mt_cycle (y = mt_y)
+    output wire         mw_req,      // normal step: mwrite of cycle mt_cycle (b = mw_b)
+    output wire [1:0]   mt_cycle,
+    output wire [127:0] mt_y,
+    output wire [127:0] mw_b,
+    input  wire         mt_done,
+    input  wire [127:0] mt_z,
+    input  wire [3:0]   mt_flags,
+    input  wire         mw_done,
+    output wire         mr_req,      // normal step: transposed read of cycle mr_cycle
+    output wire [1:0]   mr_cycle,
+    input  wire         mr_rdy,
+    input  wire [127:0] mr_val,
+    output wire         mr_acc,      // the cycle is accepted ...
+    output wire         mr_upd,      // ... and updates $mreadf with mr_val (zero flush: mr_hen)
+    output wire [7:0]   mr_hen,
+    output wire         ma_upd,      // ... and (MAU = 0) $mauf with mt_z (zero flush: ma_hen)
+    output wire [7:0]   ma_hen,
+    output wire         fr_req,      // gather: $mreadf (fr_sel = 0) or $mauf (1) of cycle fr_cycle
+    output wire         fr_sel,
+    output wire [1:0]   fr_cycle,
+    input  wire         fr_rdy,
+    input  wire [127:0] fr_val,
+    output wire         fr_acc,
     // ---- host port (between steps)
     input  wire         hp_req_valid,
     output wire         hp_req_ready,
@@ -131,6 +176,9 @@ module mn_pe_core #(
 
     localparam MP   = (N_PE > 1);                  // more than one PE
     localparam GRND = (FPALU != 0) || MP;          // `r` applied at the gather (else in mn_alu_int)
+    localparam MX   = (MAT != 0) && MP;            // the matrix unit of the MAB (WP36)
+    // the matrix unit without the vector MAU: it also keeps the MAU result of the cycle and $mauf
+    localparam MXS  = MX && (MAU == 0);
 
     // ------------------------------------------------------------------ decoder
     wire [1:0]   d_ll;
@@ -184,6 +232,10 @@ module mn_pe_core #(
     wire alu_int = cls_int;                             // 1: mn_alu_int, 0: mn_fp_alu
     wire mau_vec = mau_enfma & ~mau_mmode;              // MAU vector instruction
     wire mau_act = (MAU != 0) & mau_vec;
+    // matrix MAU (f / g / h) and ?mwrite on the MAB's matrix unit (MAT = 1)
+    wire mat_mf  = mau_enfma & mau_mmode;
+    wire mat_act = MX & mat_mf & (mau_dmode != 2'b00);
+    wire mw_act  = MX & mau_mw;
     wire op_zero = (alu_aluop == 5'b11101) & alu_uns & (alu_isela == 4'b0101);
     // MAB instructions executed with the other PEs (N_PE = 4): msl / msr, and bfn / bfe (BFN)
     wire x_ms    = MP & cls_xpe;
@@ -208,23 +260,24 @@ module mn_pe_core #(
     // ------------------------------------------------------------------ unsupported words
     wire u_der = (d_err_kind == `MN_DEC_E_UNSUPPORTED);
     wire u_xpe = (cls_xpe | (cls_fp & cls_bf)) & ~xpe;
-    wire u_mat = mau_enfma & mau_mmode;
+    wire u_mat = mat_mf & ~mat_act;                     // no matrix unit, or d (dmfma / dmmul)
+    wire u_mw  = mau_mw & ~mw_act;
     wire u_l1  = d_grp[MN_J_GRP_L1BM];
     wire u_l2  = d_grp[MN_J_GRP_L2BM];
     wire u_nfp = ~fp_here & cls_fp & ~cls_bf;           // not in the FP ALU of this FPALU
     wire u_nma = (MAU == 0) & mau_vec;                  // MAU = 0
-    wire unsup = u_der | cls_bad | u_xpe | u_mat | mau_mw | u_l1 | u_l2 | u_nfp | u_nma;
+    wire unsup = u_der | cls_bad | u_xpe | u_mat | u_mw | u_l1 | u_l2 | u_nfp | u_nma;
     localparam [31:0] F_ROUNDA = MN_J_PE_ALUC_ROUNDA_IDX, F_ROUNDB = MN_J_PE_ALUC_ROUNDB_IDX;
     localparam [31:0] F_ADMODE = MN_J_PE_ALUC_DMODE_IDX, F_ALUOP = MN_J_PE_ALUC_ALUOP_IDX;
     localparam [31:0] F_MMODE = MN_J_PE_MAUC_MMODE_IDX, F_MW = MN_J_PE_MAUC_MW_IDX;
     localparam [31:0] F_L1BM = MN_J_L1BM_BMODE_IDX, F_L2BM = MN_J_L2BM_LWRITE_IDX;
-    localparam [31:0] F_ENFMA = MN_J_PE_MAUC_ENFMA_IDX;
+    localparam [31:0] F_ENFMA = MN_J_PE_MAUC_ENFMA_IDX, F_MDMODE = MN_J_PE_MAUC_DMODE_IDX;
     wire [6:0] ufield = u_der   ? d_err_field :
                         cls_bad ? ((alu_rounda & (alu_dmode != 2'b10)) ? F_ROUNDA[6:0] :
                                    (alu_roundb & (alu_dmode != 2'b10)) ? F_ROUNDB[6:0] : F_ADMODE[6:0]) :
                         (u_xpe | u_nfp) ? F_ALUOP[6:0] :
-                        u_mat   ? F_MMODE[6:0] :
-                        mau_mw  ? F_MW[6:0] :
+                        u_mat   ? (MX ? F_MDMODE[6:0] : F_MMODE[6:0]) :
+                        u_mw    ? F_MW[6:0] :
                         u_l1    ? F_L1BM[6:0] :
                         u_l2    ? F_L2BM[6:0] : F_ENFMA[6:0];
 
@@ -235,15 +288,17 @@ module mn_pe_core #(
         mem_of = !en ? 4'd0 : (s == 4'd0) ? 4'b0001 : (s == 4'd1) ? 4'b0010 :
                  (s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b1000 : 4'd0;
     endfunction
+    // ?mwrite reads the MAU input b (the assembler encodes its source in iselb, WP36)
     wire [3:0] rd_use = mem_of(alu_isela, alu_rd) |
                         mem_of({1'b0, alu_iselb}, alu_rd & two_in) |
-                        mem_of({1'b0, mau_isela}, mau_enfma | mau_mw) |
-                        mem_of({1'b0, mau_iselb}, mau_enfma & ~mau_passa) |
+                        mem_of({1'b0, mau_isela}, mau_enfma) |
+                        mem_of({1'b0, mau_iselb}, (mau_enfma & ~mau_passa) | mau_mw) |
                         mem_of({1'b0, mau_iselc}, mau_enfma & ~mau_zeroc) |
                         mem_of({1'b0, l1_isel}, 1'b1);
     // a check-only pass first (N_PE = 4): the LM addresses depend on the PE ($mb / $nb,
-    // T-indirect, j<madpe>); GRF addresses do not, so the first PE's check stands for all
-    assign prechk = MP & (xpe | rd_use[2] | rd_use[3] | d_lm0_wr | d_lm1_wr);
+    // T-indirect, j<madpe>); GRF addresses do not, so the first PE's check stands for all.
+    // The matrix MAU needs x of all 4 PEs, gathered in that pass.
+    assign prechk = MP & (xpe | mat_act | rd_use[2] | rd_use[3] | d_lm0_wr | d_lm1_wr);
 
     // ------------------------------------------------------------------ step state
     localparam P_IDLE = 1'b0, P_RUN = 1'b1;
@@ -257,6 +312,7 @@ module mn_pe_core #(
     reg         iss_fin;    // the 4 cycles are issued
     reg [4:0]   gpend;      // ports still to gather for iss_c: {c, b, a, y, x}
     reg         alu_isd, mau_isd;   // cycle iss_c taken by the ALU / MAU
+    reg         mt_isd, mw_isd;     // cycle iss_c done by the matrix MAU / ?mwrite
     reg [1:0]   coll_c;     // cycle being collected (= mn_pe_lsu res_cycle)
     reg [2:0]   mau_cnt;    // MAU results received in this step
 
@@ -269,15 +325,18 @@ module mn_pe_core #(
     assign ready = (ph == P_IDLE) & lsu_idle;
     wire go = start & ready;
     wire rdo_in = MP & rd_only;
-    // ports to gather per cycle: the check-only pass gathers x of an xpe word only; the
-    // normal step of an xpe word gathers no ALU input (its result comes from mn_mab)
-    wire [4:0] need_n = {mau_act & ~mau_zeroc, mau_act & ~mau_passa, mau_act,
+    // ports to gather per cycle: the check-only pass gathers x of an xpe word and a (x) of a
+    // matrix MAU word only; the normal step of an xpe word gathers no ALU input (its result
+    // comes from mn_mab), that of a matrix MAU word c (y) only, that of ?mwrite b
+    wire [4:0] need_n = {(mau_act | mat_act) & ~mau_zeroc, (mau_act & ~mau_passa) | mw_act, mau_act,
                          alu_act & two_in, alu_act & ~d_is_imm};
-    wire [4:0] need = rdo_in ? {4'd0, xpe} : need_n;
+    wire [4:0] need = rdo_in ? {2'd0, mat_act, 1'b0, xpe} : need_n;
     reg  [4:0] need_q;
     // the units run in a normal step only
     wire alu_on = alu_act & ~rdo_q;
     wire mau_on = mau_act & ~rdo_q;
+    wire mt_on  = mat_act & ~rdo_q;
+    wire mw_on  = mw_act & ~rdo_q;
 
     // ------------------------------------------------------------------ operand gather
     function [3:0] code3(input [2:0] s);   // 3-bit selector -> source code
@@ -326,41 +385,58 @@ module mn_pe_core #(
             4'd0, 4'd1, 4'd3, 4'd4: gbus = opr_grf0;   // $lr $ls $lm $ln
             4'd2:  gbus = opr_t;
             4'd5, 4'd6, 4'd7, 4'd8, 4'd9, 4'd10: gbus = {flane, flane};
-            4'd11: gbus = mauf_rd;
+            4'd11: gbus = MXS ? fr_val : mauf_rd;  // $mauf (MXS: kept by the matrix unit)
             4'd12: gbus = aluf_rd;
-            default: gbus = 128'd0;   // 13 $lbf, 14 $mreadf (always 0 here), 15 (E_UNSUPPORTED)
+            4'd14: gbus = MX ? fr_val : 128'd0;   // $mreadf (0 without the matrix unit)
+            default: gbus = 128'd0;   // 13 $lbf (always 0 here), 15 (E_UNSUPPORTED)
         endcase
     end
 
     // ALU inputs with the `r` option (rounda / roundb): with an FP ALU or more than one PE both
     // ALUs (and msl / msr / bfn) take them rounded from here (one mn_alu_rnd instead of two in
-    // each ALU, WP21); otherwise the integer ALU rounds itself.
-    wire [127:0] gbus_xy;
+    // each ALU, WP21); otherwise the integer ALU rounds itself. ?mwrite takes its h `r` (extb)
+    // from here too (MAT = 1).
+    wire [127:0] gbus_xy, gbus_rr;
     generate
         if (GRND) begin : g_grnd
             wire [127:0] gbus_r;
             mn_alu_rnd u_rnd (.d(gbus), .q(gbus_r));
             wire use_r = glow[0] ? alu_rounda : alu_roundb;
             assign gbus_xy = use_r ? gbus_r : gbus;
+            assign gbus_rr = gbus_r;
         end else begin : g_nogrnd
             assign gbus_xy = gbus;
+            assign gbus_rr = gbus;
         end
     endgenerate
+    wire mw_rnd = mw_act & mau_extb & (mau_dmode == 2'b10);   // hmwrite ...r
 
     reg [127:0] px, py, pa, pb, pc;   // port registers
     wire run_x = (ph == P_RUN) & lsu_opr_valid & ~unsup_q;   // executing the step
-    wire g_on  = run_x & ~iss_fin & (gpend != 5'd0);
+    // $mreadf (x only), and $mauf without the vector MAU, come from the matrix unit: the gather
+    // waits for it
+    wire fr_g  = MX & ((gcode == 4'd14) | (MXS & (gcode == 4'd11)));
+    wire g_req = run_x & ~iss_fin & (gpend != 5'd0);
+    wire g_on  = g_req & (~fr_g | fr_rdy);
     always @(posedge clk) begin
         if (g_on & glow[0]) px <= gbus_xy;
         if (g_on & glow[1]) py <= gbus_xy;
         if (g_on & glow[2]) pa <= gbus;
-        if (g_on & glow[3]) pb <= gbus;
+        if (g_on & glow[3]) pb <= mw_rnd ? gbus_rr : gbus;
         if (g_on & glow[4]) pc <= gbus;
     end
     // check-only pass of an xpe word: x of cycle iss_c, straight from the bus
     assign xg_valid = g_on & glow[0] & rdo_q;
     assign xg_cycle = iss_c;
     assign xg_x     = gbus_xy;
+    // check-only pass of a matrix MAU word: its x (MAU input a) of cycle iss_c
+    assign mg_valid = MX & g_on & glow[2] & rdo_q;
+    assign mg_cycle = iss_c;
+    assign mg_x     = gbus[127:64];
+    assign fr_req   = g_req & fr_g & ~fr_rdy;
+    assign fr_sel   = (gcode == 4'd11);
+    assign fr_cycle = iss_c;
+    assign fr_acc   = g_on & fr_g;
 
     // ------------------------------------------------------------------ units
     wire iss_on = run_x & ~iss_fin & (gpend == 5'd0);
@@ -371,7 +447,16 @@ module mn_pe_core #(
     wire alu_ir = alu_int ? int_ir : fp_ir;
     wire alu_acc = alu_iv & alu_ir;
     wire mau_acc = mau_iv & mau_ir;
-    wire iss_adv = iss_on & (~alu_on | alu_isd | alu_acc) & (~mau_on | mau_isd | mau_acc);
+    // the matrix unit: one request per cycle, done after its work (mt_done / mw_done). Without the
+    // vector MAU its result register is the MAU result of the cycle: the next cycle is asked for
+    // after this one is collected.
+    assign mt_req   = iss_on & mt_on & ~mt_isd & (~MXS | (coll_c == iss_c));
+    assign mw_req   = iss_on & mw_on & ~mw_isd;
+    assign mt_cycle = iss_c;
+    assign mt_y     = pc;
+    assign mw_b     = pb;
+    wire iss_adv = iss_on & (~alu_on | alu_isd | alu_acc) & (~mau_on | mau_isd | mau_acc) &
+                   (~mt_on | mt_isd | (MX & mt_done)) & (~mw_on | mw_isd | (MX & mw_done));
 
     wire         int_ov, fp_ov, int_err, fp_err;
     wire [127:0] int_z, fp_z;
@@ -417,34 +502,53 @@ module mn_pe_core #(
         end
     endgenerate
 
-    // MAU and its results of the step, by cycle (mn_mau_vec has no output stall)
+    // MAU and its results of the step, by cycle (mn_mau_vec has no output stall). The matrix
+    // MAU's results (MAT = 1) go to the same buffer, at the cycle being issued.
     wire [131:0] maub_rd;
+    wire         mt_got = MX & mt_done;
     generate
         if (MAU != 0) begin : g_mau
-            wire         mau_ov;
-            wire [127:0] mau_z;
-            wire [3:0]   mau_f;
-            wire [1:0]   mau_tag;
+            wire         vec_ov;
+            wire [127:0] vec_z;
+            wire [3:0]   vec_f;
+            wire [1:0]   vec_tag;
             mn_mau_vec #(.TAGW(2)) u_mau (
                 .clk(clk), .rst(rst), .in_valid(mau_iv), .in_ready(mau_ir),
                 .dmode(mau_dmode), .round_out(mau_round_out), .passa(mau_passa), .zeroc(mau_zeroc),
                 .mdw_side(mau_mdw_side), .signa(mau_signa), .signb(mau_signb), .signc(mau_signc),
                 .exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(pos_p),
                 .a_bus(pa), .b_bus(pb), .c_bus(pc), .in_tag(iss_c),
-                .out_valid(mau_ov), .z_bus(mau_z), .flags(mau_f), .out_tag(mau_tag)
+                .out_valid(vec_ov), .z_bus(vec_z), .flags(vec_f), .out_tag(vec_tag)
             );
+            // a result of the vector MAU, or of the matrix MAU (MAT = 1), at the cycle it was issued
+            wire         mau_ov  = vec_ov | mt_got;
+            wire [1:0]   mau_tag = mt_got ? iss_c : vec_tag;
+            wire [127:0] mau_z   = mt_got ? mt_z : vec_z;
+            wire [3:0]   mau_f   = mt_got ? mt_flags : vec_f;
             mn_ram_lut #(.W(132), .AW(2), .NR(1)) u_maub (
                 .clk(clk), .we(mau_ov), .waddr(mau_tag), .wdata({mau_f, mau_z}),
                 .raddr(coll_c), .rdata(maub_rd));
             assign mau_got = mau_ov;
+        end else if (MX) begin : g_matb
+            // no vector MAU: the matrix unit holds the result of the cycle (its next cycle is
+            // issued after this one is collected, mt_req)
+            assign maub_rd = {mt_flags, mt_z};
+            assign mau_ir  = 1'b1;
+            assign mau_got = mt_got;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // MAU = 0: the vector MAU fields and port register a have no reader
+            wire unused_mau = ^{mau_round_out, mau_mdw_side, mau_signa, mau_signb, mau_signc,
+                                mau_exta, mau_extc, pa, mau_iv};
+            /* verilator lint_on UNUSEDSIGNAL */
         end else begin : g_nomau
             assign mau_ir  = 1'b1;
             assign mau_got = 1'b0;
             assign maub_rd = 132'd0;
             /* verilator lint_off UNUSEDSIGNAL */
-            // MAU = 0: the MAU fields and port registers have no reader (removed in synthesis)
+            // MAU = 0: the MAU fields and port registers have no reader (removed in synthesis);
+            // without the matrix unit (MAT = 0) there is no matrix MAU result either (mt_got = 0)
             wire unused_mau = ^{mau_dmode, mau_round_out, mau_mdw_side, mau_signa, mau_signb, mau_signc,
-                                mau_exta, mau_extb, mau_extc, pa, pb, pc, mau_iv};
+                                mau_exta, mau_extb, mau_extc, pa, pb, pc, mau_iv, mt_got};
             /* verilator lint_on UNUSEDSIGNAL */
         end
     endgenerate
@@ -453,10 +557,16 @@ module mn_pe_core #(
     // A cycle is collected after it was gathered and issued (c_iss; the units' results imply
     // it, but a check-only step has no unit and must not end before x of every cycle is out).
     wire alu_rdy = ~alu_on | alu_ov;
-    wire mau_rdy = ~mau_on | (mau_cnt > {1'b0, coll_c});
+    wire mau_rdy = ~(mau_on | mt_on) | (mau_cnt > {1'b0, coll_c});
     wire c_iss   = iss_fin | (iss_c > coll_c);
-    wire res_valid = (ph == P_RUN) & lsu_opr_valid & (unsup_q | (c_iss & alu_rdy & mau_rdy));
+    // the transposed read of the cycle (MAT = 1): the isel 11 result and $mreadf
+    wire mr_on   = MX & (ph == P_RUN) & lsu_opr_valid & ~unsup_q & ~rdo_q;
+    wire mr_ok   = ~mr_on | mr_rdy;
+    wire res_valid = (ph == P_RUN) & lsu_opr_valid & (unsup_q | (c_iss & alu_rdy & mau_rdy & mr_ok));
     assign acc = res_valid & lsu_res_ready;
+    assign mr_req   = mr_on & c_iss & ~mr_rdy;
+    assign mr_cycle = coll_c;
+    assign mr_acc   = mr_on & acc;
 
     // forwarding registers, written with the zero flush of the cycle (mn_pe_lsu zf_*), at
     // {PE, cycle} (N_PE = 4) or the cycle
@@ -474,13 +584,26 @@ module mn_pe_core #(
     wire         fwd_on  = acc & ~unsup_q & ~rdo_q & ~d_noforward;
     wire [127:0] aluf_wd = (zf_en & (zf_sel == 2'b01)) ? (alu_z & zf_mask) : alu_z;
     wire [127:0] mauf_wd = (zf_en & (zf_sel == 2'b00)) ? (maub_rd[127:0] & zf_mask) : maub_rd[127:0];
+    // $mreadf (MAT = 1) and, without the vector MAU, $mauf are kept by the matrix unit: every
+    // forwarding step, zero-flushed (sel 11 / 00; zf_mask is 16 copies of each half-word enable)
+    wire [7:0] zf_hen;
+    genvar gz;
+    generate
+        for (gz = 0; gz < 8; gz = gz + 1) begin : g_zhen
+            assign zf_hen[gz] = zf_mask[16 * gz];
+        end
+    endgenerate
+    assign mr_upd = MX & fwd_on;
+    assign mr_hen = (zf_en & (zf_sel == 2'b11)) ? zf_hen : 8'hff;
+    assign ma_upd = MXS & fwd_on & mat_act;
+    assign ma_hen = (zf_en & (zf_sel == 2'b00)) ? zf_hen : 8'hff;
     mn_ram_lut #(.W(128), .AW(FA), .NR(1)) u_aluf (
         .clk(clk), .we(fwd_on & (alu_act | xpe)), .waddr(f_wa), .wdata(aluf_wd),
         .raddr(f_ra), .rdata(aluf_rd));
     generate
         if (MAU != 0) begin : g_mauf
             mn_ram_lut #(.W(128), .AW(FA), .NR(1)) u_mauf (
-                .clk(clk), .we(fwd_on & mau_act), .waddr(f_wa), .wdata(mauf_wd),
+                .clk(clk), .we(fwd_on & (mau_act | mat_act)), .waddr(f_wa), .wdata(mauf_wd),
                 .raddr(f_ra), .rdata(mauf_rd));
         end else begin : g_nomauf
             assign mauf_rd = 128'd0;
@@ -530,7 +653,8 @@ module mn_pe_core #(
                 .opr_valid(lsu_opr_valid), .opr_cycle(iss_c), .opr_mem(opr_mem),
                 .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
                 .res_valid(res_valid), .res_ready(lsu_res_ready), .res_cycle(lsu_res_cycle),
-                .res_mau(maub_rd[127:0]), .res_alu(alu_z), .res_l1bm(128'd0), .res_mread(128'd0),
+                .res_mau(maub_rd[127:0]), .res_alu(alu_z), .res_l1bm(128'd0),
+                .res_mread(MX ? mr_val : 128'd0),
                 .res_alu_flags(alu_f), .res_mau_flags(maub_rd[131:128]),
                 .zf_en(zf_en), .zf_sel(zf_sel), .zf_mask(zf_mask),
                 .done(lsu_done), .trap(lsu_trap), .trap_wr(trap_wr), .trap_mem(trap_mem),
@@ -561,6 +685,8 @@ module mn_pe_core #(
             gpend    <= 5'd0;
             alu_isd  <= 1'b0;
             mau_isd  <= 1'b0;
+            mt_isd   <= 1'b0;
+            mw_isd   <= 1'b0;
             coll_c   <= 2'd0;
             mau_cnt  <= 3'd0;
         end else begin
@@ -578,6 +704,8 @@ module mn_pe_core #(
                 gpend    <= need;
                 alu_isd  <= 1'b0;
                 mau_isd  <= 1'b0;
+                mt_isd   <= 1'b0;
+                mw_isd   <= 1'b0;
                 coll_c   <= 2'd0;
                 mau_cnt  <= 3'd0;
             end else if (ph == P_RUN) begin
@@ -589,9 +717,13 @@ module mn_pe_core #(
                     gpend   <= need_q;
                     alu_isd <= 1'b0;
                     mau_isd <= 1'b0;
+                    mt_isd  <= 1'b0;
+                    mw_isd  <= 1'b0;
                 end else begin
                     alu_isd <= alu_isd | alu_acc;
                     mau_isd <= mau_isd | mau_acc;
+                    mt_isd  <= mt_isd | (MX & mt_done);
+                    mw_isd  <= mw_isd | (MX & mw_done);
                 end
                 // collect
                 if (mau_got) mau_cnt <= mau_cnt + 3'd1;
@@ -625,8 +757,9 @@ module mn_pe_core #(
     // lsu_busy: the core uses idle; lsu_unsup (word length 11): the decoder reports it
     // (unsup_vec); int_err / fp_err: routing follows mn_alu_cls, checked in simulation only.
     // opr_grf1 / opr_lm0 / opr_lm1: the shared read buffer gives every memory on opr_grf0.
+    // The matrix unit's answers have no reader with MAT = 0 or one PE.
     wire unused = ^{lsu_busy, lsu_unsup, int_err, fp_err, d_ll, lsu_res_cycle, opr_grf1, opr_lm0, opr_lm1,
-                    rd_only};
+                    rd_only, mt_z, mt_flags, mt_done, mw_done, mr_rdy, mr_val, fr_rdy, fr_val};
     /* verilator lint_on UNUSEDSIGNAL */
 endmodule
 `default_nettype wire

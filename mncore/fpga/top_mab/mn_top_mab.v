@@ -17,7 +17,8 @@
 // 0 none; MAU = 0 leaves out the MAU vector unit; BFN = 0 leaves out bfn / bfe. Instructions of a
 // unit that is left out stop with E_UNSUPPORTED. msl / msr are always there. INFO reports the
 // units in its flags byte (offset 19; bits 0..1 as PROTOCOL.md version 1): bits 3..2 FPALU,
-// bit 4 MAU, bit 5 BFN (WP30; proposed for PROTOCOL.md, design ID 0x03).
+// bit 4 MAU, bit 5 BFN (WP30; proposed for PROTOCOL.md, design ID 0x03), bit 6 MAT (WP36: the
+// matrix register with ?mwrite / ?mread / the matrix MAU in f / g / h; proposed as well).
 //
 // LEDs (active low): 0 heartbeat, 1 UART RX activity, 2 UART TX activity, 3 link error
 // (CRC / framing / overrun / timeout), 4 core running, 5 the last RUN stopped with an error
@@ -35,6 +36,7 @@ module mn_top_mab #(
     parameter FPALU         = 0,
     parameter MAU           = 1,
     parameter BFN           = 0,
+    parameter MAT           = 0,            // the matrix register and matrix MAU (WP36)
     parameter LED_STRETCH   = 22            // activity LEDs stay on for 2**LED_STRETCH clocks
 ) (
     input  wire       clk,
@@ -49,8 +51,10 @@ module mn_top_mab #(
     localparam [31:0] D_GRF  = 32'd1 << GRF_AW;
     localparam [31:0] D_T    = 32'd8;
     localparam [511:0] SPACE_DEPTH = {320'd0, D_T, D_GRF, D_GRF, D_LM, D_LM, D_IMEM};
-    // INFO flags: bit0 a real core; bits 3..2 FPALU, bit 4 MAU, bit 5 BFN (the units of this bitstream)
-    localparam [31:0]  FLAGS32 = 32'h01 + ((FPALU % 4) * 4) + ((MAU != 0) ? 16 : 0) + ((BFN != 0) ? 32 : 0);
+    // INFO flags: bit0 a real core; bits 3..2 FPALU, bit 4 MAU, bit 5 BFN, bit 6 MAT (the units of
+    // this bitstream)
+    localparam [31:0]  FLAGS32 = 32'h01 + ((FPALU % 4) * 4) + ((MAU != 0) ? 16 : 0) + ((BFN != 0) ? 32 : 0) +
+                                 ((MAT != 0) ? 64 : 0);
     localparam [7:0]   INFO_FL = FLAGS32[7:0];
 
     // ---------------------------------------------------------------- reset
@@ -121,7 +125,7 @@ module mn_top_mab #(
     /* verilator lint_on UNUSEDSIGNAL */
     mn_core #(
         .IMEM_AW(IMEM_AW), .IMEM_RD(0), .LM_AW(LM_AW), .GRF_AW(GRF_AW), .CLEAR(1),
-        .FPALU(FPALU), .MAU(MAU), .N_PE(4), .BFN(BFN), .PE_LOC(16'h0000)
+        .FPALU(FPALU), .MAU(MAU), .N_PE(4), .BFN(BFN), .MAT(MAT), .PE_LOC(16'h0000)
     ) u_core (
         .clk(clk), .rst(rst | core_rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),

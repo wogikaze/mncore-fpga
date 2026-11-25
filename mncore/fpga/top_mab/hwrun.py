@@ -20,6 +20,8 @@ order, only those that differ from 1): "as rtl" when both agree. The units of th
 board (FPALU / MAU / BFN of build.py) are read from the INFO flags (mn_top_mab: bits 3..2 FPALU, bit 4
 MAU, bit 5 BFN); --fpalu / --mau / --bfn, when given, must agree with them. The board must be locked
 first (contract 06 section 9): C:\\wgkz\\nano20k\\mncore\\.board.lock.
+WP36: bit 6 of the flags is MAT (the matrix unit; the RTL table then has TB_MAT=1), and --matrix
+takes the programs of `run.py --pes 4 --matrix` (table results<tag>_mat.tsv).
 """
 from __future__ import annotations
 
@@ -42,7 +44,9 @@ LOCK = Path(r"C:\wgkz\nano20k\mncore\.board.lock")
 DESIGN_ID = 0x03
 
 
-def rtl_tag(fpalu: int, mau: int, bfn: int) -> str:
+def rtl_tag(fpalu: int, mau: int, bfn: int, mat: int = 0, matrix: bool = False) -> str:
+    """the results<tag>.tsv of run.py for the configuration (defines in this order; WP36: TB_MAT=1
+    for a bitstream with the matrix unit, and the suffix _mat for run.py --matrix)."""
     defs = []
     if fpalu != 1:
         defs.append(f"TB_FPALU={fpalu}")
@@ -50,7 +54,9 @@ def rtl_tag(fpalu: int, mau: int, bfn: int) -> str:
         defs.append(f"TB_MAU={mau}")
     if bfn != 1:
         defs.append(f"TB_BFN={bfn}")
-    return "".join(f"_{d.replace('=', '')}" for d in defs)
+    if mat:
+        defs.append("TB_MAT=1")
+    return "".join(f"_{d.replace('=', '')}" for d in defs) + ("_mat" if matrix else "")
 
 
 def rtl_expectation(tag: str) -> dict:
@@ -63,11 +69,13 @@ def rtl_expectation(tag: str) -> dict:
     return out
 
 
-def corpus_rows() -> dict:
+def corpus_rows(matrix: bool = False) -> dict:
+    """pe1 = yes, or (matrix) the programs left out of pe1 only for the matrix group (run.py --matrix)."""
     rows = {}
     with open(ROOT / "mncore" / "tools" / "golden" / "corpus.tsv", encoding="utf-8") as f:
         for r in csv.DictReader(f, delimiter="\t"):
-            if r.get("pe1") == "yes":
+            reasons = set(filter(None, r.get("pe1_reason", "").split(";")))
+            if (reasons == {"groups:matrix"} and r.get("official") == "ok") if matrix else r.get("pe1") == "yes":
                 rows[r["path"]] = r
     return rows
 
@@ -124,6 +132,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("programs", nargs="*")
     ap.add_argument("--all", action="store_true", help="every corpus program with pe1 = yes")
+    ap.add_argument("--matrix", action="store_true",
+                    help="WP36: --all means the programs of run.py --matrix (left out of pe1 only for the "
+                         "matrix group); the RTL table is results<tag>_mat.tsv")
     ap.add_argument("--list", help="file with one corpus path per line ('#' comments)")
     ap.add_argument("--fpalu", type=int, help="FPALU of the loaded bitstream (default: from INFO)")
     ap.add_argument("--mau", type=int, help="MAU of the loaded bitstream (default: from INFO)")
@@ -145,7 +156,7 @@ def main(argv=None) -> int:
 
     if not a.no_lock_check and not LOCK.exists():
         raise SystemExit(f"take the board lock first: {LOCK} (WP number, start time)")
-    rows = corpus_rows()
+    rows = corpus_rows(a.matrix)
     paths = list(a.programs)
     if a.list:
         for line in Path(a.list).read_text(encoding="utf-8").splitlines():
@@ -168,13 +179,15 @@ def main(argv=None) -> int:
         if given is not None and given != v:
             raise SystemExit(f"--{k} {given}, but the bitstream has {k.upper()}={v} (INFO flags 0x{inf.flags:02x})")
         setattr(a, k, v)
-    tag = rtl_tag(a.fpalu, a.mau, a.bfn)
+    mat = (inf.flags >> 6) & 1   # WP36: the matrix unit
+    tag = rtl_tag(a.fpalu, a.mau, a.bfn, mat, a.matrix)
     exp = rtl_expectation(tag)
     if a.baud and a.baud != 1000000:
         dev.set_baud(a.baud)
     inf = dev.info(refresh=True)
     log(f"# hwrun {time.strftime('%Y-%m-%d %H:%M:%S')}: design 0x{inf.design_id:02x}, {inf.clk_hz} Hz, "
-        f"{inf.baud:.0f} baud, imem {inf.imem_depth}, topo {inf.topo}, FPALU={a.fpalu} MAU={a.mau} BFN={a.bfn}, "
+        f"{inf.baud:.0f} baud, imem {inf.imem_depth}, topo {inf.topo}, FPALU={a.fpalu} MAU={a.mau} BFN={a.bfn} "
+        f"MAT={mat}, "
         f"rtl table results{tag}.tsv ({len(exp)} rows), {len(paths)} programs")
     results = []
     t0 = time.monotonic()

@@ -12,6 +12,10 @@
 // block-float unit out (bfn / bfe stop with E_UNSUPPORTED). An E_RANGE stops the word before
 // any PE writes; core_trap is the detail of the PE that trapped (its number is mn_mab's
 // trap_pe, not a port of mn_core, whose ports stay those of brd_host_if).
+// MAT = 1 (N_PE = 4, WP36) adds the matrix register of the MAB (rtl/mab/mn_mab_mat.v): ?mwrite,
+// ?mread / $mreadf and the matrix MAU in f / g / h (d stays E_UNSUPPORTED pe_mauc_dmode). The
+// matrix register is cleared by reset (like the official emulator's initial state); it has no
+// host space.
 //
 // Instruction memory (space 0x00 IMEM): 2**IMEM_AW entries of 448 bits (PROTOCOL.md section 3:
 //   [447:446] type 01 j / 10 m, [425:0] jw, m words in [81:0]); lane k (0..6) of entry e is
@@ -63,6 +67,7 @@ module mn_core #(
     parameter MAU     = 1,           // 0: no MAU (mn_mau_vec)
     parameter N_PE    = 1,           // 1: one PE (M1); 4: one MAB, time-multiplexed (WP30)
     parameter BFN     = 1,           // N_PE = 4: bfn / bfe (mn_fp_alu_bfn)
+    parameter MAT     = 0,           // N_PE = 4: matrix register, ?mwrite / ?mread / matrix MAU (WP36)
     parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0), or of PE 0 of the MAB
 ) (
     input  wire         clk,
@@ -253,11 +258,17 @@ module mn_core #(
         if (N_PE == 1) begin : g_pe
             // one PE (M1): mn_pe_core as in WP20 (the files of the 1-PE builds stay the same)
             /* verilator lint_off UNUSEDSIGNAL */
-            // xg_* / xpe_op / prechk: only for N_PE = 4; hp_pe: one PE
+            // xg_* / xpe_op / prechk / the matrix unit's ports: only for N_PE = 4; hp_pe: one PE
             wire         u_xg_valid, u_prechk;
             wire [1:0]   u_xg_cycle, u_xz_cycle, u_xpe_op;
             wire [127:0] u_xg_x;
             wire [1:0]   unused_hp_pe = hp_pe;
+            wire         u_mg_valid, u_mt_req, u_mw_req, u_mr_req, u_mr_acc, u_mr_upd, u_ma_upd, u_fr_req;
+            wire         u_fr_sel, u_fr_acc;
+            wire [1:0]   u_mg_cycle, u_mt_cycle, u_mr_cycle, u_fr_cycle;
+            wire [63:0]  u_mg_x;
+            wire [127:0] u_mt_y, u_mw_b;
+            wire [7:0]   u_mr_hen, u_ma_hen;
             /* verilator lint_on UNUSEDSIGNAL */
             mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU),
                          .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
@@ -268,6 +279,13 @@ module mn_core #(
                 .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
                 .xpe_op(u_xpe_op), .prechk(u_prechk), .xg_valid(u_xg_valid), .xg_cycle(u_xg_cycle),
                 .xg_x(u_xg_x), .xz_cycle(u_xz_cycle), .xz_z(128'd0),
+                .mg_valid(u_mg_valid), .mg_cycle(u_mg_cycle), .mg_x(u_mg_x),
+                .mt_req(u_mt_req), .mw_req(u_mw_req), .mt_cycle(u_mt_cycle), .mt_y(u_mt_y), .mw_b(u_mw_b),
+                .mt_done(1'b0), .mt_z(128'd0), .mt_flags(4'd0), .mw_done(1'b0),
+                .mr_req(u_mr_req), .mr_cycle(u_mr_cycle), .mr_rdy(1'b0), .mr_val(128'd0),
+                .mr_acc(u_mr_acc), .mr_upd(u_mr_upd), .mr_hen(u_mr_hen), .ma_upd(u_ma_upd), .ma_hen(u_ma_hen),
+                .fr_req(u_fr_req), .fr_sel(u_fr_sel), .fr_cycle(u_fr_cycle), .fr_rdy(1'b0), .fr_val(128'd0),
+                .fr_acc(u_fr_acc),
                 .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
                 .hp_pe(2'd0), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
                 .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
@@ -279,6 +297,7 @@ module mn_core #(
             wire [1:0] trap_pe;   // the PE of an E_RANGE (not a port: the ports are brd_host_if's)
             /* verilator lint_on UNUSEDSIGNAL */
             mn_mab #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
+                     .MAT(MAT),
                      .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
                      .POS_M({28'd0, PE_LOC[5:2]}), .POS_P(0)) u_mab (
                 .clk(clk), .rst(rst),

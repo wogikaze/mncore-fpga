@@ -2,7 +2,10 @@
 """WP20 / WP30 regression: the corpus programs comparable on the reduced core, on the RTL.
 
 usage: python mncore/sim/regress/run.py [--pes 1|4] [--only TEXT] [-j N] [--official-jobs N]
-           [--skip-official] [--force-official] [--table FILE] [--keep] [--define D]
+           [--skip-official] [--force-official] [--table FILE] [--keep] [--define D] [--matrix]
+
+--matrix (WP36, with --pes 4 --define TB_MAT=1): the programs that pe1 leaves out only for the
+   matrix group (?mwrite / ?mread / ?mfma / msl / msr) instead of pe1 = yes.
 
 --pes 1 (default, WP20): the 1-PE core (mn_core N_PE = 1, LM 512 long words), PE n0c0b0m0p0.
 --pes 4 (WP30): one MAB of 4 PEs on the time-multiplexed core (mn_core N_PE = 4, LM_AW = 8:
@@ -401,6 +404,8 @@ def classify_stop(reason: int, info: int, entry_word):
                     what = {0b110: "floor", 0b111: "ftoi"}.get(iselb, "bfn")
             elif name == "pe_mauc_mmode":
                 what = "matrix MAU"
+            elif name == "pe_mauc_dmode":
+                what = "matrix MAU d"
             elif name == "pe_mauc_mw":
                 what = "?mwrite"
     return f"E_UNSUPPORTED {name}", what
@@ -523,6 +528,11 @@ def main(argv=None) -> int:
                     help="also the programs that pe1 leaves out only for their LM addresses (run-time "
                          "addresses or beyond 256 long words): they pass if they stay inside the LM, "
                          "else the RTL stops with E_RANGE (results<tag>_lm.tsv)")
+    ap.add_argument("--matrix", action="store_true",
+                    help="WP36: instead of pe1 = yes, the programs that pe1 leaves out only for the "
+                         "matrix group (?mwrite / ?mread / ?mfma, also msl / msr; with --also-lm also "
+                         "for their LM addresses). Use with --pes 4 --define TB_MAT=1 "
+                         "(results<tag>_mat.tsv)")
     a = ap.parse_args(argv)
 
     def log(s):
@@ -534,9 +544,12 @@ def main(argv=None) -> int:
     lm_only = {"lm_dyn", "lm_max>=256"}
 
     def selected(r) -> bool:
+        reasons = set(filter(None, r.get("pe1_reason", "").split(";")))
+        if a.matrix:
+            allowed = {"groups:matrix"} | (lm_only if a.also_lm else set())
+            return r.get("official") == "ok" and "groups:matrix" in reasons and reasons <= allowed
         if r.get("pe1") == "yes":
             return not a.also_lm
-        reasons = set(filter(None, r.get("pe1_reason", "").split(";")))
         return a.also_lm and r.get("official") == "ok" and bool(reasons) and reasons <= lm_only
 
     with open(ROOT / "mncore" / "tools" / "golden" / "corpus.tsv", encoding="utf-8") as f:
@@ -545,7 +558,9 @@ def main(argv=None) -> int:
             r = dict(zip(head, line.rstrip("\n").split("\t")))
             if selected(r) and (not a.only or a.only in r["path"]):
                 rows.append(r)
-    log(f"[regress] {len(rows)} programs " + ("left out of pe1 only for LM" if a.also_lm else "with pe1 = yes"))
+    what = ("left out of pe1 only for the matrix group" + (" (and LM)" if a.also_lm else "")) if a.matrix else \
+        ("left out of pe1 only for LM" if a.also_lm else "with pe1 = yes")
+    log(f"[regress] {len(rows)} programs {what}")
     if not a.skip_official:
         official_stage(rows, a.official_jobs, a.force_official, log)
     vvp = Path(a.vvp).resolve() if a.vvp else compile_tb(log, a.define)
@@ -563,7 +578,8 @@ def main(argv=None) -> int:
     results.sort(key=lambda r: r["path"])
     cols = ["path", "kind", "groups", "words", "steps", "clocks", "compared", "result", "detail"]
     text = "\t".join(cols) + "\n" + "".join("\t".join(str(r[c]) for c in cols) + "\n" for r in results)
-    tag = "".join(f"_{d.replace('=', '')}" for d in a.define) + ("_lm" if a.also_lm else "")
+    tag = "".join(f"_{d.replace('=', '')}" for d in a.define) + ("_lm" if a.also_lm else "") + \
+        ("_mat" if a.matrix else "")
     (BUILD / f"results{tag}.tsv").write_text(text, encoding="utf-8", newline="\n")
     if a.table:
         Path(a.table).write_text(text, encoding="utf-8", newline="\n")
