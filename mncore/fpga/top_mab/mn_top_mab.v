@@ -20,9 +20,7 @@
 // bit 4 MAU, bit 5 BFN (WP30; proposed for PROTOCOL.md, design ID 0x03), bit 6 MAT (WP36: the
 // matrix register with ?mwrite / ?mread / the matrix MAU in f / g / h; proposed as well).
 //
-// LEDs (active low): 0 heartbeat, 1 UART RX activity, 2 UART TX activity, 3 link error
-// (CRC / framing / overrun / timeout), 4 core running, 5 the last RUN stopped with an error
-// (E_RANGE / E_UNSUPPORTED / E_DECODE).
+// LED: only LED 0, steadily on at the lowest brightness (connection / alive check).
 // Button S1 (pin 88) resets the whole design, including the baud rate.
 `default_nettype none
 module mn_top_mab #(
@@ -37,7 +35,10 @@ module mn_top_mab #(
     parameter MAU           = 1,
     parameter BFN           = 0,
     parameter MAT           = 0,            // the matrix register and matrix MAU (WP36)
-    parameter LED_STRETCH   = 22            // activity LEDs stay on for 2**LED_STRETCH clocks
+    /* verilator lint_off UNUSEDPARAM */
+    parameter LED_STRETCH   = 22,           // unused (kept for existing testbenches)
+    /* verilator lint_on UNUSEDPARAM */
+    parameter LED_DIM_BITS  = 10            // LED 0 duty = 1 / 2**LED_DIM_BITS
 ) (
     input  wire       clk,
     input  wire       btn_rst,
@@ -137,34 +138,17 @@ module mn_top_mab #(
         .core_pc(core_pc), .core_steps(core_steps), .core_trap(core_trap)
     );
 
-    // ---------------------------------------------------------------- LEDs
-    localparam [LED_STRETCH-1:0] S_ZERO = {LED_STRETCH{1'b0}};
-    localparam [LED_STRETCH-1:0] S_FULL = {LED_STRETCH{1'b1}};
-    localparam [LED_STRETCH-1:0] S_ONE  = {{(LED_STRETCH-1){1'b0}}, 1'b1};
-    reg [24:0] hb;
-    reg [LED_STRETCH-1:0] s_rx, s_tx, s_err, s_run;
+    // ---------------------------------------------------------------- LED
+    // Only LED 0 is lit, steadily, at the lowest brightness (duty 1 / 2**LED_DIM_BITS): it just shows
+    // that the design is loaded and running. The other LEDs stay off (lead decision 2026-11-25).
+    /* verilator lint_off UNUSEDSIGNAL */
+    wire led_unused = dbg_rx_byte ^ dbg_tx_byte ^ dbg_err ^ dbg_probation;
+    /* verilator lint_on UNUSEDSIGNAL */
+    reg [LED_DIM_BITS-1:0] dim;
     always @(posedge clk) begin
-        if (rst) begin
-            hb    <= 25'd0;
-            s_rx  <= S_ZERO;
-            s_tx  <= S_ZERO;
-            s_err <= S_ZERO;
-            s_run <= S_ZERO;
-        end else begin
-            hb <= hb + 1'b1;
-            if (dbg_rx_byte)         s_rx <= S_FULL;
-            else if (s_rx != S_ZERO) s_rx <= s_rx - S_ONE;
-            if (dbg_tx_byte)         s_tx <= S_FULL;
-            else if (s_tx != S_ZERO) s_tx <= s_tx - S_ONE;
-            if (dbg_err)             s_err <= S_FULL;
-            else if (s_err != S_ZERO) s_err <= s_err - S_ONE;
-            if (core_busy)           s_run <= S_FULL;
-            else if (s_run != S_ZERO) s_run <= s_run - S_ONE;
-        end
+        if (rst) dim <= {LED_DIM_BITS{1'b0}};
+        else     dim <= dim + 1'b1;
     end
-    wire stop_err = ~core_busy & (core_reason != 8'd0);
-    wire [5:0] led_on = {stop_err, s_run != S_ZERO, (s_err != S_ZERO) | dbg_probation, s_tx != S_ZERO,
-                         s_rx != S_ZERO, hb[24]};
-    assign led = ~led_on;
+    assign led = {5'b11111, ~(dim == {LED_DIM_BITS{1'b0}})};
 endmodule
 `default_nettype wire
