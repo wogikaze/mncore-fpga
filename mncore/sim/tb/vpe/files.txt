@@ -1,0 +1,57 @@
+# WP34: the virtual PEs (mn_core VPE = 1, rtl/vpe): the PE state in the SDRAM (tb_sdmem). This unit runs
+# the M2 core (N_PE = 4, M2 = 1) as one virtual MAB (N_MAB = 1, LM_AW = 8) on the directed programs of
+# the unit m2 (mncore/sim/tb/m2/fixed/all.scr, expected values from the official emulator or the reduced
+# Rust simulator): the same results as the BSRAM PEs, through the SDRAM store, the context engine and the
+# host engine. The units vpe/m64 (N_MAB = 16, LM_AW = 11) and vpe/m64r (N_MAB = 16, LM_AW = 8) run the 64
+# PEs and the chip's LM (gen_vpe.py); vpe/mab and vpe/mat run the WP30 / WP36 programs on one virtual MAB.
+# Lint / synth: mn_vpe_harness (mn_core VPE = 1, N_MAB = 16, LM_AW = 11, the board's units).
+top: tb_core
+rtl_top: mn_vpe_harness
+incdir: mncore/rtl/dec
+define: TB_NPE=4
+define: TB_M2=1
+define: TB_SDMEM
+define: TB_VPE=1
+define: TB_NMAB=1
+define: TB_LMAW=8
+define: TB_SCRIPT="mncore/sim/tb/m2/fixed/all.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/vpe/mn_vpe_store.v
+mncore/rtl/vpe/mn_vpe_ctx.v
+mncore/rtl/vpe/mn_vpe_arb.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/vpe/mn_vpe.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/mv/mn_mv_tags.v
+mncore/rtl/mv/mn_mv_red.v
+mncore/rtl/mv/mn_mv.v
+mncore/rtl/core/mn_core.v
+mncore/sim/tb/vpe/mn_vpe_harness.v
+mncore/sim/tb/m2/tb_sdmem.v
+mncore/sim/tb/core/tb_core.v

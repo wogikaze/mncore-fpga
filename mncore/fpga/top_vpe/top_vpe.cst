@@ -1,0 +1,25 @@
+// Tang Nano 20K (GW2AR-LV18QN88C8/I7) pins for mn_top_vpe (WP34). The same pins as
+// mncore/fpga/top_m2/top_m2.cst (WP37). The embedded SDRAM (O_sdram_* / IO_sdram_dq) is bound by
+// name by nextpnr (apicula), not here (mncore/rtl/sdram/README.md).
+//
+// UART to the on-board BL616 USB-UART bridge: uart_tx = 69 (FPGA -> BL616), uart_rx = 70
+// (BL616 -> FPGA). Clock 27 MHz on pin 4, button S1 on pin 88, LEDs on 15..20 (active low).
+
+IO_LOC  "clk" 4;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+CLOCK_LOC "clk" BUFG;
+
+IO_LOC  "btn_rst" 88;
+IO_PORT "btn_rst" IO_TYPE=LVCMOS33 PULL_MODE=DOWN;
+
+IO_LOC  "uart_rx" 70;
+IO_PORT "uart_rx" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+IO_LOC  "uart_tx" 69;
+IO_PORT "uart_tx" IO_TYPE=LVCMOS33 PULL_MODE=UP DRIVE=8;
+
+IO_LOC "led[0]" 15;
+IO_LOC "led[1]" 16;
+IO_LOC "led[2]" 17;
+IO_LOC "led[3]" 18;
+IO_LOC "led[4]" 19;
+IO_LOC "led[5]" 20;

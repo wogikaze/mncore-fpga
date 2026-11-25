@@ -1,0 +1,40 @@
+# hwrun vpe 2026-11-25 23:54:24: design 0x05, 27000000 Hz, 2000000 baud, imem 512, topo (1, 1, 1, 16, 4), LM 2048, units L1BM, FPALU=0 MAU=0 BFN=0 REPLICA=0, rtl table vpe16_lm11/results_TB_L2MV0_TB_FPALU0_TB_MAU0_TB_BFN0.tsv (0 rows), 37 programs
+[1/37] pass b                   no rtl result   44 words    44 steps  99584 lw   27.57 s  mncompile/benchmarks/results/16.onehot/kernel.vsm  rust ok off_rust same vs_rust pass
+[2/37] pass b                   no rtl result   45 words    45 steps  99584 lw   19.83 s  mncompile/benchmarks/results/17.transpose-mab/kernel.vsm  rust ok off_rust same vs_rust pass
+[3/37] pass b                   no rtl result   30 words    30 steps  99584 lw   18.29 s  mncompile/benchmarks/results/18.inversion-small/kernel.vsm  rust ok off_rust same vs_rust pass
+[4/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.39 s  proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/30-lbf-valid.vsm  rust ok off_rust same vs_rust pass
+[5/37] pass b                   no rtl result    7 words     7 steps  99584 lw   12.46 s  proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/31-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[6/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.41 s  proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/32-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[7/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.43 s  proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/33-lbf-noforward-alu.vsm  rust ok off_rust same vs_rust pass
+[8/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.45 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-lbf-valid.vsm  rust ok off_rust same vs_rust pass
+[9/37] pass b                   no rtl result    7 words     7 steps  99584 lw   12.38 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[10/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.53 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-valid.vsm  rust ok off_rust same vs_rust pass
+[11/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.46 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[12/37] pass b                   no rtl result    7 words     7 steps  99584 lw   12.55 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[13/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.41 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward-alu.vsm  rust ok off_rust same vs_rust pass
+[14/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.41 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[15/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.42 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-noforward-alu.vsm  rust ok off_rust same vs_rust pass
+[16/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.43 s  proofs_lean/evidence/forwarding/programs/33-lbf-valid.vsm  rust ok off_rust same vs_rust pass
+[17/37] pass b                   no rtl result    7 words     7 steps  99584 lw   12.42 s  proofs_lean/evidence/forwarding/programs/34-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[18/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.43 s  proofs_lean/evidence/forwarding/programs/35-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[19/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.99 s  proofs_lean/evidence/forwarding/programs/36-lbf-noforward-alu.vsm  rust ok off_rust same vs_rust pass
+[20/37] pass b                   no rtl result    4 words     4 steps  99584 lw   13.39 s  proofs_lean/evidence/lbf-encoded/00-disabled-write/template.vsm  rust ok off_rust same vs_rust pass
+[21/37] pass b                   no rtl result    4 words     4 steps  99584 lw   13.47 s  proofs_lean/evidence/lbf-encoded/01-disabled-discard/template.vsm  rust ok off_rust same vs_rust pass
+[22/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.81 s  proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/template.vsm  rust ok off_rust same vs_rust pass
+[23/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.81 s  proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/template.vsm  rust ok off_rust same vs_rust pass
+[24/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.79 s  proofs_lean/evidence/lbf-encoded/04-disabled-chain/template.vsm  rust ok off_rust same vs_rust pass
+[25/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/05-after-alu-imm/template.vsm  rust ok off_rust same vs_rust pass
+[26/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/06-after-mau/template.vsm  rust ok off_rust same vs_rust pass
+[27/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/template.vsm  rust ok off_rust same vs_rust pass
+[28/37] pass b                   no rtl result    1 words     1 steps  99584 lw   11.99 s  proofs_lean/evidence/lbf-encoded/08-producer-new/driver.vsm  rust ok off_rust same vs_rust pass
+[29/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.81 s  proofs_lean/evidence/lbf-encoded/08-producer-new/intended.vsm  rust ok off_rust same vs_rust pass
+[30/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/08-producer-new/template.vsm  rust ok off_rust same vs_rust pass
+[31/37] pass b                   no rtl result    1 words     1 steps  99584 lw   12.02 s  proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/driver.vsm  rust ok off_rust same vs_rust pass
+[32/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.81 s  proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/intended.vsm  rust ok off_rust same vs_rust pass
+[33/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/template.vsm  rust ok off_rust same vs_rust pass
+[34/37] pass b                   no rtl result    7 words     7 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/10-nop/intended.vsm  rust ok off_rust same vs_rust pass
+[35/37] pass b                   no rtl result    4 words     4 steps  99584 lw   12.78 s  proofs_lean/evidence/lbf-encoded/10-nop/template.vsm  rust ok off_rust same vs_rust pass
+[36/37] pass b                   no rtl result    5 words     5 steps  99584 lw   12.11 s  research/experiments/isa-analyst/progs/e2_l1bmd_extent.vsm  rust ok off_rust same vs_rust pass
+[37/37] pass b                   no rtl result    4 words     4 steps  99584 lw   15.14 s  research/experiments/resched/mnist-small/7.sumcol-mini/s4_l1bm.vsm  rust ok off_rust same vs_rust pass
+# 37 programs in 594 s; link: crc_err 0 frame_err 0 overrun 0 timeout 0, host retries 0
+# pass 37/37 (official or the zero-rule Rust run); as the RTL simulation 0/37

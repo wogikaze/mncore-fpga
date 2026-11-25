@@ -43,7 +43,7 @@ MUTATIONS = [
      ".clk(clk), .we(fwd_on & alu_act), .waddr(f_wa), .wdata(aluf_wd),", "$aluf after msl / msr / bfn"),
     ("fwd_shared", PE, "assign f_wa = {pe_q, coll_c};", "assign f_wa = {2'b00, coll_c};",
      "forwarding registers per PE"),
-    ("peid_pe0", PE, "wire [5:0] v_peid = {V_MAB4[5:2], pos_p};", "wire [5:0] v_peid = {V_MAB4[5:2], 2'd0};",
+    ("peid_pe0", PE, "wire [5:0] v_peid = {v_mab, pos_p};", "wire [5:0] v_peid = {v_mab, 2'd0};",
      "$peid of each PE"),
     ("mau_pe_sub", PE, ".exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(pos_p),",
      ".exta(mau_exta), .extb(mau_extb), .extc(mau_extc), .pe_sub(2'd0),", "dvfma u / d PE pair"),

@@ -89,6 +89,19 @@
 // FPALU = 0 / MAU = 0 leave the FP-side ALU / the MAU out (area); their instructions then stop
 // with E_UNSUPPORTED pe_aluc_aluop / pe_mauc_enfma (mn_pe_core). FPALU = 2 is the FP ALU without
 // floor / ftoi, FPALU = 3 also without fmax / fmin (WP21 area options; mn_pe_core).
+//
+// VPE = 1 (N_PE = 4, WP34): the virtual PEs (rtl/vpe/mn_vpe.v in place of mn_mab): N_MAB MABs (1 .. 16;
+// 16 = the 64 PEs of the L1B, PE_LOC[5:0] = 0) of 4 PEs run one after the other on the one datapath, with
+// the LM0 / LM1 / GRF0 / GRF1 and the per-PE context (T, OMR, BAR, $aluf, $mauf) of every PE in the SDRAM
+// region GRF_BASE .. 0xFFFFF (rtl/vpe/README.md). LM_AW up to 11 (the chip's 2048 long words). The PE
+// spaces exist at the N_MAB * 4 locations n?c?b?m<m>p<p> and go straight to the SDRAM (mn_vpe's host
+// engine; also 0x12 $aluf and 0x13 $mauf); CLEAR does not apply (the PE state is in the SDRAM: SDCLR = 1
+// writes 0 to the region after reset, with the DRAM and PDM). With the units (M2) the L1BM unit has N_MAB
+// MABs (L1_RRN 2 becomes 1 when N_MAB > 1) and gets the MAB of the step (cur_mab); the MV unit and the
+// virtual PEs share the SDRAM bus (mn_vpe_arb, round robin). The matrix register (MAT) needs N_MAB = 1.
+// L2MV = 0 (with M2): the L1BM unit only, without the L2BM and MV units (the 64-PE board design with the
+// L1BM; a word with an L2BM part stops with E_UNSUPPORTED l2bm_lwrite, an m word with E_UNSUPPORTED (m field
+// 0); the spaces 7..9 do not exist).
 `default_nettype none
 module mn_core #(
     parameter IMEM_AW = 9,           // instruction memory: 2**IMEM_AW entries
@@ -115,7 +128,14 @@ module mn_core #(
     parameter DRAM_AW = 19,          // M2: DRAM 2**DRAM_AW long words (contract DRAM_DEPTH)
     parameter [19:0] PDM_BASE  = 20'h80000,   // M2: PDM / DRAM in the SDRAM (long words)
     parameter [19:0] DRAM_BASE = 20'h00000,
-    parameter SDCLR   = 0,           // M2: 1 write 0 to the DRAM and PDM after reset
+    parameter SDCLR   = 0,           // M2 / VPE: 1 write 0 to the DRAM, PDM (and VPE region) after reset
+    parameter VPE     = 0,           // N_PE = 4: 1 the virtual PEs in the SDRAM (WP34, rtl/vpe)
+    parameter N_MAB   = 1,           // VPE: MABs of the L1B (1 .. 16)
+    parameter VPE_CXALL = 0,         // VPE: 1 move the whole context around every MAB pass (a check)
+    parameter L2MV    = 1,           // M2: 0 the L1BM unit only (no L2BM / MV units; WP34's 64-PE board design)
+    parameter [19:0] GRF_BASE  = 20'hA0000,   // VPE: the region in the SDRAM (long words, aligned)
+    parameter [19:0] CTX_BASE  = 20'hA8000,
+    parameter [19:0] LM_BASE   = 20'hC0000,
     /* verilator lint_on UNUSEDPARAM */
     parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0), or of PE 0 of the MAB
 ) (
@@ -167,6 +187,8 @@ module mn_core #(
 `include "mn_mfields.vh"
 
     localparam MU = (M2 != 0) && (N_PE > 1);   // the L1BM / L2BM / MV units
+    localparam VP = (VPE != 0) && (N_PE > 1);  // the virtual PEs (WP34)
+    localparam NM = VP ? N_MAB : 1;            // MABs
     localparam [2:0] R_OK = 3'd0, R_RANGE = 3'd1, R_UNSUP = 3'd2, R_DECODE = 3'd3, R_WAIT = 3'd4;
     localparam [7:0] SP_IMEM = 8'h00;
     localparam [16:0] DEPTH = 17'd1 << IMEM_AW;
@@ -274,7 +296,7 @@ module mn_core #(
 
     always @(posedge clk) begin
         if (rst) begin
-            clr    <= (CLEAR != 0);
+            clr    <= (CLEAR != 0) && !VP;   // VPE: the PE state is in the SDRAM (SDCLR)
             clr_sp <= 3'd0;
             clr_a  <= 11'd0;
             clr_pe <= 2'd0;
@@ -293,18 +315,26 @@ module mn_core #(
         end
     end
 
+    // (VPE: also 0x12 $aluf and 0x13 $mauf)
     function is_pe_space(input [7:0] sp);
         is_pe_space = (sp == 8'h01) || (sp == 8'h02) || (sp == 8'h03) || (sp == 8'h04) ||
-                      (sp == 8'h05) || (sp == 8'h10) || (sp == 8'h11);
+                      (sp == 8'h05) || (sp == 8'h10) || (sp == 8'h11) || (VP && ((sp == 8'h12) || (sp == 8'h13)));
     endfunction
-    // the PE locations: PE_LOC (one PE) or the MAB PE_LOC[15:2] with p = 0..3 (N_PE = 4)
+    // the PE locations: PE_LOC (one PE), the MAB PE_LOC[15:2] with p = 0..3 (N_PE = 4), or the MABs
+    // m = 0 .. N_MAB-1 of the L1B PE_LOC[15:6] (VPE with N_MAB > 1)
+    localparam [31:0] NM32 = NM;
+    localparam [4:0]  NM5  = NM32[4:0];
     function is_pe_loc(input [15:0] l);
-        is_pe_loc = (N_PE > 1) ? (l[15:2] == PE_LOC[15:2]) : (l == PE_LOC);
+        is_pe_loc = (NM > 1) ? ((l[15:6] == PE_LOC[15:6]) && ({1'b0, l[5:2]} < NM5)) :
+                    (N_PE > 1) ? (l[15:2] == PE_LOC[15:2]) : (l == PE_LOC);
     endfunction
     wire w_pe = is_pe_space(mw_space) && is_pe_loc(mw_loc);
     wire r_pe = is_pe_space(mr_space) && is_pe_loc(mr_loc);
     assign hp_req_valid = clr | (~busy & ((mw_valid & w_pe) | (mr_valid & r_pe)));
     wire [1:0] hp_pe = clr ? clr_pe : mw_valid ? mw_loc[1:0] : mr_loc[1:0];
+    // VPE: the PE number {MAB, PE} (the MAB counted from 0 in the L1B, or 0 with one MAB)
+    wire [5:0]  hp_loc = mw_valid ? mw_loc[5:0] : mr_loc[5:0];
+    wire [5:0]  hp_vpe = {(NM > 1) ? hp_loc[5:2] : 4'd0, hp_loc[1:0]};
 
     // ------------------------------------------------------------------ the units' host spaces (M2)
     // 0x06 L1BM at the L1B of the core (m = p = 0); 0x07 L2BM, 0x08 PDM, 0x09 DRAM (mn_mv, loc 0)
@@ -344,36 +374,53 @@ module mn_core #(
     // the units' signals of the PE datapath (M2)
     wire         ugo;
     wire [1:0]   cur_pe;
+    wire [3:0]   cur_mab;    // VPE: the MAB of the step (0 otherwise)
     wire         x_act, x_unsup;
     wire [6:0]   x_field;
     wire         lu_src, lu_lbf, ls_we, lr_req, lr_ready, lr_valid, lb_we;
     wire [1:0]   ls_cycle, lr_cycle, lb_rcycle, lb_wcycle;
     wire [127:0] ls_data, lr_data, lb_rdata, lb_wdata;
+    // the masters of the SDRAM bus: the MV unit (M2) and the virtual PEs (VPE)
+    wire         mv_sd_valid, mv_sd_ready, mv_sd_we, mv_sd_rsp;
+    wire [22:0]  mv_sd_addr;
+    wire [63:0]  mv_sd_wdata;
+    wire [7:0]   mv_sd_wmask;
+    wire         vp_sd_valid, vp_sd_ready, vp_sd_we, vp_sd_rsp;
+    wire [22:0]  vp_sd_addr;
+    wire [63:0]  vp_sd_wdata;
+    wire [7:0]   vp_sd_wmask;
     generate
         if (N_PE == 1) begin : g_pe
             // one PE (M1): mn_pe_core as in WP20 (the files of the 1-PE builds stay the same)
             /* verilator lint_off UNUSEDSIGNAL */
             // xg_* / xpe_op / prechk / the matrix unit's / the L1BM unit's ports: only for N_PE = 4;
-            // hp_pe: one PE
-            wire         u_xg_valid, u_prechk;
+            // hp_pe: one PE; the virtual PEs' ports: N_PE = 4 only
+            wire         u_xg_valid, u_prechk, u_xchk;
+            wire [9:0]   u_cx_use;
             wire [1:0]   u_xg_cycle, u_xz_cycle, u_xpe_op;
             wire [127:0] u_xg_x;
             wire [1:0]   unused_hp_pe = hp_pe;
+            wire [5:0]   unused_hp_vpe = hp_vpe;
             wire         u_mg_valid, u_mt_req, u_mw_req, u_mr_req, u_mr_acc, u_mr_upd, u_ma_upd, u_fr_req;
             wire         u_fr_sel, u_fr_acc;
             wire [1:0]   u_mg_cycle, u_mt_cycle, u_mr_cycle, u_fr_cycle;
             wire [63:0]  u_mg_x;
             wire [127:0] u_mt_y, u_mw_b;
             wire [7:0]   u_mr_hen, u_ma_hen;
+            wire         u_vs_valid, u_vs_we;
+            wire [22:0]  u_vs_addr;
+            wire [63:0]  u_vs_wdata;
+            wire [7:0]   u_vs_wmask;
             /* verilator lint_on UNUSEDSIGNAL */
             mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU),
                          .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
                          .POS_M({28'd0, PE_LOC[5:2]}), .POS_P({30'd0, PE_LOC[1:0]})) u_pe (
                 .clk(clk), .rst(rst),
-                .start(pe_start), .ready(pe_ready), .jw(jw), .pe(2'd0), .rd_only(1'b0),
+                .start(pe_start), .ready(pe_ready), .jw(jw), .pe(2'd0), .vm(4'd0), .rd_only(1'b0),
                 .done(pe_done), .st(pe_st), .st_field(pe_field),
                 .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
-                .xpe_op(u_xpe_op), .prechk(u_prechk), .xg_valid(u_xg_valid), .xg_cycle(u_xg_cycle),
+                .xpe_op(u_xpe_op), .prechk(u_prechk), .xchk(u_xchk), .cx_use(u_cx_use),
+                .xg_valid(u_xg_valid), .xg_cycle(u_xg_cycle),
                 .xg_x(u_xg_x), .xz_cycle(u_xz_cycle), .xz_z(128'd0),
                 .mg_valid(u_mg_valid), .mg_cycle(u_mg_cycle), .mg_x(u_mg_x),
                 .mt_req(u_mt_req), .mw_req(u_mw_req), .mt_cycle(u_mt_cycle), .mt_y(u_mt_y), .mw_b(u_mw_b),
@@ -390,25 +437,69 @@ module mn_core #(
                 .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
                 .hp_pe(2'd0), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
                 .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
-                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata),
+                .vs_req_valid(u_vs_valid), .vs_req_ready(1'b0), .vs_req_we(u_vs_we), .vs_req_addr(u_vs_addr),
+                .vs_req_wdata(u_vs_wdata), .vs_req_wmask(u_vs_wmask), .vs_rsp_valid(1'b0), .vs_rsp_rdata(64'd0)
             );
-            assign ugo    = 1'b0;
-            assign cur_pe = 2'd0;
+            assign ugo     = 1'b0;
+            assign cur_pe  = 2'd0;
+            assign cur_mab = 4'd0;
+            assign vp_sd_valid = 1'b0;
+            assign vp_sd_we    = 1'b0;
+            assign vp_sd_addr  = 23'd0;
+            assign vp_sd_wdata = 64'd0;
+            assign vp_sd_wmask = 8'd0;
             /* verilator lint_off UNUSEDSIGNAL */
             // one PE has no units (M2 needs N_PE = 4): their answers have no reader
-            wire unused_pe1 = ^{x_act, x_unsup, x_field, lu_src, lu_lbf, lr_ready, lr_valid, lr_data, lb_rdata};
+            wire unused_pe1 = ^{x_act, x_unsup, x_field, lu_src, lu_lbf, lr_ready, lr_valid, lr_data, lb_rdata,
+                                vp_sd_ready, vp_sd_rsp};
             /* verilator lint_on UNUSEDSIGNAL */
+        end else if (VP) begin : g_vpe
+            // the virtual PEs (WP34): N_MAB MABs of 4 PEs on the one datapath, the PE state in the SDRAM
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire [1:0] trap_pe;   // the PE / MAB of an E_RANGE (not ports: the ports are brd_host_if's)
+            wire [3:0] trap_mab;
+            wire [1:0] unused_hp_pe = hp_pe;
+            /* verilator lint_on UNUSEDSIGNAL */
+            mn_vpe #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .BFN(BFN), .MAT(MAT),
+                     .BM(MU ? 1 : 0), .N_MAB(NM),
+                     .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
+                     .POS_M({28'd0, PE_LOC[5:2]}), .GRF_BASE(GRF_BASE), .CTX_BASE(CTX_BASE),
+                     .LM_BASE(LM_BASE), .CXALL(VPE_CXALL)) u_vpe (
+                .clk(clk), .rst(rst),
+                .start(pe_start), .ready(pe_ready), .jw(jw), .done(pe_done), .st(pe_st), .st_field(pe_field),
+                .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
+                .trap_pe(trap_pe), .trap_mab(trap_mab),
+                .ugo(ugo), .cur_pe(cur_pe), .cur_mab(cur_mab), .x_act(x_act), .x_unsup(x_unsup), .x_field(x_field),
+                .lu_src(lu_src), .lu_lbf(lu_lbf), .ls_we(ls_we), .ls_cycle(ls_cycle), .ls_data(ls_data),
+                .lr_req(lr_req), .lr_ready(lr_ready), .lr_cycle(lr_cycle), .lr_valid(lr_valid), .lr_data(lr_data),
+                .lb_rcycle(lb_rcycle), .lb_rdata(lb_rdata), .lb_we(lb_we), .lb_wcycle(lb_wcycle),
+                .lb_wdata(lb_wdata),
+                .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(mw_valid),
+                .hp_pe(hp_vpe), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
+                .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata),
+                .sd_req_valid(vp_sd_valid), .sd_req_ready(vp_sd_ready), .sd_req_we(vp_sd_we),
+                .sd_req_addr(vp_sd_addr), .sd_req_wdata(vp_sd_wdata), .sd_req_wmask(vp_sd_wmask),
+                .sd_rsp_valid(vp_sd_rsp), .sd_rsp_rdata(sd_rsp_rdata));
         end else begin : g_mab
             // the 4 PEs of a MAB on one time-multiplexed datapath (WP30)
             /* verilator lint_off UNUSEDSIGNAL */
             wire [1:0] trap_pe;   // the PE of an E_RANGE (not a port: the ports are brd_host_if's)
+            wire [9:0] u_cx_use;  // VPE only
+            wire       u_vs_valid, u_vs_we;
+            wire [22:0] u_vs_addr;
+            wire [63:0] u_vs_wdata;
+            wire [7:0]  u_vs_wmask;
+            wire [5:0]  unused_hp_vpe = hp_vpe;
             /* verilator lint_on UNUSEDSIGNAL */
             mn_mab #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
                      .MAT(MAT), .BM(MU ? 1 : 0),
                      .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
                      .POS_M({28'd0, PE_LOC[5:2]}), .POS_P(0)) u_mab (
                 .clk(clk), .rst(rst),
-                .start(pe_start), .ready(pe_ready), .jw(jw), .done(pe_done), .st(pe_st), .st_field(pe_field),
+                .start(pe_start), .ready(pe_ready), .jw(jw), .vm(4'd0), .chk_only(1'b0), .nochk(1'b0),
+                .cx_use(u_cx_use), .done(pe_done), .st(pe_st), .st_field(pe_field),
                 .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
                 .trap_pe(trap_pe),
                 .ugo(ugo), .cur_pe(cur_pe), .x_act(x_act), .x_unsup(x_unsup), .x_field(x_field),
@@ -419,8 +510,19 @@ module mn_core #(
                 .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
                 .hp_pe(hp_pe), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
                 .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),
-                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata),
+                .vs_req_valid(u_vs_valid), .vs_req_ready(1'b0), .vs_req_we(u_vs_we), .vs_req_addr(u_vs_addr),
+                .vs_req_wdata(u_vs_wdata), .vs_req_wmask(u_vs_wmask), .vs_rsp_valid(1'b0), .vs_rsp_rdata(64'd0)
             );
+            assign cur_mab = 4'd0;
+            assign vp_sd_valid = 1'b0;
+            assign vp_sd_we    = 1'b0;
+            assign vp_sd_addr  = 23'd0;
+            assign vp_sd_wdata = 64'd0;
+            assign vp_sd_wmask = 8'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire unused_vp = ^{vp_sd_ready, vp_sd_rsp};
+            /* verilator lint_on UNUSEDSIGNAL */
         end
     endgenerate
 
@@ -485,7 +587,12 @@ module mn_core #(
             wire [22:0] lb_req_addr;
             wire [63:0] lb_req_wdata;
             wire [7:0]  lb_req_wmask;
-            mn_l1bm #(.N_MAB(1), .AW(L1_AW), .RRN(L1_RRN), .CLEAR(1), .REPLICA(REPLICA)) u_l1 (
+            // one MAB, or the N_MAB MABs of the virtual PEs (VPE; then the general reduction network)
+            // (more than one MAB: the 256-entry source buffer, $lbf and $lbi in BSRAM, BS = 1; mn_vpe sets
+            // mn_pe_core LBS to match)
+            localparam integer L1RRN = ((NM > 1) && (L1_RRN == 2)) ? 1 : L1_RRN;
+            mn_l1bm #(.N_MAB(NM), .AW(L1_AW), .RRN(L1RRN), .CLEAR(1), .REPLICA(REPLICA),
+                      .BS((NM > 1) ? 1 : 0)) u_l1 (
                 .clk(clk), .rst(rst),
                 .ll(d_ll), .l1bm_bmode(d_bmode), .l1bm_lwrite(d_lwrite), .l1bm_rmode(d_rmode), .l1bm_me(d_me),
                 .l1bm_ladr(d_ladr), .l1bm_dmode(d_dmode), .l1bm_ext(d_ext), .l1bm_round_out(d_rout),
@@ -493,11 +600,11 @@ module mn_core #(
                 .use_src(lu_src), .lbf_upd(lu_lbf), .chk_trap(l1_trap), .chk_addr(l1_chk_addr),
                 .chk_unsup(l1_unsup), .chk_field(l1_field),
                 .start(l1_start), .idle(l1_idle), .commit(l1_commit), .done(l1_done),
-                .src_we(ls_we), .src_mab(4'd0), .src_pe(cur_pe), .src_cycle(ls_cycle), .src_data(ls_data),
-                .res_req(lr_req), .res_ready(l1_res_ready), .res_mab(4'd0), .res_pe(cur_pe),
+                .src_we(ls_we), .src_mab(cur_mab), .src_pe(cur_pe), .src_cycle(ls_cycle), .src_data(ls_data),
+                .res_req(lr_req), .res_ready(l1_res_ready), .res_mab(cur_mab), .res_pe(cur_pe),
                 .res_cycle(lr_cycle), .res_valid(l1_res_valid), .res_data(l1_res_data),
-                .lbf_rmab(4'd0), .lbf_rpe(cur_pe), .lbf_rcycle(lb_rcycle), .lbf_rdata(lb_rdata),
-                .lbf_we(lb_we), .lbf_wmab(4'd0), .lbf_wpe(cur_pe), .lbf_wcycle(lb_wcycle), .lbf_wdata(lb_wdata),
+                .lbf_rmab(cur_mab), .lbf_rpe(cur_pe), .lbf_rcycle(lb_rcycle), .lbf_rdata(lb_rdata),
+                .lbf_we(lb_we), .lbf_wmab(cur_mab), .lbf_wpe(cur_pe), .lbf_wcycle(lb_wcycle), .lbf_wdata(lb_wdata),
                 .b_req_valid(b_valid), .b_req_ready(b_ready), .b_req_we(b_we), .b_req_addr(b_addr),
                 .b_req_wdata(b_wdata), .b_req_wmask(b_wmask), .b_req_err(b_err),
                 .b_rsp_valid(b_rsp), .b_rsp_rdata(b_rdata));
@@ -519,6 +626,8 @@ module mn_core #(
             assign l1h_rsp   = ~busy & b_rsp;
             assign l1h_data  = b_rdata;
 
+            wire        mv_err;
+            if (L2MV != 0) begin : g_l2mv
             // ---- L2BM unit (L2B of the core; one L1B)
             wire        cb_req_valid, cb_req_ready, cb_req_we, cb_req_err, cb_rsp_valid;
             wire [22:0] cb_req_addr;
@@ -548,10 +657,6 @@ module mn_core #(
                 .dar_re(dar_re), .dar_raddr(dar_raddr), .dar_rdata(dar_rdata));
 
             // ---- MV unit (the group of the core: its L2BM, PDM and DRAM)
-            wire        mv_sd_valid, mv_sd_we, mv_err;
-            wire [22:0] mv_sd_addr;
-            wire [63:0] mv_sd_wdata;
-            wire [7:0]  mv_sd_wmask;
             mn_mv #(.L2AW(L2_AW), .PDM_AW(PDM_AW), .DRAM_AW(DRAM_AW), .PDM_BASE(PDM_BASE),
                     .DRAM_BASE(DRAM_BASE)) u_mv (
                 .clk(clk), .rst(rst),
@@ -562,54 +667,60 @@ module mn_core #(
                 .cb_req_addr(cb_req_addr), .cb_req_wdata(cb_req_wdata), .cb_req_wmask(cb_req_wmask),
                 .cb_req_err(cb_req_err), .cb_rsp_valid(cb_rsp_valid), .cb_rsp_rdata(cb_rsp_rdata),
                 .dar_re(dar_re), .dar_raddr(dar_raddr), .dar_rdata(dar_rdata),
-                .sd_req_valid(mv_sd_valid), .sd_req_ready(sd_req_ready & ~sd_clr), .sd_req_we(mv_sd_we),
+                .sd_req_valid(mv_sd_valid), .sd_req_ready(mv_sd_ready), .sd_req_we(mv_sd_we),
                 .sd_req_addr(mv_sd_addr), .sd_req_wdata(mv_sd_wdata), .sd_req_wmask(mv_sd_wmask),
-                .sd_rsp_valid(sd_rsp_valid), .sd_rsp_rdata(sd_rsp_rdata), .sd_err_addr(sd_err_addr),
+                .sd_rsp_valid(mv_sd_rsp), .sd_rsp_rdata(sd_rsp_rdata), .sd_err_addr(sd_err_addr),
                 .err_sdr(mv_err),
                 .hw_valid(mw_valid & ~busy & ~clr & ~sd_clr & w_mv), .hw_ready(mvh_w_ready), .hw_err(mvh_w_err),
                 .hw_space(mw_space), .hw_loc(mw_loc), .hw_addr(mw_addr), .hw_data(mw_data), .hw_mask(mw_mask),
                 .hr_valid(mr_valid & ~busy & ~clr & ~sd_clr & r_mv), .hr_ready(mvh_r_ready), .hr_err(mvh_r_err),
                 .hr_space(mr_space), .hr_loc(mr_loc), .hr_addr(mr_addr), .hr_rsp_valid(mvh_rsp),
                 .hr_rsp_data(mvh_data));
-
-            // ---- clear of the DRAM and PDM after reset (SDCLR): 0 into every long word, DRAM first
-            if (SDCLR != 0) begin : g_sdclr
-                localparam [20:0] D_LAST = (21'd1 << DRAM_AW) - 21'd1;
-                localparam [20:0] P_LAST = (21'd1 << PDM_AW) - 21'd1;
-                reg        sc_on, sc_pdm;
-                reg [20:0] sc_a;
-                always @(posedge clk) begin
-                    if (rst) begin
-                        sc_on  <= 1'b1;
-                        sc_pdm <= 1'b0;
-                        sc_a   <= 21'd0;
-                    end else if (sc_on && sd_req_ready) begin
-                        sc_a <= sc_a + 21'd1;
-                        if (!sc_pdm && sc_a == D_LAST) begin
-                            sc_pdm <= 1'b1;
-                            sc_a   <= 21'd0;
-                        end else if (sc_pdm && sc_a == P_LAST) begin
-                            sc_on <= 1'b0;
-                        end
-                    end
-                end
-                assign sd_clr       = sc_on;
-                assign sd_req_valid = sc_on | mv_sd_valid;
-                assign sd_req_we    = sc_on | mv_sd_we;
-                assign sd_req_addr  = sc_on ? {3'd0, (sc_pdm ? PDM_BASE : DRAM_BASE) | sc_a[19:0]} : mv_sd_addr;
-                assign sd_req_wdata = sc_on ? 64'd0 : mv_sd_wdata;
-                assign sd_req_wmask = sc_on ? 8'hff : mv_sd_wmask;
+            end else begin : g_nol2mv
+                // L2MV = 0 (WP34): the L1BM unit only. A word with an L2BM part (the decoder's L2BM
+                // group: l1bm_gwrite, l2bm_lwrite, DAR) stops with E_UNSUPPORTED l2bm_lwrite in mn_mab's
+                // check-only pass (before the units start), an m word with E_UNSUPPORTED (m field 0, as
+                // without the units) and a wait with WAIT (no MV was issued). The spaces 7..9 do not exist.
+                localparam [31:0] F_L2W = MN_J_L2BM_LWRITE_IDX;
+                assign l2_act   = d_grp[MN_J_GRP_L2BM];
+                assign l2_unsup = d_grp[MN_J_GRP_L2BM];
+                assign l2_field = F_L2W[6:0];
+                assign l2_trap  = 1'b0;
+                assign l2_idle  = 1'b1;
+                assign l2_pre   = 1'b0;
+                assign l2_done  = 1'b0;
+                assign lb_req_valid = 1'b0;
+                assign lb_req_we    = 1'b0;
+                assign lb_req_l1b   = 3'd0;
+                assign lb_req_addr  = 23'd0;
+                assign lb_req_wdata = 64'd0;
+                assign lb_req_wmask = 8'd0;
+                assign mv_ready     = 1'b1;     // an m word: started and refused at once (S_MA)
+                assign mv_acc       = 1'b1;
+                assign mv_acc_st    = 2'd2;
+                assign mv_acc_field = 4'd0;
+                assign mv_busy      = 1'b0;
+                assign mv_wt_cnt    = 2'd0;
+                assign mvh_w_ready  = 1'b1;
+                assign mvh_w_err    = 1'b1;
+                assign mvh_r_ready  = 1'b1;
+                assign mvh_r_err    = 1'b1;
+                assign mvh_rsp      = 1'b0;
+                assign mvh_data     = 64'd0;
+                assign mv_sd_valid  = 1'b0;
+                assign mv_sd_we     = 1'b0;
+                assign mv_sd_addr   = 23'd0;
+                assign mv_sd_wdata  = 64'd0;
+                assign mv_sd_wmask  = 8'd0;
+                assign mv_err       = 1'b0;
                 /* verilator lint_off UNUSEDSIGNAL */
-                wire unused_sc = sc_a[20];   // the counter's carry: the last address is compared
+                // no L2BM / MV: their fields and requests have no reader
+                wire unused_l2 = ^{d_gwrite, d_gadr, d_l2lwrite, d_bdmode, d_l2ladr, d_l1adr, d_immode, d_l2dmode,
+                                   d_l2opcode, d_darsend, d_darwrite, l2_start, l2_commit, l2_skip, mv_start,
+                                   wt_take, mv_sd_ready, mv_sd_rsp, e_wd, sd_err_addr};
                 /* verilator lint_on UNUSEDSIGNAL */
-            end else begin : g_nosdclr
-                assign sd_clr       = 1'b0;
-                assign sd_req_valid = mv_sd_valid;
-                assign sd_req_we    = mv_sd_we;
-                assign sd_req_addr  = mv_sd_addr;
-                assign sd_req_wdata = mv_sd_wdata;
-                assign sd_req_wmask = mv_sd_wmask;
             end
+
             assign units_rdy = l1_idle & l2_idle & ~mv_busy & ~sd_clr;
             assign unit_busy = mv_busy | sd_clr;
             assign unit_err  = mv_err;
@@ -652,21 +763,116 @@ module mn_core #(
             assign mvh_r_err   = 1'b1;
             assign mvh_rsp     = 1'b0;
             assign mvh_data    = 64'd0;
-            assign sd_clr       = 1'b0;
-            assign units_rdy    = 1'b1;
-            assign unit_busy    = 1'b0;
-            assign unit_err     = 1'b0;
-            assign sd_req_valid = 1'b0;
-            assign sd_req_we    = 1'b0;
-            assign sd_req_addr  = 23'd0;
-            assign sd_req_wdata = 64'd0;
-            assign sd_req_wmask = 8'd0;
+            assign units_rdy    = ~sd_clr;
+            assign unit_busy    = sd_clr;
+            assign unit_err     = VP & sd_err_addr;
+            assign mv_sd_valid  = 1'b0;
+            assign mv_sd_we     = 1'b0;
+            assign mv_sd_addr   = 23'd0;
+            assign mv_sd_wdata  = 64'd0;
+            assign mv_sd_wmask  = 8'd0;
             /* verilator lint_off UNUSEDSIGNAL */
-            // no units: their requests and the SDRAM bus have no reader
-            wire unused_u = ^{ugo, cur_pe, ls_we, ls_cycle, ls_data, lr_req, lr_cycle, lb_rcycle, lb_we, lb_wcycle,
-                              lb_wdata, l1_start, l1_commit, l2_start, l2_commit, l2_skip, mv_start, wt_take,
-                              e_wd, w_l1_ok, r_l1_ok, sd_req_ready, sd_rsp_valid, sd_rsp_rdata, sd_err_addr};
+            // no units: their requests have no reader (the SDRAM bus: the virtual PEs' only, or none)
+            wire unused_u = ^{ugo, cur_pe, cur_mab, ls_we, ls_cycle, ls_data, lr_req, lr_cycle, lb_rcycle, lb_we,
+                              lb_wcycle, lb_wdata, l1_start, l1_commit, l2_start, l2_commit, l2_skip, mv_start,
+                              wt_take, e_wd, w_l1_ok, r_l1_ok, mv_sd_ready, mv_sd_rsp, sd_err_addr, sd_rsp_rdata};
             /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
+
+    // ------------------------------------------------------------------ the SDRAM bus (M2 / VPE)
+    // the clear after reset (SDCLR: 0 into the DRAM, the PDM (M2) and the VPE region, in that order),
+    // then the MV unit and the virtual PEs (round robin, mn_vpe_arb)
+    wire        a_valid, a_ready, a_we;
+    wire [22:0] a_addr;
+    wire [63:0] a_wdata;
+    wire [7:0]  a_wmask;
+    generate
+        if (MU && VP) begin : g_arb
+            mn_vpe_arb u_arb (
+                .clk(clk), .rst(rst),
+                .m0_req_valid(mv_sd_valid), .m0_req_ready(mv_sd_ready), .m0_req_we(mv_sd_we),
+                .m0_req_addr(mv_sd_addr), .m0_req_wdata(mv_sd_wdata), .m0_req_wmask(mv_sd_wmask),
+                .m0_rsp_valid(mv_sd_rsp),
+                .m1_req_valid(vp_sd_valid), .m1_req_ready(vp_sd_ready), .m1_req_we(vp_sd_we),
+                .m1_req_addr(vp_sd_addr), .m1_req_wdata(vp_sd_wdata), .m1_req_wmask(vp_sd_wmask),
+                .m1_rsp_valid(vp_sd_rsp),
+                .s_req_valid(a_valid), .s_req_ready(a_ready), .s_req_we(a_we), .s_req_addr(a_addr),
+                .s_req_wdata(a_wdata), .s_req_wmask(a_wmask), .s_rsp_valid(sd_rsp_valid));
+        end else if (VP) begin : g_vpbus
+            assign a_valid = vp_sd_valid;
+            assign a_we    = vp_sd_we;
+            assign a_addr  = vp_sd_addr;
+            assign a_wdata = vp_sd_wdata;
+            assign a_wmask = vp_sd_wmask;
+            assign vp_sd_ready = a_ready;
+            assign vp_sd_rsp   = sd_rsp_valid;
+            assign mv_sd_ready = 1'b0;
+            assign mv_sd_rsp   = 1'b0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // the virtual PEs without the units: no MV requests
+            wire unused_mv = ^{mv_sd_valid, mv_sd_we, mv_sd_addr, mv_sd_wdata, mv_sd_wmask};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end else begin : g_mvbus
+            assign a_valid = mv_sd_valid;
+            assign a_we    = mv_sd_we;
+            assign a_addr  = mv_sd_addr;
+            assign a_wdata = mv_sd_wdata;
+            assign a_wmask = mv_sd_wmask;
+            assign mv_sd_ready = a_ready;
+            assign mv_sd_rsp   = sd_rsp_valid;
+            assign vp_sd_ready = 1'b0;
+            assign vp_sd_rsp   = 1'b0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // no virtual PEs: their requests are 0; without the MV unit (L2MV = 0) nothing reads the SDRAM
+            wire unused_vp = ^{vp_sd_valid, vp_sd_we, vp_sd_addr, vp_sd_wdata, vp_sd_wmask, sd_rsp_rdata};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+        if ((MU || VP) && SDCLR != 0) begin : g_sdclr
+            // phase 0 DRAM, 1 PDM (the units), 2 the VPE region GRF_BASE .. 0xFFFFF (VPE)
+            localparam [20:0] D_LAST = (21'd1 << DRAM_AW) - 21'd1;
+            localparam [20:0] P_LAST = (21'd1 << PDM_AW) - 21'd1;
+            localparam [20:0] V_LAST = 21'h100000 - {1'b0, GRF_BASE} - 21'd1;
+            localparam [1:0]  PH0 = (MU && L2MV != 0) ? 2'd0 : 2'd2;
+            reg        sc_on;
+            reg [1:0]  sc_ph;
+            reg [20:0] sc_a;
+            wire [20:0] sc_last = (sc_ph == 2'd0) ? D_LAST : (sc_ph == 2'd1) ? P_LAST : V_LAST;
+            always @(posedge clk) begin
+                if (rst) begin
+                    sc_on <= 1'b1;
+                    sc_ph <= PH0;
+                    sc_a  <= 21'd0;
+                end else if (sc_on && sd_req_ready) begin
+                    sc_a <= sc_a + 21'd1;
+                    if (sc_a == sc_last) begin
+                        sc_a <= 21'd0;
+                        if (sc_ph == 2'd0) sc_ph <= 2'd1;
+                        else if (sc_ph == 2'd1 && VP) sc_ph <= 2'd2;
+                        else sc_on <= 1'b0;
+                    end
+                end
+            end
+            wire [19:0] sc_addr = (sc_ph == 2'd0) ? (DRAM_BASE | sc_a[19:0]) :
+                                  (sc_ph == 2'd1) ? (PDM_BASE | sc_a[19:0]) : (GRF_BASE + sc_a[19:0]);
+            assign sd_clr       = sc_on;
+            assign sd_req_valid = sc_on | a_valid;
+            assign sd_req_we    = sc_on | a_we;
+            assign sd_req_addr  = sc_on ? {3'd0, sc_addr} : a_addr;
+            assign sd_req_wdata = sc_on ? 64'd0 : a_wdata;
+            assign sd_req_wmask = sc_on ? 8'hff : a_wmask;
+            assign a_ready      = sd_req_ready & ~sc_on;
+            /* verilator lint_off UNUSEDSIGNAL */
+            wire unused_sc = sc_a[20];   // the counter's carry: the last address is compared
+            /* verilator lint_on UNUSEDSIGNAL */
+        end else begin : g_nosdclr
+            assign sd_clr       = 1'b0;
+            assign sd_req_valid = a_valid;
+            assign sd_req_we    = a_we;
+            assign sd_req_addr  = a_addr;
+            assign sd_req_wdata = a_wdata;
+            assign sd_req_wmask = a_wmask;
+            assign a_ready      = sd_req_ready;
         end
     endgenerate
 

@@ -40,6 +40,16 @@
 // starts, and mn_core starts the units with it. In the normal pass, PE cur_pe (= the PE of the step)
 // gives its L1BM operands (ls_*), takes its L1BM -> PE values (lr_*) and reads / writes its $lbf
 // (lb_*). ugo also pulses for a word without the check-only pass (at its start).
+//
+// VPE = 1 (N_PE = 4, WP34): this MAB runs the 4 PEs of the (virtual) MAB vm, whose memories are in the
+// SDRAM (vs_*: mn_mab_mem's store bus); rtl/vpe/mn_vpe.v runs it once per virtual MAB and swaps the
+// per-PE context through the host port (cx_use: what the word uses, see mn_pe_core). Two inputs, taken
+// at start, change the check-only pass (both 0 without VPE):
+//   chk_only: run the check-only pass only (also for a word that would not need it) and stop after it
+//     (st, st_field and trap_* as usual; st = 0 when the 4 PEs passed); no ugo, nothing is written.
+//     mn_vpe checks the ranges of all the virtual MABs this way before any of them writes.
+//   nochk: leave out the check-only pass unless the word needs it for its data (xchk: msl / msr / bfn /
+//     bfe, matrix MAU); mn_vpe sets it for the MABs after the first when the ranges are already known.
 `default_nettype none
 module mn_mab #(
     parameter LM_AW  = 8,
@@ -50,6 +60,10 @@ module mn_mab #(
     parameter BFN    = 1,   // N_PE = 4: bfn / bfe
     parameter MAT    = 0,   // N_PE = 4: the matrix register and matrix MAU (WP36)
     parameter BM     = 0,   // N_PE = 4: the L1BM / L2BM units of mn_core (WP37)
+    parameter VPE    = 0,   // N_PE = 4: the virtual PEs (WP34, see above)
+    parameter LBS    = 0,   // BM: $lbf from the L1BM unit's BSRAM (mn_l1bm BS = 1; mn_pe_core LBS)
+    parameter [19:0] LM_BASE  = 20'hC0000,   // VPE: SDRAM bases of the LM / GRF (mn_vpe_store)
+    parameter [19:0] GRF_BASE = 20'hA0000,
     parameter integer POS_N = 0,   // chip coordinates of the MAB (contract 06 section 3)
     parameter integer POS_C = 0,
     parameter integer POS_B = 0,
@@ -61,6 +75,10 @@ module mn_mab #(
     input  wire         start,
     output wire         ready,
     input  wire [425:0] jw,
+    input  wire [3:0]   vm,          // VPE: the virtual MAB (stable from start until done)
+    input  wire         chk_only,    // VPE: the check-only pass only (taken at start)
+    input  wire         nochk,       // VPE: no check-only pass unless the word needs it for its data
+    output wire [9:0]   cx_use,      // VPE: the per-PE context the word uses (mn_pe_core)
     output wire         done,
     output wire [1:0]   st,
     output wire [6:0]   st_field,
@@ -100,9 +118,19 @@ module mn_mab #(
     input  wire [7:0]   hp_req_wmask,
     output wire         hp_req_err,
     output wire         hp_rsp_valid,
-    output wire [63:0]  hp_rsp_rdata
+    output wire [63:0]  hp_rsp_rdata,
+    // ---- VPE: the store's bus to the SDRAM
+    output wire         vs_req_valid,
+    input  wire         vs_req_ready,
+    output wire         vs_req_we,
+    output wire [22:0]  vs_req_addr,
+    output wire [63:0]  vs_req_wdata,
+    output wire [7:0]   vs_req_wmask,
+    input  wire         vs_rsp_valid,
+    input  wire [63:0]  vs_rsp_rdata
 );
     wire         c_start, c_ready, c_done;
+    wire         xchk;
     wire [1:0]   c_st;
     wire [6:0]   c_field;
     wire [1:0]   c_pe;
@@ -121,13 +149,14 @@ module mn_mab #(
     wire [3:0]   mt_flags;
 
     mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
-                 .MAT(MAT), .BM(BM),
+                 .MAT(MAT), .BM(BM), .VPE(VPE), .LBS(LBS), .LM_BASE(LM_BASE), .GRF_BASE(GRF_BASE),
                  .POS_N(POS_N), .POS_C(POS_C), .POS_B(POS_B), .POS_M(POS_M), .POS_P(POS_P)) u_pe (
         .clk(clk), .rst(rst),
-        .start(c_start), .ready(c_ready), .jw(jw), .pe(c_pe), .rd_only(c_rdo),
+        .start(c_start), .ready(c_ready), .jw(jw), .pe(c_pe), .vm(vm), .rd_only(c_rdo),
         .done(c_done), .st(c_st), .st_field(c_field),
         .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
-        .xpe_op(xpe_op), .prechk(prechk), .xg_valid(xg_valid), .xg_cycle(xg_cycle), .xg_x(xg_x),
+        .xpe_op(xpe_op), .prechk(prechk), .xchk(xchk), .cx_use(cx_use),
+        .xg_valid(xg_valid), .xg_cycle(xg_cycle), .xg_x(xg_x),
         .xz_cycle(xz_cycle), .xz_z(xz_z),
         .mg_valid(mg_valid), .mg_cycle(mg_cycle), .mg_x(mg_x),
         .mt_req(mt_req), .mw_req(mw_req), .mt_cycle(mt_cycle), .mt_y(mt_y), .mw_b(mw_b),
@@ -143,7 +172,10 @@ module mn_mab #(
         .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we), .hp_pe(hp_pe),
         .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
         .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
-        .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata)
+        .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata),
+        .vs_req_valid(vs_req_valid), .vs_req_ready(vs_req_ready), .vs_req_we(vs_req_we),
+        .vs_req_addr(vs_req_addr), .vs_req_wdata(vs_req_wdata), .vs_req_wmask(vs_req_wmask),
+        .vs_rsp_valid(vs_rsp_valid), .vs_rsp_rdata(vs_rsp_rdata)
     );
 
     generate
@@ -192,7 +224,7 @@ module mn_mab #(
             assign ugo      = start & c_ready;
             assign cur_pe   = 2'd0;
             /* verilator lint_off UNUSEDSIGNAL */
-            wire unused_one = ^{xpe_op, prechk, xg_valid, xg_cycle, xg_x, xz_cycle, mat_busy};
+            wire unused_one = ^{xpe_op, prechk, xg_valid, xg_cycle, xg_x, xz_cycle, mat_busy, xchk, chk_only, nochk};
             /* verilator lint_on UNUSEDSIGNAL */
         end else begin : g_mab
             localparam XW = (BFN != 0) ? 128 : 64;   // exchange buffer width
@@ -209,7 +241,11 @@ module mn_mab #(
             reg  [1:0] st_q, tpe_q;
             reg  [6:0] fld_q;
             reg        ugo_q;      // the normal pass begins (after the check-only pass)
+            reg        co_q;       // VPE: the check-only pass only (chk_only)
             wire       bf_fin;     // the block-float conversion of the 4 cycles is done
+            // the word gets the check-only pass: mn_pe_core's prechk, less the range / E_UNSUPPORTED
+            // part when nochk (VPE), or always when chk_only (VPE)
+            wire       pchk = (prechk & ~(nochk & ~xchk)) | chk_only;
 
             assign ready    = (m == M_IDLE) & c_ready & ~mat_busy;
             assign done     = d_q;
@@ -235,6 +271,7 @@ module mn_mab #(
                     fld_q  <= 7'd0;
                     tpe_q  <= 2'd0;
                     ugo_q  <= 1'b0;
+                    co_q   <= 1'b0;
                 end else begin
                     d_q   <= 1'b0;
                     ugo_q <= 1'b0;
@@ -242,9 +279,10 @@ module mn_mab #(
                         M_IDLE: if (start && c_ready) begin
                             op_q   <= xpe_op;
                             p      <= 2'd0;
-                            pass_r <= prechk;
+                            pass_r <= pchk;
                             uns    <= 1'b0;
-                            ugo_q  <= ~prechk;
+                            ugo_q  <= ~pchk;
+                            co_q   <= chk_only;
                             m      <= M_GO;
                         end
                         M_GO: if (c_ready) m <= M_WAIT;   // mn_pe_core takes the start
@@ -266,6 +304,10 @@ module mn_mab #(
                                     st_q  <= 2'd2;
                                     fld_q <= uns ? ufld : c_field;
                                     m     <= M_END;
+                                end else if (co_q) begin
+                                    // VPE chk_only: the 4 PEs passed; nothing more
+                                    st_q <= 2'd0;
+                                    m    <= M_END;
                                 end else begin
                                     pass_r <= 1'b0;
                                     p      <= 2'd0;

@@ -52,7 +52,7 @@ MUTATIONS = [
     ("no_y_gather", PE, "alu_act & two_in, alu_act & ~d_is_imm};", "1'b0, alu_act & ~d_is_imm};",
      "gathering of ALU input y"),
     ("msb1", PE, "wire       fmsb = (gcode == 4'd8);", "wire       fmsb = 1'b0;", "$msb1"),
-    ("peid", PE, "wire [5:0] v_peid = {V_MAB4[5:2], pos_p};", "wire [5:0] v_peid = 6'd1;", "$peid"),
+    ("peid", PE, "wire [5:0] v_peid = {v_mab, pos_p};", "wire [5:0] v_peid = 6'd1;", "$peid"),
     ("rd_use_lm1", PE, "(s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b1000 : 4'd0;",
      "(s == 4'd3) ? 4'b0100 : (s == 4'd4) ? 4'b0000 : 4'd0;", "rd_use of LM1"),
     ("l1bm_allowed", PE, "wire u_l1  = ~BX & d_grp[MN_J_GRP_L1BM];", "wire u_l1  = 1'b0;", "E_UNSUPPORTED of L1BM"),
@@ -64,7 +64,7 @@ MUTATIONS = [
     ("range_info", CORE, "info   <= (pe_st == 2'd1) ? pc : {9'd0, pe_field};\n                            s      <= S_IDLE;",
      "info   <= (pe_st == 2'd1) ? pc + 16'd1 : {9'd0, pe_field};\n                            s      <= S_IDLE;",
      "E_RANGE word number"),
-    ("no_clear", CORE, "clr    <= (CLEAR != 0);", "clr    <= 1'b0;", "clear of the PE state after reset"),
+    ("no_clear", CORE, "clr    <= (CLEAR != 0) && !VP;", "clr    <= 1'b0;", "clear of the PE state after reset"),
     ("run_lost_in_clear", CORE, "if (run_start) run_pend <= 1'b1;", "if (1'b0) run_pend <= 1'b1;",
      "RUN that arrives during the clear"),
 ]
