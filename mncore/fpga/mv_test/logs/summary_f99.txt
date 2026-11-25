@@ -1,0 +1,5 @@
+design mvt_top {} synth_gowin -family gw2a -nowidelut
+yosys: LUT 4361, ALU 1140, MUX2 0, FF 2341, SSRAM 72, BSRAM 24, DSP 0, LUT_eq 6077  (LUT_eq = LUT + ALU + 8 * SSRAM = 6077, 29.3 % of 20736)
+seed 1: Fmax sclk 100.12 MHz, u_core.clk 69.99 MHz -> PASS (core >= 27.0, SDRAM sclk >= 99.0)
+  utilisation: VCC 1/1 (100 %), IOB 33/66 (50 %), LUT4 6247/20736 (30 %), IOLOGICO 1/384 (0 %), ALU 1310/15552 (8 %), GND 1/1 (100 %), DFF 2773/15552 (18 %), RAM16SDP4 72/648 (11 %), BSRAM 24/46 (52 %), GSR 1/1 (100 %), rPLL 1/2 (50 %), BUFG 1/24 (4 %)
+bitstream: mncore/fpga/mv_test/build/f99/mv_test.fs (seed 1)

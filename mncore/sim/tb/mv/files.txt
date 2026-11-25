@@ -1,0 +1,27 @@
+# WP33: the MV unit (mn_mv) with the L2BM unit (mn_l2bm, WP32) and the SDRAM (sdr_bus64, WP05,
+# with the timing-checking SDRAM model of mncore/sim/tb/sdram).
+# Default top tb_mv: the MV test programs (fixed/mv.tst, made by gen_tests.py with the official
+# emulator) run on the test core mvt_core (mncore/fpga/mv_test: instruction memory, sequencer,
+# mn_mv, mn_l2bm, a test L1BM) through its host ports, as on the board.
+# Lint / synth top: mn_mv.
+top: tb_mv
+rtl_top: mn_mv
+incdir: mncore/rtl/dec
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/rtl/mv/mn_mv_tags.v
+mncore/rtl/mv/mn_mv_red.v
+mncore/rtl/mv/mn_mv.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/sdram/sdr_tmr.v
+mncore/rtl/sdram/sdr_ctrl.v
+mncore/rtl/sdram/sdr_fifo.v
+mncore/rtl/sdram/sdr_afifo.v
+mncore/rtl/sdram/sdr_bus64.v
+mncore/fpga/mv_test/mvt_l1mem.v
+mncore/fpga/mv_test/mvt_core.v
+mncore/sim/tb/sdram/tb_sdr_model.v
+mncore/sim/tb/mv/tb_mv_env.v
+mncore/sim/tb/mv/tb_mv.v
