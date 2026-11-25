@@ -1,0 +1,20 @@
+# hello_hw 2026-11-25 19:24:25: problems/challenge/21.hello-world/main.vsm, 9 words, split at 4
+# openFPGALoader top_mab.fs: rc 0
+# part 1: design 0x03 flags 0x11 (MAU 1)
+# part 1: RUN 4 words: reason OK pc 4 steps 4 info 0
+# part 1: read the state of p0..p3 (4196 long words)
+# openFPGALoader top_m2.fs: rc 0
+# part 2: design 0x04 flags 0x81 (REPLICA 1)
+# part 2: RUN 5 words: reason OK pc 5 steps 5 info 0
+# DRAM n0 [0] 48656c6c6f2c2077 [1] 6f726c64212afe00: b'Hello, world!'
+# vs official (4096 PEs, cut): 15632 compared, 0 differ, 0 only official, 0 only board
+# vs Rust, reduced topology (zero rule): 15632 compared, 12 differ, 0 only rust, 0 only board
+#   DRAM n0 0x0 rust=3a655e6c612c1277 board=48656c6c6f2c2077
+#   DRAM n0 0x1 rust=61725e64132af362 board=6f726c64212afe00
+#   DRAM n0 0x2 rust=61725e64132af362 board=6f726c64212afe00
+#   DRAM n0 0x3 rust=61725e64132af362 board=6f726c64212afe00
+#   L1BM n0c0b0 0x30 rust=3a655e6c612c1277 board=4265666c692c1a77
+#   L1BM n0c0b0 0x31 rust=61725e64132af362 board=697266641b2afb62
+#   L1BM n0c0b0 0x32 rust=61725e64132af362 board=697266641b2afb62
+#   L1BM n0c0b0 0x33 rust=61725e64132af362 board=697266641b2afb62
+# PASS: the board equals the official emulator (replica rule)

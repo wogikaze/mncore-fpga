@@ -1,0 +1,922 @@
+Info: Using uarch 'gowin' for device 'GW2AR-LV18QN88C8/I7'
+
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:0, MUX2_LU7:0, MUX2_LUT6:0, MUX2_LUT5:0
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 2328 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0xd11f1216
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      33/     66    50%
+Info: 	                LUT4:   15493/  20736    74%
+Info: 	            IOLOGICI:       0/    384     0%
+Info: 	            IOLOGICO:       1/    384     0%
+Info: 	           MUX2_LUT5:       0/  10368     0%
+Info: 	           MUX2_LUT6:       0/   5184     0%
+Info: 	           MUX2_LUT7:       0/   2592     0%
+Info: 	           MUX2_LUT8:       0/   2592     0%
+Info: 	                 ALU:    2188/  15552    14%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    6423/  15552    41%
+Info: 	           RAM16SDP4:     296/    648    45%
+Info: 	               BSRAM:      43/     46    93%
+Info: 	              ALU54D:       0/     24     0%
+Info: 	     MULTADDALU18X18:       0/     24     0%
+Info: 	        MULTALU18X18:       0/     24     0%
+Info: 	        MULTALU36X18:       0/     24     0%
+Info: 	           MULT36X36:       0/     12     0%
+Info: 	           MULT18X18:       0/     48     0%
+Info: 	             MULT9X9:       0/     96     0%
+Info: 	              PADD18:       0/     48     0%
+Info: 	               PADD9:       0/     96     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       1/      2    50%
+Info: 	             GW_JTAG:       0/      1     0%
+Info: 	                BUFG:       1/     24     4%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 13802 cells, random placement wirelen = 804519.
+Info:     at initial placer iter 0, wirelen = 7478
+Info:     at initial placer iter 1, wirelen = 6483
+Info:     at initial placer iter 2, wirelen = 6671
+Info:     at initial placer iter 3, wirelen = 6460
+Info: Running main analytical placer, max placement attempts per cell = 75117024.
+Info:     at iteration #1, type ALL: wirelen solved = 6639, spread = 238680, legal = 519367; time = 21.82s
+Info:     at iteration #2, type ALL: wirelen solved = 14845, spread = 197569, legal = 485034; time = 26.06s
+Info:     at iteration #3, type ALL: wirelen solved = 24144, spread = 182235, legal = 464355; time = 21.34s
+Info:     at iteration #4, type ALL: wirelen solved = 34054, spread = 172676, legal = 452519; time = 18.66s
+Info:     at iteration #5, type ALL: wirelen solved = 42072, spread = 163295, legal = 422849; time = 17.84s
+Info:     at iteration #6, type ALL: wirelen solved = 47507, spread = 154280, legal = 409447; time = 20.34s
+Info:     at iteration #7, type ALL: wirelen solved = 54237, spread = 154274, legal = 395251; time = 17.42s
+Info:     at iteration #8, type ALL: wirelen solved = 59564, spread = 144994, legal = 394771; time = 14.44s
+Info:     at iteration #9, type ALL: wirelen solved = 61151, spread = 149898, legal = 392744; time = 13.19s
+Info:     at iteration #10, type ALL: wirelen solved = 63736, spread = 149076, legal = 386171; time = 12.68s
+Info:     at iteration #11, type ALL: wirelen solved = 68537, spread = 147483, legal = 387189; time = 10.81s
+Info:     at iteration #12, type ALL: wirelen solved = 72167, spread = 144959, legal = 381554; time = 10.65s
+Info:     at iteration #13, type ALL: wirelen solved = 75898, spread = 149163, legal = 357650; time = 9.15s
+Info:     at iteration #14, type ALL: wirelen solved = 82930, spread = 150515, legal = 331501; time = 6.62s
+Info:     at iteration #15, type ALL: wirelen solved = 84175, spread = 147948, legal = 329740; time = 7.70s
+Info:     at iteration #16, type ALL: wirelen solved = 88483, spread = 150915, legal = 320446; time = 5.99s
+Info:     at iteration #17, type ALL: wirelen solved = 90096, spread = 151709, legal = 315578; time = 6.22s
+Info:     at iteration #18, type ALL: wirelen solved = 94809, spread = 153728, legal = 308738; time = 6.74s
+Info:     at iteration #19, type ALL: wirelen solved = 98021, spread = 152343, legal = 285526; time = 5.13s
+Info:     at iteration #20, type ALL: wirelen solved = 99647, spread = 153160, legal = 284139; time = 5.17s
+Info:     at iteration #21, type ALL: wirelen solved = 100873, spread = 148750, legal = 288270; time = 5.12s
+Info:     at iteration #22, type ALL: wirelen solved = 102653, spread = 151597, legal = 282681; time = 5.28s
+Info:     at iteration #23, type ALL: wirelen solved = 106629, spread = 153902, legal = 280900; time = 5.23s
+Info:     at iteration #24, type ALL: wirelen solved = 111468, spread = 155723, legal = 272762; time = 4.35s
+Info:     at iteration #25, type ALL: wirelen solved = 112843, spread = 159783, legal = 246947; time = 3.47s
+Info:     at iteration #26, type ALL: wirelen solved = 110802, spread = 151705, legal = 257289; time = 4.17s
+Info:     at iteration #27, type ALL: wirelen solved = 116362, spread = 159500, legal = 255240; time = 3.76s
+Info:     at iteration #28, type ALL: wirelen solved = 119309, spread = 158495, legal = 260648; time = 4.06s
+Info:     at iteration #29, type ALL: wirelen solved = 123338, spread = 164541, legal = 250559; time = 3.60s
+Info:     at iteration #30, type ALL: wirelen solved = 124521, spread = 163829, legal = 256400; time = 3.66s
+Info: HeAP Placer Time: 310.12s
+Info:   of which solving equations: 19.84s
+Info:   of which spreading cells: 2.95s
+Info:   of which strict legalisation: 281.51s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 1249, wirelen = 246947
+Info:   at iteration #5: temp = 0.000000, timing cost = 716, wirelen = 157979
+Info:   at iteration #10: temp = 0.000000, timing cost = 585, wirelen = 143336
+Info:   at iteration #15: temp = 0.000000, timing cost = 626, wirelen = 138865
+Info:   at iteration #20: temp = 0.000000, timing cost = 600, wirelen = 136079
+Info:   at iteration #25: temp = 0.000000, timing cost = 601, wirelen = 133961
+Info:   at iteration #30: temp = 0.000000, timing cost = 572, wirelen = 133573
+Info:   at iteration #35: temp = 0.000000, timing cost = 562, wirelen = 133322
+Info:   at iteration #38: temp = 0.000000, timing cost = 582, wirelen = 133297 
+Info: SA placement time 78.41s
+
+Info: Max frequency for clock       'sclk': 69.57 MHz (PASS at 54.00 MHz)
+Info: Max frequency for clock 'u_core.clk': 29.68 MHz (FAIL at 54.00 MHz)
+
+Info: Max delay posedge sclk       -> posedge u_core.clk: 0.57 ns
+Info: Max delay posedge u_core.clk -> posedge sclk      : 3.47 ns
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 46 endpoint(s)
+Info:          + represents [1,46) endpoint(s)
+Info: [-15180, -13508) |+
+Info: [-13508, -11836) |+
+Info: [-11836, -10164) |*+
+Info: [-10164,  -8492) |****+
+Info: [ -8492,  -6820) |***+
+Info: [ -6820,  -5148) |************+
+Info: [ -5148,  -3476) |**********+
+Info: [ -3476,  -1804) |**********+
+Info: [ -1804,   -132) |**********************+
+Info: [  -132,   1540) |***************+
+Info: [  1540,   3212) |**********+
+Info: [  3212,   4884) |**********+
+Info: [  4884,   6556) |**********+
+Info: [  6556,   8228) |***********+
+Info: [  8228,   9900) |*****************+
+Info: [  9900,  11572) |**************************+
+Info: [ 11572,  13244) |***************************+
+Info: [ 13244,  14916) |********************************+
+Info: [ 14916,  16588) |*********************************+
+Info: [ 16588,  18260) |************************************************************ 
+Info: Checksum: 0x1246f2db
+Info: Routing globals...
+Info:     'u_core.clk' net was routed.
+Info:     'pclk' net was routed using global resources only.
+Info:     'sclk' net was routed using global resources only.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.ri[2]_DFFRE_Q_1_D_LUT2_F_I1_LUT4_I2_F_LUT4_F_1_I0_LUT2_I0_F[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.lr_have_DFFRE_Q_D_LUT3_I2_F_LUT3_I2_1_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_store.g_ireg.v_q_DFFR_Q_1_D_LUT3_F_I1_LUT2_F_I1_LUT2_I0_F_LUT2_I0_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.c_start_LUT3_I0_F_LUT4_F_I3_LUT3_I2_F_LUT4_F_I1_LUT2_I1_F_LUT3_F_I1_LUT3_F_I2_LUT2_I1_F[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.jw[259]' is routed using segments.
+Info:     'core_info_DFFRE_Q_7_D_LUT3_F_I1_LUT3_I0_F_LUT4_F_I2[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.c_start_LUT3_I0_F_LUT4_F_I3_LUT3_I2_F_LUT4_F_I3[1]' is routed using segments.
+Info:     'u_sdr.u_ctrl.wb2_LUT2_I0_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.fcur_DFFE_Q_2_D_LUT3_I2_F_LUT2_I1_F_LUT4_I3_1_F[1]' is routed using segments.
+Info:     'dq_oe_LUT1_I0_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.ri[2]_DFFRE_Q_1_D_LUT2_F_I1_LUT4_I2_F_LUT4_F_1_I0_LUT4_I3_F_LUT4_F_I3_LUT4_I0_F' is routed using segments.
+Info:     'u_sdr.g_async.u_q.mem.0.23_DI_LUT2_I1_F' is routed using segments.
+Info:     'u_host.blen_DFFRE_Q_9_D_LUT3_F_I2[0]' is routed using segments.
+Info:     'core_reason_LUT4_I0_F_LUT4_F_I3[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.ri[2]_DFFRE_Q_1_D_LUT2_F_I1_LUT4_I2_F_LUT4_F_1_I0_LUT3_I1_F[3]' is routed using segments.
+Info:     'u_sdr.g_async.u_q.mem.0.16_DI_2_LUT3_F_I1[2]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.flnz3_DFFE_Q_1_D_LUT3_F_I2[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.brk1[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.jw[335]' is routed using segments.
+Info:     'u_core.g_units.g_sdclr.sc_on_DFFSE_Q_CE_LUT2_F_I1[0]' is routed using segments.
+Info:     'u_host.prob_cnt_DFFR_Q_24_D_LUT3_F_I1_LUT2_F_I1_LUT2_I1_F[2]' is routed using segments.
+Info:     'mr_addr_DFFRE_Q_1_D_LUT4_F_I3[2]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.c_start_LUT2_I0_F[0]' is routed using segments.
+Info:     'u_sdr.pk_v_LUT2_I0_F' is routed using segments.
+Info:     'u_sdr.u_ctrl.rd_last_LUT2_I1_1_F' is routed using segments.
+Info:     'u_core.g_units.u_l1.clr_on_LUT3_I0_F' is routed using segments.
+Info:     'u_core.g_units.u_l1.clr_on_LUT3_I0_1_F' is routed using segments.
+Info:     'u_core.g_units.u_l1.kw_DFFRE_Q_13_D_LUT3_F_1_I2_LUT4_F_1_I2_LUT3_F_I1_LUT3_F_I2[0]' is routed using segments.
+Info:     'u_core.g_units.lb_req_wdata_DFFRE_Q_14_D_LUT4_F_I3_LUT4_F_1_I3_LUT3_F_I1_LUT3_F_I2_LUT3_I1_F_LUT3_F_I2_LUT3_F_I1_LUT3_I2_F_LUT3_F_I1[2]' is routed using segments.
+Info:     'u_core.g_units.lb_req_wdata_DFFRE_Q_10_D_LUT3_F_I2_LUT3_F_I2_LUT4_F_1_I3_LUT4_F_1_I2[0]' is routed using segments.
+Info:     'u_core.g_units.u_mv.g_da_DFFRE_Q_CE' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.brl_1_LUT4_I0_F[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.g_ra.v_LUT3_I1_F[3]' is routed using segments.
+Info:     'u_core.g_units.lb_req_wdata_DFFRE_Q_20_CE_LUT3_F_I1_LUT2_F_I0_LUT2_F_I1_LUT3_I2_F_LUT2_I1_F_LUT3_F_I1_LUT4_I2_F_LUT3_F_I2[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.ri[2]_DFFRE_Q_1_D_LUT2_F_I1_LUT4_I2_F_LUT4_F_1_I0_LUT3_I1_1_F_LUT4_I3_F[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.loc_pend_LUT4_I0_I3_LUT3_I2_1_F_LUT3_I0_F_LUT3_I2_F_LUT2_I1_1_F[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.loc_pend_LUT4_I0_I3_LUT3_I2_1_F_LUT3_I0_F_LUT3_I2_F_LUT2_I1_1_F[1]' is routed using segments.
+Info:     'u_sdr.g_async.u_q.wbin[2]' is routed using segments.
+Info:     'u_sdr.g_async.u_q.wbin[1]' is routed using segments.
+Info:     'dbg_probation' is routed using segments.
+Info:     'core_reason_LUT4_I0_F_LUT4_F_1_I3_LUT4_F_2_I3[1]' is routed using segments.
+Info:     'u_host.core_rst_LUT2_I0_F_LUT3_I2_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.fcur_DFFE_Q_CE_LUT3_F_I2[0]' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 62293 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       35        964 |   35   964 |     61336|       1.30       1.30|
+Info:       2000 |       66       1933 |   31   969 |     60383|       0.73       2.03|
+Info:       3000 |      101       2898 |   35   965 |     59432|       0.65       2.68|
+Info:       4000 |      121       3878 |   20   980 |     58456|       0.60       3.28|
+Info:       5000 |      161       4838 |   40   960 |     57533|       0.61       3.89|
+Info:       6000 |      194       5805 |   33   967 |     56584|       0.66       4.54|
+Info:       7000 |      236       6763 |   42   958 |     55652|       0.68       5.22|
+Info:       8000 |      271       7728 |   35   965 |     54740|       0.68       5.90|
+Info:       9000 |      304       8695 |   33   967 |     53783|       0.96       6.86|
+Info:      10000 |      358       9641 |   54   946 |     52850|       0.83       7.69|
+Info:      11000 |      404      10595 |   46   954 |     52046|       0.80       8.50|
+Info:      12000 |      453      11546 |   49   951 |     51166|       0.71       9.21|
+Info:      13000 |      512      12487 |   59   941 |     50258|       0.78       9.98|
+Info:      14000 |      583      13416 |   71   929 |     49355|       0.88      10.87|
+Info:      15000 |      648      14351 |   65   935 |     48442|       0.88      11.75|
+Info:      16000 |      754      15245 |  106   894 |     47647|       1.65      13.40|
+Info:      17000 |      839      16160 |   85   915 |     46985|       1.32      14.72|
+Info:      18000 |      922      17077 |   83   917 |     46316|       1.27      15.99|
+Info:      19000 |      978      18021 |   56   944 |     45382|       1.10      17.09|
+Info:      20000 |     1154      18845 |  176   824 |     44783|       1.02      18.10|
+Info:      21000 |     1412      19587 |  258   742 |     44195|       1.02      19.12|
+Info:      22000 |     1619      20380 |  207   793 |     43554|       0.88      20.00|
+Info:      23000 |     1896      21103 |  277   723 |     43034|       1.11      21.11|
+Info:      24000 |     2081      21918 |  185   815 |     42483|       1.06      22.17|
+Info:      25000 |     2282      22717 |  201   799 |     41966|       1.08      23.25|
+Info:      26000 |     2448      23551 |  166   834 |     41251|       1.16      24.41|
+Info:      27000 |     2635      24364 |  187   813 |     40702|       1.07      25.48|
+Info:      28000 |     2778      25221 |  143   857 |     39995|       1.07      26.55|
+Info:      29000 |     2978      26021 |  200   800 |     39423|       1.26      27.81|
+Info:      30000 |     3141      26858 |  163   837 |     39063|       1.13      28.94|
+Info:      31000 |     3340      27659 |  199   801 |     38554|       1.17      30.11|
+Info:      32000 |     3563      28364 |  223   705 |     37896|       1.02      31.13|
+Info:      33000 |     3792      29126 |  229   762 |     37438|       1.22      32.35|
+Info:      34000 |     4003      29914 |  211   788 |     36852|       1.31      33.66|
+Info:      35000 |     4249      30668 |  246   754 |     36385|       1.22      34.88|
+Info:      36000 |     4432      31485 |  183   817 |     35665|       1.09      35.97|
+Info:      37000 |     4624      32292 |  192   807 |     35004|       1.21      37.17|
+Info:      38000 |     4917      32984 |  293   692 |     34777|       1.58      38.75|
+Info:      39000 |     5157      33732 |  240   748 |     34294|       1.23      39.98|
+Info:      40000 |     5435      34452 |  278   720 |     33967|       1.67      41.65|
+Info:      41000 |     5645      35229 |  210   777 |     33391|       1.60      43.25|
+Info:      42000 |     5846      35995 |  201   766 |     32693|       1.26      44.51|
+Info:      43000 |     6004      36762 |  158   767 |     32008|       1.15      45.66|
+Info:      44000 |     6220      37473 |  216   711 |     31419|       1.29      46.95|
+Info:      45000 |     6459      38187 |  239   714 |     30837|       1.24      48.19|
+Info:      46000 |     6682      38949 |  223   762 |     30338|       1.32      49.51|
+Info:      47000 |     6867      39749 |  185   800 |     29652|       1.50      51.01|
+Info:      48000 |     7078      40534 |  211   785 |     29098|       1.65      52.66|
+Info:      49000 |     7307      41299 |  229   765 |     28490|       1.32      53.98|
+Info:      50000 |     7542      42046 |  235   747 |     27981|       1.30      55.28|
+Info:      51000 |     7802      42729 |  260   683 |     27392|       1.42      56.71|
+Info:      52000 |     8025      43470 |  223   741 |     26813|       1.51      58.22|
+Info:      53000 |     8244      44198 |  219   728 |     26224|       1.44      59.67|
+Info:      54000 |     8493      44905 |  249   707 |     25815|       1.69      61.35|
+Info:      55000 |     8835      45563 |  342   658 |     25709|       2.04      63.39|
+Info:      56000 |     9131      46259 |  296   696 |     25408|       1.77      65.16|
+Info:      57000 |     9431      46955 |  300   696 |     25026|       2.04      67.19|
+Info:      58000 |     9667      47699 |  236   744 |     24516|       1.72      68.91|
+Info:      59000 |     9922      48393 |  255   694 |     24136|       2.96      71.87|
+Info:      60000 |    10184      49124 |  262   731 |     23763|       2.07      73.94|
+Info:      61000 |    10396      49899 |  212   775 |     23124|       1.58      75.51|
+Info:      62000 |    10700      50585 |  304   686 |     22734|       2.17      77.68|
+Info:      63000 |    11005      51252 |  305   667 |     22354|       2.68      80.36|
+Info:      64000 |    11296      51935 |  291   683 |     21917|       2.19      82.56|
+Info:      65000 |    11596      52629 |  300   694 |     21712|       2.09      84.65|
+Info:      66000 |    11847      53314 |  251   685 |     21257|       1.60      86.25|
+Info:      67000 |    12119      53971 |  272   657 |     20766|       2.11      88.37|
+Info:      68000 |    12446      54626 |  327   655 |     20338|       3.17      91.54|
+Info:      69000 |    12629      55442 |  183   816 |     20484|       1.84      93.38|
+Info:      70000 |    13011      56060 |  382   618 |     20307|       2.54      95.92|
+Info:      71000 |    13411      56660 |  400   600 |     20138|       2.86      98.77|
+Info:      72000 |    13755      57314 |  344   654 |     19799|       2.70     101.48|
+Info:      73000 |    14028      58023 |  273   709 |     19368|       2.04     103.52|
+Info:      74000 |    14448      58603 |  420   580 |     19463|       2.63     106.15|
+Info:      75000 |    14843      59204 |  395   601 |     19323|       2.58     108.73|
+Info:      76000 |    15134      59906 |  291   702 |     18768|       2.21     110.94|
+Info:      77000 |    15417      60610 |  283   704 |     18276|       2.06     112.99|
+Info:      78000 |    15748      61274 |  331   664 |     18011|       2.39     115.39|
+Info:      79000 |    15988      62024 |  240   750 |     17395|       1.75     117.13|
+Info:      80000 |    16376      62632 |  388   608 |     17252|       2.84     119.97|
+Info:      81000 |    16796      63212 |  420   580 |     17151|       2.60     122.57|
+Info:      82000 |    17041      63960 |  245   748 |     16670|       2.22     124.78|
+Info:      83000 |    17319      64677 |  278   717 |     16215|       1.96     126.74|
+Info:      84000 |    17710      65284 |  391   607 |     16090|       3.75     130.49|
+Info:      85000 |    18065      65906 |  355   622 |     15920|       2.99     133.48|
+Info:      86000 |    18427      66490 |  362   584 |     15489|       2.61     136.10|
+Info:      87000 |    18727      67152 |  300   662 |     15056|       2.47     138.57|
+Info:      88000 |    19033      67814 |  306   662 |     14665|       2.25     140.82|
+Info:      89000 |    19408      68396 |  375   582 |     14330|       2.51     143.33|
+Info:      90000 |    19715      69038 |  307   642 |     13883|       2.44     145.77|
+Info:      91000 |    20057      69674 |  342   636 |     13551|       2.13     147.90|
+Info:      92000 |    20509      70205 |  452   531 |     13449|       2.84     150.74|
+Info:      93000 |    20852      70836 |  343   631 |     13047|       2.60     153.34|
+Info:      94000 |    21168      71466 |  316   630 |     12660|       2.27     155.61|
+Info:      95000 |    21516      72094 |  348   628 |     12266|       2.35     157.96|
+Info:      96000 |    21863      72729 |  347   635 |     12032|       2.74     160.70|
+Info:      97000 |    22238      73305 |  375   576 |     11783|       3.35     164.05|
+Info:      98000 |    22719      73824 |  481   519 |     11707|       4.18     168.23|
+Info:      99000 |    23059      74458 |  340   634 |     11354|       2.82     171.05|
+Info:     100000 |    23330      75113 |  271   655 |     10840|       2.12     173.16|
+Info:     101000 |    23665      75741 |  335   628 |     10523|       2.79     175.96|
+Info:     102000 |    23986      76376 |  321   635 |     10034|       3.15     179.11|
+Info:     103000 |    24424      76936 |  438   560 |      9839|       3.39     182.49|
+Info:     104000 |    24884      77476 |  460   540 |      9745|       4.24     186.73|
+Info:     105000 |    25355      77991 |  471   515 |      9611|       5.15     191.88|
+Info:     106000 |    25800      78546 |  445   555 |      9568|       5.00     196.88|
+Info:     107000 |    26142      79204 |  342   658 |      9393|       2.94     199.82|
+Info:     108000 |    26469      79874 |  327   670 |      9055|       2.68     202.50|
+Info:     109000 |    26901      80442 |  432   568 |      8972|       2.92     205.42|
+Info:     110000 |    27312      81031 |  411   589 |      8720|       3.58     208.99|
+Info:     111000 |    27777      81566 |  465   535 |      8642|       4.03     213.03|
+Info:     112000 |    28145      82198 |  368   632 |      8179|       2.77     215.79|
+Info:     113000 |    28364      82964 |  219   766 |      7548|       1.83     217.63|
+Info:     114000 |    28595      83712 |  231   748 |      6942|       2.26     219.88|
+Info:     115000 |    28811      84475 |  216   763 |      6271|       1.90     221.78|
+Info:     116000 |    29009      85263 |  198   788 |      5619|       1.95     223.74|
+Info:     117000 |    29189      86065 |  180   802 |      4923|       1.93     225.67|
+Info:     118000 |    29502      86739 |  313   674 |      4563|       3.06     228.73|
+Info:     119000 |    29710      87518 |  208   779 |      3880|       2.05     230.78|
+Info:     120000 |    30025      88195 |  315   677 |      3493|       2.43     233.21|
+Info:     121000 |    30507      88710 |  482   515 |      3413|       3.50     236.71|
+Info:     122000 |    30683      89508 |  176   798 |      2682|       1.95     238.66|
+Info:     123000 |    31061      90124 |  378   616 |      2486|       3.51     242.17|
+Info:     124000 |    31372      90803 |  311   679 |      2106|       3.41     245.58|
+Info:     125000 |    31684      91478 |  312   675 |      1626|       2.92     248.49|
+Info:     126000 |    32143      92017 |  459   539 |      1722|       3.75     252.25|
+Info:     127000 |    32631      92529 |  488   512 |      1926|       4.07     256.31|
+Info:     128000 |    33133      93027 |  502   498 |      1769|       3.88     260.20|
+Info:     129000 |    33493      93661 |  360   634 |      1361|       2.88     263.08|
+Info:     130000 |    33719      94423 |  226   762 |       755|       2.29     265.37|
+Info:     131000 |    33945      95189 |  226   766 |       173|       2.26     267.63|
+Info:     132000 |    34475      95659 |  530   470 |       195|       3.74     271.37|
+Info:     133000 |    34910      96222 |  435   563 |         2|       3.47     274.84|
+Info:     133001 |    34910      96224 |    0     2 |         0|       0.17     275.01|
+Info: Routing complete.
+Info: Router1 time 275.01s
+Info: Checksum: 0x1dd62c98
+
+Info: Critical path report for clock 'sclk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.23  0.23 Source u_sdr.u_ctrl.g_bank[1].u_wr.ok_DFFS_Q.Q
+Info:    routing  0.18  0.41 Net u_sdr.u_ctrl.wr_ok[1] (5,29) -> (5,29)
+Info:                          Sink u_sdr.u_ctrl.g_bank[1].u_rdp.ok_LUT3_I2.I1
+Info:                          Defined in:
+Info:                               mncore/rtl/sdram/sdr_ctrl.v:160.40-160.45
+Info:      logic  0.57  0.98 Source u_sdr.u_ctrl.g_bank[1].u_rdp.ok_LUT3_I2.F
+Info:    routing  0.43  1.41 Net u_sdr.u_ctrl.g_bank[1].u_rdp.ok_LUT3_I2_F[1] (5,29) -> (7,30)
+Info:                          Sink u_sdr.u_ctrl.g_bank[2].u_rdp.ok_LUT3_I2_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  1.98 Source u_sdr.u_ctrl.g_bank[2].u_rdp.ok_LUT3_I2_F_LUT2_F.F
+Info:    routing  0.15  2.13 Net u_sdr.u_ctrl.g_bank[2].u_rdp.ok_LUT3_I2_F[2] (7,30) -> (7,30)
+Info:                          Sink u_sdr.u_ctrl.h_hit_LUT3_I1_I2_LUT4_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  2.60 Source u_sdr.u_ctrl.h_hit_LUT3_I1_I2_LUT4_F.F
+Info:    routing  0.18  2.78 Net u_sdr.u_ctrl.h_hit_LUT3_I1_I2[2] (7,30) -> (7,29)
+Info:                          Sink u_sdr.u_ctrl.h_hit_LUT3_I1.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  3.24 Source u_sdr.u_ctrl.h_hit_LUT3_I1.F
+Info:    routing  0.43  3.66 Net u_sdr.u_ctrl.h_hit_LUT3_I1_F[3] (7,29) -> (7,26)
+Info:                          Sink u_sdr.u_ctrl.h_stale_LUT4_I2_F_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  4.03 Source u_sdr.u_ctrl.h_stale_LUT4_I2_F_LUT4_F.F
+Info:    routing  0.25  4.28 Net u_sdr.u_ctrl.h_stale_LUT4_I2_F[2] (7,26) -> (6,26)
+Info:                          Sink u_sdr.u_ctrl.n_la_LUT3_I0.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  4.74 Source u_sdr.u_ctrl.n_la_LUT3_I0.F
+Info:    routing  0.01  4.75 Net u_sdr.u_ctrl.n_hit_LUT4_I1_I2[3] (6,26) -> (6,26)
+Info:                          Sink u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  5.32 Source u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F_LUT2_F.F
+Info:    routing  0.17  5.49 Net u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F[1] (6,26) -> (6,26)
+Info:                          Sink u_sdr.u_ctrl.n_hit_LUT4_I1_F_LUT2_I1.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  6.04 Source u_sdr.u_ctrl.n_hit_LUT4_I1_F_LUT2_I1.F
+Info:    routing  0.21  6.25 Net u_sdr.u_ctrl.n_hit_LUT4_I1_F_LUT2_I1_F[2] (6,26) -> (5,26)
+Info:                          Sink u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F_LUT2_I1_F_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  6.71 Source u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F_LUT2_I1_F_LUT3_F.F
+Info:    routing  0.22  6.94 Net u_sdr.u_ctrl.h_open_LUT4_I1_F_LUT2_I1_F_LUT2_I1_F[1] (5,26) -> (4,26)
+Info:                          Sink u_sdr.u_ctrl.bk_open_DFFR_Q_3_D_LUT3_F_I1_LUT3_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  7.51 Source u_sdr.u_ctrl.bk_open_DFFR_Q_3_D_LUT3_F_I1_LUT3_F.F
+Info:    routing  0.76  8.27 Net u_sdr.u_ctrl.bk_open_DFFR_Q_3_D_LUT3_F_I1[1] (4,26) -> (3,20)
+Info:                          Sink u_sdr.u_ctrl.g_bank[0].u_act.c_DFFRE_Q_1_D_LUT2_F_I0_ALU_SUM_COUT_ALU_CIN_SUM_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  8.84 Source u_sdr.u_ctrl.g_bank[0].u_act.c_DFFRE_Q_1_D_LUT2_F_I0_ALU_SUM_COUT_ALU_CIN_SUM_LUT2_F.F
+Info:    routing  0.20  9.03 Net u_sdr.u_ctrl.g_bank[0].u_act.c_DFFRE_Q_1_D_LUT2_F_I0[1] (3,20) -> (3,21)
+Info:                          Sink u_sdr.u_ctrl.g_bank[0].u_act.ok_LUT2_I0_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  9.60 Source u_sdr.u_ctrl.g_bank[0].u_act.ok_LUT2_I0_F_LUT2_F.F
+Info:    routing  0.18  9.79 Net u_sdr.u_ctrl.g_bank[0].u_act.ok_LUT2_I0_F[1] (3,21) -> (3,20)
+Info:                          Sink u_sdr.u_ctrl.g_bank[0].u_act.ok_DFFS_Q_D_LUT3_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  10.35 Source u_sdr.u_ctrl.g_bank[0].u_act.ok_DFFS_Q_D_LUT3_F.F
+Info:    routing  0.00  10.36 Net u_sdr.u_ctrl.g_bank[0].u_act.ok_DFFS_Q_D (3,20) -> (3,20)
+Info:                          Sink u_sdr.u_ctrl.g_bank[0].u_act.ok_DFFS_Q.D
+Info:      setup  0.04  10.39 Source u_sdr.u_ctrl.g_bank[0].u_act.ok_DFFS_Q.D
+Info: 7.02 ns logic, 3.38 ns routing
+
+Info: Critical path report for clock 'u_core.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  2.26  2.26 Source u_core.u_imem.g_lane[0].mem.0.7.DO7
+Info:    routing  1.73  3.99 Net u_core.g_mab.u_mab.jw[259] (31,9) -> (35,28)
+Info:                          Sink u_core.g_units.u_l1.kj_LUT4_I1_F_LUT4_I3_F_LUT4_F_1_I2_LUT4_F_I2_LUT4_I2_F_LUT4_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  4.45 Source u_core.g_units.u_l1.kj_LUT4_I1_F_LUT4_I3_F_LUT4_F_1_I2_LUT4_F_I2_LUT4_I2_F_LUT4_F.F
+Info:    routing  0.19  4.64 Net u_core.g_units.u_l1.kj_LUT4_I1_F_LUT4_I3_F_LUT4_F_1_I2_LUT4_F_I2_LUT4_I2_1_F[1] (35,28) -> (35,28)
+Info:                          Sink u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_I1_LUT4_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  5.21 Source u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_I1_LUT4_F.F
+Info:    routing  0.57  5.78 Net u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_I1 (35,28) -> (37,29)
+Info:                          Sink u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN.I1
+Info:      logic  0.57  6.35 Source u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN.SUM
+Info:    routing  0.22  6.57 Net u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_SUM[1] (37,29) -> (37,28)
+Info:                          Sink u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT4_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  7.13 Source u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT4_F.F
+Info:    routing  0.42  7.56 Net u_core.g_units.u_l1.kj_DFFRE_Q_D_LUT2_F_I0_ALU_SUM_CIN_ALU_COUT_I1_ALU_I1_COUT_ALU_CIN_COUT_ALU_CIN_SUM[3] (37,28) -> (39,29)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I1_LUT3_F_I1_LUT4_I0_I3_LUT4_F_1_I3_LUT4_F_1_I2_LUT3_I1_F_LUT3_F_I1_LUT2_I1_F_LUT4_F_1.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  7.93 Source u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I1_LUT3_F_I1_LUT4_I0_I3_LUT4_F_1_I3_LUT4_F_1_I2_LUT3_I1_F_LUT3_F_I1_LUT2_I1_F_LUT4_F_1.F
+Info:    routing  0.19  8.11 Net u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I1_LUT3_F_I1_LUT4_I0_I3_LUT4_F_1_I3_LUT4_F_1_I2_LUT3_I1_F_LUT3_F_I1_LUT2_I1_F[2] (39,29) -> (39,28)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_I1_LUT2_F_I1_LUT4_F_I3_LUT4_F_I1_LUT2_I1_F_LUT2_F.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  8.66 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_I1_LUT2_F_I1_LUT4_F_I3_LUT4_F_I1_LUT2_I1_F_LUT2_F.F
+Info:    routing  0.43  9.09 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_I1_LUT2_F_I1_LUT4_F_I3_LUT4_F_I1_LUT2_I1_F[0] (39,28) -> (40,29)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F_LUT4_F_I1_LUT4_I1_F_LUT4_F.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  9.64 Source u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F_LUT4_F_I1_LUT4_I1_F_LUT4_F.F
+Info:    routing  0.43  10.06 Net u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F_LUT4_F_I1_LUT4_I1_F[2] (40,29) -> (41,30)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I0_LUT4_I2_F_LUT4_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  10.53 Source u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I0_LUT4_I2_F_LUT4_F.F
+Info:    routing  0.20  10.73 Net u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_I2_LUT3_F_I2_LUT3_F_I2_LUT3_F_I0_LUT4_I2_F[3] (41,30) -> (42,30)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I1_LUT3_F_I2_LUT2_I1_F_LUT4_F_I0_LUT4_F_I3_LUT3_I2_F_LUT3_I2_F_LUT4_F_1.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  11.10 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I1_LUT3_F_I2_LUT2_I1_F_LUT4_F_I0_LUT4_F_I3_LUT3_I2_F_LUT3_I2_F_LUT4_F_1.F
+Info:    routing  0.40  11.50 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I1_LUT3_F_I2_LUT2_I1_F_LUT4_F_I0_LUT4_F_I3_LUT3_I2_F_LUT3_I2_F[1] (42,30) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  12.07 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM.COUT
+Info:    routing  0.00  12.07 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT (42,31) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:555.18-555.40
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  12.10 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN.COUT
+Info:    routing  0.00  12.10 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT (42,31) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:555.18-555.40
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  12.14 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  12.14 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT (42,31) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:555.18-555.40
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  12.17 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  12.17 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (42,31) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:555.18-555.40
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  12.21 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  12.21 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (42,31) -> (42,31)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:555.18-555.40
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  12.68 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.SUM
+Info:    routing  0.49  13.16 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM (42,31) -> (43,32)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0.I0
+Info:      logic  0.55  13.71 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0.COUT
+Info:    routing  0.00  13.71 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_TAIL_ALULC (43,32) -> (43,32)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_TAIL_ALULC.CIN
+Info:      logic  0.47  14.18 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_TAIL_ALULC.SUM
+Info:    routing  0.50  14.68 Net u_core.g_units.u_l1.kj_LUT4_I1_I2_LUT2_I0_F[1] (43,32) -> (41,32)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  15.05 Source u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F_LUT4_F.F
+Info:    routing  0.18  15.23 Net u_core.g_units.u_l1.kw_DFFRE_Q_30_D_LUT2_F_I1_LUT4_F_1_I3_LUT4_F_I2_LUT4_F_I3_LUT4_I3_F_LUT4_F_I2_LUT4_I3_F[2] (41,32) -> (41,32)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1_LUT3_F_1.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  15.69 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1_LUT3_F_1.F
+Info:    routing  0.43  16.12 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1[2] (41,32) -> (40,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  16.69 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F.F
+Info:    routing  0.25  16.94 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0 (40,34) -> (40,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.I0
+Info:      logic  0.55  17.49 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.49 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (40,35) -> (40,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.52 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.52 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (40,35) -> (40,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.56 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.56 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (40,35) -> (40,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.59 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.59 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (40,35) -> (40,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.63 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.63 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (40,35) -> (41,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.66 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.66 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (41,35) -> (41,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.70 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.70 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN (41,35) -> (41,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.73 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.73 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN (41,35) -> (41,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  17.77 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT.COUT
+Info:    routing  0.00  17.77 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN (41,35) -> (41,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:517.18-517.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  18.24 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM.SUM
+Info:    routing  0.40  18.63 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0 (41,35) -> (41,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2.I0
+Info:      logic  0.55  19.18 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2.COUT
+Info:    routing  0.00  19.18 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_COUT (41,33) -> (41,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  19.22 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1.COUT
+Info:    routing  0.00  19.22 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1_COUT (41,33) -> (41,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  19.25 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM.COUT
+Info:    routing  0.00  19.25 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_COUT (41,33) -> (41,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  19.28 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT.COUT
+Info:    routing  0.00  19.28 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN (41,33) -> (41,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  19.32 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2.COUT
+Info:    routing  0.00  19.32 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_COUT (41,33) -> (42,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_1.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  19.35 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_1.COUT
+Info:    routing  0.00  19.35 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_1_COUT (42,33) -> (42,33)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:518.18-518.79
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  19.82 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1.SUM
+Info:    routing  0.43  20.25 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM[2] (42,33) -> (42,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  20.80 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  20.80 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN_ALU_COUT_CIN (42,34) -> (42,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:524.45-524.58
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  20.83 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  20.83 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT_CIN (42,34) -> (42,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:524.45-524.58
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  20.87 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN_ALU_COUT.COUT
+Info:    routing  0.00  20.87 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0_CIN (42,34) -> (42,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:524.45-524.58
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  21.34 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_COUT_ALU_CIN_SUM_ALU_I0.SUM
+Info:    routing  0.75  22.09 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM[1] (42,34) -> (42,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1_I1_LUT4_F_I2_LUT4_F_I1_LUT4_I1_F_LUT4_F_1_I0_LUT3_I2_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  22.66 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1_I1_LUT4_F_I2_LUT4_F_I1_LUT4_I1_F_LUT4_F_1_I0_LUT3_I2_F_LUT2_F.F
+Info:    routing  0.19  22.85 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_1_I1_LUT4_F_I2_LUT4_F_I1_LUT4_I1_F_LUT4_F_1_I0_LUT3_I2_F[2] (42,38) -> (42,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  23.31 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1_LUT3_F.F
+Info:    routing  0.15  23.47 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I1[3] (42,38) -> (42,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT4_F_I3_LUT4_F_1.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  23.84 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT4_F_I3_LUT4_F_1.F
+Info:    routing  0.15  23.99 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT4_F_I3[3] (42,38) -> (42,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  24.36 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT4_F.F
+Info:    routing  0.43  24.78 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I0_LUT3_F_I2_LUT3_F_I1[3] (42,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  25.16 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F.F
+Info:    routing  0.18  25.33 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0 (39,38) -> (38,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT.I0
+Info:      logic  0.55  25.88 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT.COUT
+Info:    routing  0.00  25.88 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN (38,38) -> (38,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  25.92 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM.COUT
+Info:    routing  0.00  25.92 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT (38,38) -> (38,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  25.95 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN.COUT
+Info:    routing  0.00  25.95 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT (38,38) -> (38,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  25.99 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  25.99 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT (38,38) -> (38,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  26.02 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  26.02 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (38,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  26.06 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  26.06 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (39,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  26.09 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  26.09 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (39,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  26.13 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  26.13 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (39,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  26.16 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  26.16 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (39,38) -> (39,38)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:454.18-454.47
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  26.63 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.SUM
+Info:    routing  0.76  27.39 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM (39,38) -> (43,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0.I0
+Info:      logic  0.55  27.94 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0.COUT
+Info:    routing  0.00  27.94 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT (43,34) -> (43,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  27.98 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN.COUT
+Info:    routing  0.00  27.98 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT (43,34) -> (43,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  28.01 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  28.01 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT (43,34) -> (43,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  28.05 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  28.05 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (43,34) -> (43,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  28.08 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  28.08 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (43,34) -> (44,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  28.11 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.COUT
+Info:    routing  0.00  28.11 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT (44,34) -> (44,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:455.18-455.50
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  28.58 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN.SUM
+Info:    routing  0.40  28.98 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM (44,34) -> (44,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.I0
+Info:      logic  0.55  29.53 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  29.53 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN_ALU_COUT_CIN (44,35) -> (44,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:456.37-456.48
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  29.57 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  29.57 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_CIN (44,35) -> (44,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:456.37-456.48
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  29.60 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT.COUT
+Info:    routing  0.00  29.60 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_TAIL_ALULC (44,35) -> (44,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_TAIL_ALULC.CIN
+Info:      logic  0.47  30.07 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1_ALU_COUT_TAIL_ALULC.SUM
+Info:    routing  0.40  30.47 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1_I1 (44,35) -> (42,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1.I1
+Info:                          Defined in:
+Info:                               mncore/rtl/l1bm/mn_l1bm.v:456.37-456.48
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.57  31.03 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_COUT_ALU_CIN_COUT_ALU_CIN_SUM_LUT2_I0_F_LUT2_F_1.F
+Info:    routing  0.44  31.48 Net u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_CIN_ALU_COUT_I0_LUT4_F_I3_LUT2_I1_F[1] (42,35) -> (40,34)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_SUM_LUT2_I0_F_LUT3_I2.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  32.05 Source u_core.g_units.u_l1.kw_DFFRE_Q_5_D_LUT4_F_I2_LUT2_F_I1_LUT4_F_I3_LUT4_F_1_I2_LUT4_I2_F_LUT3_I2_F_ALU_I0_SUM_ALU_I1_SUM_ALU_SUM_2_CIN_ALU_COUT_SUM_ALU_SUM_2_I0_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F_ALU_SUM_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_COUT_ALU_CIN_SUM_ALU_I0_SUM_LUT2_I0_F_LUT3_I2.F
+Info:    routing  1.01  33.06 Net u_core.g_units.u_l1.kw_DFFRE_Q_38_D_LUT4_F_I2[3] (40,34) -> (29,35)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_54_D_LUT4_F.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  33.61 Source u_core.g_units.u_l1.kw_DFFRE_Q_54_D_LUT4_F.F
+Info:    routing  0.69  34.30 Net u_core.g_units.u_l1.kw_DFFRE_Q_54_D[3] (29,35) -> (28,40)
+Info:                          Sink u_core.g_units.u_l1.kw_DFFRE_Q_54_D_LUT4_I3.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  34.67 Source u_core.g_units.u_l1.kw_DFFRE_Q_54_D_LUT4_I3.F
+Info:    routing  0.16  34.83 Net u_core.g_units.u_l1.kw_DFFRE_Q_54_D_LUT4_I3_F[2] (28,40) -> (28,40)
+Info:                          Sink u_core.g_units.u_l1.u_mem.g_lane[0].mem.0.0_DIA_9_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  35.29 Source u_core.g_units.u_l1.u_mem.g_lane[0].mem.0.0_DIA_9_LUT3_F.F
+Info:    routing  0.66  35.96 Net u_core.g_units.u_l1.u_mem.g_lane[0].mem.0.0_DIA_9 (28,40) -> (28,45)
+Info:                          Sink u_core.g_units.u_l1.u_mem.g_lane[0].mem.0.0.DIA9
+Info:      setup  0.03  35.99 Source u_core.g_units.u_l1.u_mem.g_lane[0].mem.0.0.DIA9
+Info: 22.18 ns logic, 13.81 ns routing
+
+Info: Critical path report for cross-domain path 'posedge sclk' -> 'posedge u_core.clk':
+Info:       type curr  total name
+Info:   clk-to-q  0.31  0.31 Source u_sdr.g_async.u_r.mem.0.5.DO[3]
+Info:    routing  1.08  1.40 Net u_sdr.g_async.u_r.mem.0.5_DO_3 (6,41) -> (7,46)
+Info:                          Sink sd_rsp_rdata_DFFE_Q_40_passthrough_lut$.I3
+Info:      logic  0.37  1.77 Source sd_rsp_rdata_DFFE_Q_40_passthrough_lut$.F
+Info:    routing  0.00  1.77 Net sd_rsp_rdata_DFFE_Q_40$conn$D (7,46) -> (7,46)
+Info:                          Sink sd_rsp_rdata_DFFE_Q_40.D
+Info:      setup  0.04  1.80 Source sd_rsp_rdata_DFFE_Q_40.D
+Info: 0.72 ns logic, 1.09 ns routing
+
+Info: Critical path report for cross-domain path 'posedge u_core.clk' -> 'posedge sclk':
+Info:       type curr  total name
+Info:   clk-to-q  0.23  0.23 Source rst_DFFS_Q.Q
+Info:    routing  0.17  0.40 Net rst (6,20) -> (6,20)
+Info:                          Sink srst_sync_LUT2_I0.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  0.96 Source srst_sync_LUT2_I0.F
+Info:    routing  0.24  1.20 Net srst_sync_LUT2_I0_F[1] (6,20) -> (7,20)
+Info:                          Sink u_sdr.u_ctrl.h_v_LUT2_I0_F_LUT2_F.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  1.75 Source u_sdr.u_ctrl.h_v_LUT2_I0_F_LUT2_F.F
+Info:    routing  0.67  2.42 Net u_sdr.u_ctrl.h_v_LUT2_I0_F[1] (7,20) -> (10,19)
+Info:                          Sink u_sdr.u_ctrl.h_v_LUT2_I0_F_LUT2_I1.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  2.99 Source u_sdr.u_ctrl.h_v_LUT2_I0_F_LUT2_I1.F
+Info:    routing  1.29  4.28 Net u_sdr.u_ctrl.h_v_LUT2_I0_F_LUT2_I1_F[2] (10,19) -> (4,34)
+Info:                          Sink u_sdr.u_ctrl.n_wd_DFFE_Q_43.CE
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      setup  0.04  4.32 Source u_sdr.u_ctrl.n_wd_DFFE_Q_43.CE
+Info: 1.95 ns logic, 2.36 ns routing
+
+Info: Max frequency for clock       'sclk': 96.21 MHz (PASS at 54.00 MHz)
+Warning: Max frequency for clock 'u_core.clk': 27.78 MHz (FAIL at 54.00 MHz)
+
+Info: Max delay posedge sclk       -> posedge u_core.clk: 1.80 ns
+Info: Max delay posedge u_core.clk -> posedge sclk      : 4.32 ns
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 45 endpoint(s)
+Info:          + represents [1,45) endpoint(s)
+Info: [-17473, -15695) |*+
+Info: [-15695, -13917) |+
+Info: [-13917, -12139) |+
+Info: [-12139, -10361) |*+
+Info: [-10361,  -8583) |+
+Info: [ -8583,  -6805) |+
+Info: [ -6805,  -5027) |****+
+Info: [ -5027,  -3249) |******+
+Info: [ -3249,  -1471) |*******************+
+Info: [ -1471,    307) |*********+
+Info: [   307,   2085) |*****************+
+Info: [  2085,   3863) |***********************+
+Info: [  3863,   5641) |**********+
+Info: [  5641,   7419) |******************+
+Info: [  7419,   9197) |************+
+Info: [  9197,  10975) |**********************+
+Info: [ 10975,  12753) |*********************************+
+Info: [ 12753,  14531) |**********************************+
+Info: [ 14531,  16309) |************************************************************ 
+Info: [ 16309,  18087) |********************************************************+
+
+1 warning, 0 errors
+
+Info: Program finished normally.

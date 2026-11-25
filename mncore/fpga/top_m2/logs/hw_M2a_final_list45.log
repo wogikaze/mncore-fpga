@@ -1,0 +1,48 @@
+# hwrun m2 2026-11-25 19:36:37: design 0x04, 27000000 Hz, 2000000 baud, imem 512, topo (1, 1, 1, 1, 4), FPALU=0 MAU=0 BFN=0 MAT=0 REPLICA=0, rtl table results_TB_FPALU0_TB_MAU0_TB_BFN0.tsv (247 rows), 45 programs
+[1/45] pass b                   as rtl      5 words     5 steps 15632 lw   2.13 s  docs/mnist-golf/submissions/17.dram-dl-256-16.vsm  rust ok off_rust same vs_rust pass
+[2/45] pass c                   as rtl     10 words    10 steps 15632 lw   8.10 s  docs/mnist-golf/submissions/20.dram-ul-256-16p.vsm 896 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[3/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.95 s  docs/mnist-golf/submissions/24.dram-dl-16.vsm  rust ok off_rust same vs_rust pass
+[4/45] pass c                   as rtl      7 words     7 steps 15632 lw   2.68 s  docs/mnist-golf/submissions/28.dram-dl-16-16.vsm 288 differ, 0 only official, 0 only board rust ok off_rust differ(L1BM,L2BM,LM0) vs_rust pass
+[5/45] pass c                   as rtl      8 words     8 steps 15632 lw   2.13 s  docs/mnist-golf/submissions/8.sumcol.vsm 48 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[6/45] pass b                   as rtl      5 words     5 steps 15632 lw   2.13 s  mncompile/benchmarks/results/17.dram-dl-256-16/kernel.vsm  rust ok off_rust same vs_rust pass
+[7/45] pass b                   as rtl     25 words    25 steps 15632 lw   5.04 s  mncompile/benchmarks/results/19.dram-dl-256-16p/kernel.vsm  rust ok off_rust same vs_rust pass
+[8/45] pass b                   as rtl     14 words    14 steps 15632 lw   3.49 s  mncompile/benchmarks/results/21.dram-dl-256-16-l2b/kernel.vsm  rust ok off_rust same vs_rust pass
+[9/45] pass c                   as rtl     13 words    13 steps 15632 lw   1.94 s  mncompile/benchmarks/results/21.hello-world/kernel.vsm 372 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[10/45] pass b                   as rtl      5 words     5 steps 15632 lw   2.39 s  mncompile/benchmarks/results/24.dram-dl-16/kernel.vsm  rust ok off_rust same vs_rust pass
+[11/45] pass c                   as rtl     12 words    12 steps 15632 lw   3.54 s  mncompile/benchmarks/results/28.dram-dl-16-16/kernel.vsm 288 differ, 0 only official, 0 only board rust ok off_rust differ(L1BM,L2BM,LM0) vs_rust pass
+[12/45] pass b                   as rtl      9 words     9 steps 15632 lw   3.19 s  mncompile/benchmarks/results/31.dram-ul-256/kernel.vsm  rust ok off_rust same vs_rust pass
+[13/45] pass c                   as rtl      6 words     6 steps 15632 lw   6.58 s  problems/18.dram-ul-256-16/answer.vsm 704 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[14/45] pass b                   as rtl     25 words    25 steps 15632 lw   5.57 s  problems/19.dram-dl-256-16p/main.vsm  rust ok off_rust same vs_rust pass
+[15/45] pass b                   as rtl     12 words    12 steps 15632 lw   3.63 s  problems/21.dram-dl-256-16-l2b/answer.vsm  rust ok off_rust same vs_rust pass
+[16/45] pass b                   as rtl     10 words    10 steps 15632 lw   3.00 s  problems/22.dram-dl-1024-16/main.vsm  rust ok off_rust same vs_rust pass
+[17/45] pass c                   as rtl      4 words     4 steps 15632 lw   2.26 s  problems/25.dram-ul-16/answer.vsm 112 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[18/45] pass c                   as rtl      7 words     7 steps 15632 lw   3.06 s  problems/28.dram-dl-16-16/answer.vsm 288 differ, 0 only official, 0 only board rust ok off_rust differ(L1BM,L2BM,LM0) vs_rust pass
+[19/45] pass b                   as rtl      8 words     8 steps 15632 lw   2.86 s  problems/29.dram-ul-16-16/improved.vsm  rust ok off_rust same vs_rust pass
+[20/45] pass c                   as rtl      7 words     7 steps 15632 lw   2.83 s  problems/31.dram-ul-256/answer.vsm 168 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[21/45] pass b                   as rtl      7 words     7 steps 15632 lw   1.92 s  proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/31-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[22/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.92 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-lbf-valid.vsm  rust ok off_rust same vs_rust pass
+[23/45] pass b                   as rtl      5 words     5 steps 15632 lw   1.92 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[24/45] pass b                   as rtl      5 words     5 steps 15632 lw   1.92 s  proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward.vsm  rust ok off_rust same vs_rust pass
+[25/45] pass b                   as rtl      7 words     7 steps 15632 lw   1.92 s  proofs_lean/evidence/forwarding/programs/34-lbf-nop.vsm  rust ok off_rust same vs_rust pass
+[26/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.95 s  proofs_lean/evidence/lbf-encoded/00-disabled-write/template.vsm  rust ok off_rust same vs_rust pass
+[27/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.94 s  proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/template.vsm  rust ok off_rust same vs_rust pass
+[28/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.94 s  proofs_lean/evidence/lbf-encoded/06-after-mau/template.vsm  rust ok off_rust same vs_rust pass
+[29/45] pass b                   as rtl      5 words     5 steps 15632 lw   1.97 s  proofs_lean/evidence/lbf-encoded/08-producer-new/intended.vsm  rust ok off_rust same vs_rust pass
+[30/45] pass b                   as rtl      5 words     5 steps 15632 lw   1.96 s  proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/intended.vsm  rust ok off_rust same vs_rust pass
+[31/45] pass b                   as rtl      4 words     4 steps 15632 lw   1.95 s  proofs_lean/evidence/lbf-encoded/10-nop/template.vsm  rust ok off_rust same vs_rust pass
+[32/45] pass c                   as rtl     20 words    20 steps 15632 lw   1.90 s  research/experiments/algo-redesign/t_coord2.vsm 3584 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM) vs_rust pass
+[33/45] pass c                   as rtl      5 words     5 steps 15632 lw   1.91 s  research/experiments/isa-analyst/progs/e2_multiwrite.vsm 60 differ, 0 only official, 0 only board rust ok off_rust differ(L1BM) vs_rust pass
+[34/45] pass b                   as rtl      1 words     1 steps 15632 lw   1.89 s  research/experiments/isa-analyst/progs/t_l2bm_dram.vsm  rust ok off_rust same vs_rust pass
+[35/45] pass c                   as rtl      9 words     9 steps 15632 lw   1.90 s  research/experiments/lowerbound/nine_word.vsm 4840 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[36/45] pass c                   as rtl     51 words    51 steps 15632 lw   2.38 s  research/experiments/packer/probes/p12_final_2block.vsm 4712 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[37/45] pass c                   as rtl     13 words    13 steps 15632 lw  14.69 s  research/experiments/resched/27.dram-ul-16-1024/v_bar.vsm 3296 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[38/45] pass c                   as rtl     12 words    12 steps 15632 lw  14.69 s  research/experiments/resched/27.dram-ul-16-1024/v_t2.vsm 3296 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[39/45] pass c                   as rtl      6 words     6 steps 15632 lw   2.13 s  research/experiments/resched/8.sumcol/c6a.vsm 40 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[40/45] pass c                   as rtl      5 words     5 steps 15632 lw   5.15 s  research/experiments/resched/dar-sweep/18.dram-ul-256-16/a2.vsm 480 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[41/45] pass b                   as rtl     19 words    19 steps 15632 lw   5.00 s  research/experiments/resched/dram-sweep/19.dram-dl-256-16p/base.vsm  rust ok off_rust same vs_rust pass
+[42/45] pass b                   as rtl      8 words     8 steps 15632 lw   2.79 s  research/experiments/resched/dram-sweep/22.dram-dl-1024-16/base.vsm  rust ok off_rust same vs_rust pass
+[43/45] pass b                   as rtl      3 words     3 steps 15632 lw   1.95 s  research/experiments/resched/dram-sweep/24.dram-dl-16/c3.vsm  rust ok off_rust same vs_rust pass
+[44/45] pass c                   as rtl     13 words    13 steps 15632 lw  14.68 s  research/experiments/resched/dram-sweep/27.dram-ul-16-1024/base.vsm 3296 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[45/45] pass c                   as rtl      7 words     7 steps 15632 lw   2.86 s  research/experiments/resched/dram-sweep/31.dram-ul-256/base.vsm 168 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+# 45 programs in 172 s; link: crc_err 0 frame_err 0 overrun 0 timeout 0, host retries 0
+# pass 45/45 (official or the zero-rule Rust run); as the RTL simulation 45/45
