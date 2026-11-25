@@ -14,11 +14,23 @@
 
 INFO はデザイン ID 0x05（提案）。フラグは 0x03 / 0x04 と同じ（bit 3..2 FPALU、bit 4 MAU、bit 5 BFN、bit 6 MAT、bit 7 REPLICA）。L1BM / L2BM / PDM / DRAM の空間の深さ（0 はない）で `UNITS` と `SDRAM` が分かる。`L1_RRN` は INFO に出ないので `set.json` に書く。
 
+いまの組（nextpnr の LUT4、Fmax コア / SDRAM。どれも 27 MHz で実機確認）:
+
+| メンバー | 中身 | LUT4 | Fmax |
+| --- | --- | ---: | --- |
+| M2a | UNITS 2（L1BM、L2BM、MV）、整数 ALU、ゼロ規則 | 71.8 % | 30.3 / 94.0 MHz |
+| M2aR | M2a の複製規則版（`mnrun.py --rule replica` のとき） | 74.6 % | 27.7 / 85.7 MHz |
+| MAU | UNITS 0、MAU、SDRAM あり | 69.9 % | 44.5 / 89.6 MHz |
+| MAUF3 | UNITS 0、MAU + FPALU 3（rsqrt、relu、lrelu）、SDRAM なし | 68.6 % | 44.1 MHz |
+| L1MAU | UNITS 1（L1BM、縮約なし）+ MAU、SDRAM なし、ゼロ規則 | 74.1 % | 40.4 MHz |
+
+floor / ftoi / fmax / fmin（FPALU 1 / 2）、BFN、MAT を実行できるメンバーはまだない（`mncore/status/WP-38.md` の判断と理由 13）。
+
 ## `mn_top_m2`（WP37）との違い
 
 1. **PDM / DRAM を消すのは RESET コマンドだけ**（`mn_core` の `SDCLR` = 0、消去は上位で行う）。構成（電源投入、ボタン S1）では消さない。プログラムの途中で別のメンバーを書いても、PDM / DRAM の内容は SDRAM に残る。
 2. **ユニットのないメンバーも PDM / DRAM のホスト空間（0x08 / 0x09）を持つ**（`SDRAM` = 1）。コアに MV がないので、上位が `mn_mv` のホストの口と同じ検査と番地で SDRAM に橋渡しする。リフレッシュも続く。
-3. `SDRAM` = 0 のメンバーは PDM / DRAM の空間を持たない。`mnrun.py` は、その区間の PDM / DRAM の d set / r / d get を、次の SDRAM のあるメンバーまで順番どおりに保留する（そのメンバーの語は PDM / DRAM に触れないので、順序は保たれる）。
+3. `SDRAM` = 0 のメンバーは PDM / DRAM の空間を持たない。`mnrun.py` は、PDM / DRAM の d set / r / d get を、MV の語を含む区間の直前かプログラムの終わりまで順番どおりに保留し、SDRAM のあるメンバーでまとめて実行する（MV の語のない区間は PDM / DRAM に触れないので、順序は保たれる。終わりのメンバーに SDRAM がなければ、SDRAM のあるメンバーをもう 1 回読み込む）。
 
 ## 作り方
 
