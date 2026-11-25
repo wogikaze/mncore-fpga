@@ -158,8 +158,9 @@ def build(name: str, prm: dict, listfile: Path, a) -> int:
         p = parse_pnr(out)
         util = ", ".join(f"{k} {u}/{t} ({100 * u / t:.0f} %)" for k, (u, t) in p["util"].items() if u)
         clk = p["clocks"]
-        core = [f for n, f in clk.items() if n != "sclk"]
-        sdr = [f for n, f in clk.items() if n == "sclk"]
+        # the SDRAM controller's clock is the rPLL output sclk (g_sdr.sclk); the rest is the board clock
+        core = [f for n, f in clk.items() if not n.endswith("sclk")]
+        sdr = [f for n, f in clk.items() if n.endswith("sclk")]
         # SDRAM = 0: no controller, no SDRAM clock to check
         sdr_ok = (bool(sdr) and min(sdr) >= a.sdr_mhz) if prm.get("SDRAM", "1") != "0" else not sdr
         ok = bool(core) and min(core) >= a.core_mhz and sdr_ok
