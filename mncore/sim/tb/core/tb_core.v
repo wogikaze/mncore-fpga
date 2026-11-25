@@ -15,6 +15,9 @@
 //                                      or "DERR <tag> <space> <addr>"
 //   Q <space> <loc> <addr> <value>     read one long word and check it (self-test)
 //   X <pc> <count>                     RUN; prints "S <reason> <info> <pc> <steps> <trap> <clocks>"
+//                                      (after a RUN that stopped with WAIT, reason 4 (M2), the program
+//                                      blocks there like on the official emulator: later X print the
+//                                      same stop without running, later W are skipped, until C)
 //   K <reason> <info>                  check the stop record of the last RUN (self-test)
 //   P <pc> <steps>                     check core_pc and core_steps of the last RUN (self-test)
 //   E                                  end
@@ -156,6 +159,44 @@ module tb_core;
         end
     endtask
 
+    // ------------------------------------------------------------------ DRAM / PDM backdoor (WP37)
+    // With TB_SDMEM, W / R of the DRAM (space 9) and PDM (8) of n0 at long word 64 and above go
+    // straight into / out of tb_sdmem's array (zero time; the core is idle between RUNs): the large
+    // `r` line images and the DRAM probe of the M2 regression would otherwise take most of the
+    // simulation. Long words 0..63 go through the host port (mn_mv), like the board. +nobd: all through
+    // the host port.
+    reg nobd = 1'b0;
+    initial nobd = $test$plusargs("nobd");
+    function automatic bd_ok(input [7:0] sp, input [15:0] loc, input [22:0] a);
+        bd_ok = 1'b0;
+`ifdef TB_SDMEM
+        bd_ok = !nobd && (sp == 8'h08 || sp == 8'h09) && (loc == 16'd0) && (a >= 23'd64) &&
+                (a < ((sp == 8'h08) ? 23'h20000 : 23'h80000));
+`endif
+    endfunction
+    task automatic bd_write(input [7:0] sp, input [22:0] a, input [7:0] mask, input [63:0] d, output reg err);
+        reg [19:0] sa;
+        begin
+            err = 1'b0;
+            sa  = (sp == 8'h08) ? (20'h80000 | a[19:0]) : a[19:0];
+`ifdef TB_SDMEM
+            if (|mask[7:4]) u_sdmem.mem[sa][63:32] = d[63:32];
+            if (|mask[3:0]) u_sdmem.mem[sa][31:0]  = d[31:0];
+`endif
+        end
+    endtask
+    task automatic bd_read(input [7:0] sp, input [22:0] a, output reg [63:0] d, output reg err);
+        reg [19:0] sa;
+        begin
+            err = 1'b0;
+            d   = 64'd0;
+            sa  = (sp == 8'h08) ? (20'h80000 | a[19:0]) : a[19:0];
+`ifdef TB_SDMEM
+            d = u_sdmem.mem[sa];
+`endif
+        end
+    endtask
+
     // ------------------------------------------------------------------ script
     integer fd, rc, maxclk, nchk, nfail, nerr, i, n, ctag, t0, zp;
     reg [8*16-1:0] word;
@@ -164,6 +205,9 @@ module tb_core;
     reg [31:0]  a0, a1, a2, a3, a4;
     reg [63:0]  v, d;
     reg         err, quiet, done_scr;
+    reg         blocked = 1'b0;    // a RUN stopped with WAIT (reason 4): the program blocks there
+    reg [31:0]  blk_info = 32'd0;
+    reg [15:0]  blk_pc = 16'd0;
     reg [8*256-1:0] fname;
     reg [8*1024-1:0] line;
 
@@ -196,6 +240,7 @@ module tb_core;
                     "C": begin
                         @(negedge clk);
                         rst = 1'b1;
+                        blocked = 1'b0;
 `ifdef TB_SDMEM
                         u_sdmem.clear;     // the board clears the DRAM / PDM after RESET (SDCLR)
 `endif
@@ -232,7 +277,9 @@ module tb_core;
                     end
                     "W": begin
                         rc = $fscanf(fd, "%h %h %h %h %h", a0, a1, a2, a3, v);
-                        mem_write(a0[7:0], a1[15:0], a2[22:0], a3[7:0], v, err);
+                        if (blocked) err = 1'b0;   // after a WAIT stop: no more d set (WP37)
+                        else if (bd_ok(a0[7:0], a1[15:0], a2[22:0])) bd_write(a0[7:0], a2[22:0], a3[7:0], v, err);
+                        else mem_write(a0[7:0], a1[15:0], a2[22:0], a3[7:0], v, err);
                         if (err) begin
                             $display("ERR write space %0h loc %0h addr %0h rejected", a0, a1, a2);
                             nerr = nerr + 1;
@@ -241,7 +288,8 @@ module tb_core;
                     "R": begin
                         rc = $fscanf(fd, "%h %h %h %h %h", a4, a0, a1, a2, a3);
                         for (i = 0; i < a3; i = i + 1) begin
-                            mem_read(a0[7:0], a1[15:0], a2[22:0] + i, d, err);
+                            if (bd_ok(a0[7:0], a1[15:0], a2[22:0] + i)) bd_read(a0[7:0], a2[22:0] + i, d, err);
+                            else mem_read(a0[7:0], a1[15:0], a2[22:0] + i, d, err);
                             if (err) $display("DERR %0h %0h %0h", a4, a0, a2 + i);
                             else     $display("D %0h %0h %0h %016h", a4, a0, a2 + i, d);
                         end
@@ -259,19 +307,30 @@ module tb_core;
                     end
                     "X": begin
                         rc = $fscanf(fd, "%h %h", a0, a1);
-                        @(negedge clk);
-                        run_start = 1'b1; run_pc = a0[15:0]; run_count = a1;
-                        @(negedge clk);
-                        run_start = 1'b0;
-                        t0 = clocks;
-                        while (core_busy && (clocks - t0) < maxclk) @(negedge clk);
-                        if (core_busy) begin
-                            $display("S TIMEOUT pc %0h steps %0h after %0d clocks", core_pc, core_steps, clocks - t0);
-                            nerr = nerr + 1;
-                            done_scr = 1'b1;
-                        end else
-                            $display("S %0h %0h %0h %0h %0h %0d", core_reason, core_info, core_pc, core_steps,
-                                     core_trap, clocks - t0);
+                        if (blocked) begin
+                            // after a WAIT stop the official blocks for ever: no more RUNs
+                            $display("S 4 %0h %0h 0 0 0", blk_info, blk_pc);
+                        end else begin
+                            @(negedge clk);
+                            run_start = 1'b1; run_pc = a0[15:0]; run_count = a1;
+                            @(negedge clk);
+                            run_start = 1'b0;
+                            t0 = clocks;
+                            while (core_busy && (clocks - t0) < maxclk) @(negedge clk);
+                            if (core_busy) begin
+                                $display("S TIMEOUT pc %0h steps %0h after %0d clocks", core_pc, core_steps, clocks - t0);
+                                nerr = nerr + 1;
+                                done_scr = 1'b1;
+                            end else begin
+                                $display("S %0h %0h %0h %0h %0h %0d", core_reason, core_info, core_pc, core_steps,
+                                         core_trap, clocks - t0);
+                                if (core_reason == 8'd4) begin
+                                    blocked  = 1'b1;
+                                    blk_info = core_info;
+                                    blk_pc   = core_pc;
+                                end
+                            end
+                        end
                     end
                     "K": begin
                         rc = $fscanf(fd, "%h %h", a0, a1);

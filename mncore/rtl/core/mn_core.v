@@ -99,6 +99,9 @@ module mn_core #(
     parameter FPALU   = 1,           // FP-side ALU: 1 full, 0 none, 2 / 3 reduced (mn_pe_core)
     parameter MAU     = 1,           // 0: no MAU (mn_mau_vec)
     parameter N_PE    = 1,           // 1: one PE (M1); 4: one MAB, time-multiplexed (WP30)
+    /* verilator lint_off UNUSEDPARAM */
+    // the MAB's and the units' parameters: only read by the generate blocks of N_PE = 4 (a 1-PE
+    // build without the files of mn_mab and the units does not see those reads)
     parameter BFN     = 1,           // N_PE = 4: bfn / bfe (mn_fp_alu_bfn)
     parameter MAT     = 0,           // N_PE = 4: matrix register, ?mwrite / ?mread / matrix MAU (WP36)
     parameter M2      = 0,           // N_PE = 4: the L1BM, L2BM and MV units (WP37)
@@ -113,6 +116,7 @@ module mn_core #(
     parameter [19:0] PDM_BASE  = 20'h80000,   // M2: PDM / DRAM in the SDRAM (long words)
     parameter [19:0] DRAM_BASE = 20'h00000,
     parameter SDCLR   = 0,           // M2: 1 write 0 to the DRAM and PDM after reset
+    /* verilator lint_on UNUSEDPARAM */
     parameter [15:0] PE_LOC = 16'h0  // location of the PE (n0c0b0m0p0), or of PE 0 of the MAB
 ) (
     input  wire         clk,
@@ -390,6 +394,10 @@ module mn_core #(
             );
             assign ugo    = 1'b0;
             assign cur_pe = 2'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // one PE has no units (M2 needs N_PE = 4): their answers have no reader
+            wire unused_pe1 = ^{x_act, x_unsup, x_field, lu_src, lu_lbf, lr_ready, lr_valid, lr_data, lb_rdata};
+            /* verilator lint_on UNUSEDSIGNAL */
         end else begin : g_mab
             // the 4 PEs of a MAB on one time-multiplexed datapath (WP30)
             /* verilator lint_off UNUSEDSIGNAL */

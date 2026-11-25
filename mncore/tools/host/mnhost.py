@@ -39,7 +39,7 @@ CMD = {
     "RUN": 0x06, "STATUS": 0x07, "RESET": 0x08, "SET_BAUD": 0x09,
 }
 STATUS_NAMES = {0: "OK", 1: "E_CRC", 2: "E_CMD", 3: "E_LEN", 4: "E_BUSY", 5: "E_RANGE", 6: "E_ARG"}
-REASON_NAMES = {0: "OK", 1: "E_RANGE", 2: "E_UNSUPPORTED", 3: "E_DECODE"}
+REASON_NAMES = {0: "OK", 1: "E_RANGE", 2: "E_UNSUPPORTED", 3: "E_DECODE", 4: "WAIT"}
 
 SPACES = {
     "IMEM": 0x00, "LM0": 0x01, "LM1": 0x02, "GRF0": 0x03, "GRF1": 0x04, "T": 0x05,
@@ -550,6 +550,21 @@ def parse_dline(line: str) -> DOp:
     return d
 
 
+def parse_rline(line: str) -> DOp:
+    """An `r` line (DRAM data, contract 06 section 2: `r <group> <addr hex> <count hex> <long words>`)
+    as a d set of the DRAM of group <group> (WP37: WR_MEM of space 9)."""
+    body = line.split("#", 1)[0].strip()
+    f = body.split()
+    if len(f) != 5:
+        raise ValueError(f"cannot parse r line: {line}")
+    n = int(f[3], 16)
+    if len(f[4]) != 16 * n:
+        raise ValueError(f"r line payload is not {n} long words: {line}")
+    payload = [int(f[4][16 * i:16 * i + 16], 16) for i in range(n)]
+    return DOp(op="set", space="DRAM", width="l", addr=int(f[2], 16), loc={"n": int(f[1])}, count=n,
+               payload=payload, text=body)
+
+
 def parse_asm(text: str) -> AsmProgram:
     prog = AsmProgram()
     for ln, raw in enumerate(text.splitlines(), 1):
@@ -567,6 +582,7 @@ def parse_asm(text: str) -> AsmProgram:
             prog.events.append((len(prog.entries), parse_dline(line)))
         elif tag == "r" and len(line) > 2 and line[1] == " ":
             prog.rlines.append(line)       # DRAM data (assemble3 echoes the .vsm data lines)
+            prog.events.append((len(prog.entries), parse_rline(line)))
         elif tag in "iq":
             raise ValueError(f"line {ln}: '{tag}' words are not supported (use --instruction-mode flat "
                              f"--disable-packer)")
@@ -653,6 +669,11 @@ def long_words(d: DOp) -> list[tuple[int, int, int]]:
             w = d.addr + i
             v = (d.payload[i] >> 32) if d.payload else 0
             out.append((w >> 1, (v << 32) if w % 2 == 0 else v, 0xF0 if w % 2 == 0 else 0x0F))
+    elif d.space == "L1BM" and d.width == "ll":
+        # $llb<a>: long word a + i and a + i + 4 (WP02: the emulator's two long word L1BM access)
+        for i in range(d.count):
+            out.append((d.addr + i, d.payload[2 * i] if d.payload else 0, 0xFF))
+            out.append((d.addr + i + 4, d.payload[2 * i + 1] if d.payload else 0, 0xFF))
     else:
         per = 2 if d.width == "ll" else 1
         base = d.addr >> 1 if d.space in ("LM0", "LM1", "GRF0", "GRF1") else d.addr
@@ -714,6 +735,11 @@ def get_units(d: DOp) -> list[tuple[str, int, int | None, object]]:
         for i in range(d.count):
             a = d.addr + i
             out.append((d.space + "W", a, a >> 1, "hi" if a % 2 == 0 else "lo"))
+    elif d.space == "L1BM" and d.width == "ll":
+        # $llb<a>: long words a + i and a + i + 4 (WP02)
+        for i in range(d.count):
+            for a in (d.addr + i, d.addr + i + 4):
+                out.append(("L1BM", a, a, "lw"))
     else:
         per = 2 if d.width == "ll" else 1
         base = d.addr >> 1 if d.space in PE_WORD_SPACES else d.addr
@@ -773,18 +799,21 @@ def execute_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMa
 
     Only what the device implements is touched: locations of the INFO topology and spaces with an INFO
     depth; d set / d get are cut at that depth (dropped d set long words are counted in stats["dropped"]).
-    `r` lines (DRAM data) are skipped when the device has no DRAM.  The d get values become ndmp records
+    `r` lines (DRAM data) are WR_MEM of the DRAM (space 9) of their group, at their place in the program
+    (WP37); they are skipped when the device has no DRAM.  The d get values become ndmp records
     like norm_gpfn3 makes them from the emulator's dump (get_units).  A RUN that stops with an error ends
     the program: stop is its STATUS and stop_entry the program entry (window base + pc; an E_RANGE info is
-    the entry number in the window, the window base is added in stats["e_range_word"])."""
+    the entry number in the window, the window base is added in stats["e_range_word"]).  A RUN that stops
+    with WAIT (reason 4, WP33 / WP37: a wait without a completed MV of its tag; the official emulator
+    blocks there for ever) ends the RUNs and the d sets, but the later d gets still read the state, like
+    the emulator's dump; stop is that STATUS (stats["wait_word"] the entry)."""
     smap = smap or SpaceMap(dev.info())
     inf = dev.info()
     depth = inf.imem_depth
     res = RunResult(stats={"runs": 0, "steps": 0, "windows": 0, "dropped": 0, "gets": 0, "sets": 0,
                            "skipped_d": 0, "rlines": len(prog.rlines), "read_words": 0})
-    if prog.rlines and smap.depth("DRAM") > 0:
-        raise ValueError("`r` lines (DRAM data) are not supported yet")
     dev.reset()
+    blocked = [False]
     win = {"base": None}
 
     def load_window(base):
@@ -794,7 +823,7 @@ def execute_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMa
         res.stats["windows"] += 1
 
     def run_range(a, b):
-        while a < b:
+        while a < b and not blocked[0]:
             if depth == 0:
                 raise SystemExit("device has no instruction memory")
             if win["base"] is None or not (win["base"] <= a < win["base"] + depth):
@@ -804,6 +833,12 @@ def execute_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMa
             st = dev.wait_idle(run_timeout)
             res.stats["runs"] += 1
             res.stats["steps"] += st.steps
+            if st.reason == 4:
+                # WAIT: the program blocks here (no more RUNs or d sets; the d gets still read)
+                res.stop, res.stop_entry = st, win["base"] + st.pc
+                res.stats["wait_word"] = win["base"] + st.pc
+                blocked[0] = True
+                return True
             if st.reason != 0:
                 res.stop, res.stop_entry = st, win["base"] + st.pc
                 if st.reason == 1:
@@ -824,8 +859,9 @@ def execute_program(dev: Device, prog: AsmProgram, topo: Topology, smap: SpaceMa
             log(f"[{pos}] {d.text}")
         dep = smap.depth(d.space)
         locs = topo.locations(d.space, d.loc) if dep else []
-        if not locs:
-            res.stats["skipped_d"] += 1
+        if not locs or (blocked[0] and d.op == "set"):
+            if not d.text.startswith("r "):       # r lines are counted in stats["rlines"]
+                res.stats["skipped_d"] += 1
             continue
         for f in locs:
             if d.op == "set":
@@ -955,13 +991,16 @@ def cmd_run(dev, a):
     else:
         sys.stdout.write(out)
     s = r.stats
-    print(f"{len(prog.entries)} entries, {len(prog.events)} d lines ({s['skipped_d']} skipped: space or location not "
-          f"implemented), {s['rlines']} r lines skipped, {s['runs']} RUNs, {s['steps']} steps, {len(lines)} ndmp "
+    print(f"{len(prog.entries)} entries, {len(prog.events)} d / r lines ({s['skipped_d']} skipped: space or location "
+          f"not implemented), {s['rlines']} r lines, {s['runs']} RUNs, {s['steps']} steps, {len(lines)} ndmp "
           f"lines, {time.monotonic() - t0:.1f} s", file=sys.stderr)
     if s["dropped"]:
         print(f"warning: {s['dropped']} long words of d set beyond the implemented depth were dropped",
               file=sys.stderr)
-    if r.stop is not None:
+    if r.stop is not None and r.stop.reason == 4:
+        print(f"WAIT at entry {r.stop_entry} (tag {r.stop.info}): the program blocks there (as on the official "
+              f"emulator); the d gets show that state", file=sys.stderr)
+    elif r.stop is not None:
         st = r.stop
         extra = f" (word {s['e_range_word']})" if st.reason == 1 else f" info {st.info:#x}"
         print(f"STOPPED: {st.reason_name} at entry {r.stop_entry}{extra}", file=sys.stderr)

@@ -541,6 +541,8 @@ def compile_tb(log, defines=()) -> Path:
 def classify_stop(reason: int, info: int, entry_word):
     if reason == 1:
         return "E_RANGE", f"word {info}"
+    if reason == 4:
+        return "WAIT", f"tag {info}"
     if reason == 3:
         return "E_DECODE", f"info {info:#x}"
     if info & 0x80:
@@ -609,10 +611,12 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
             reads[(int(p[1], 16), int(p[2], 16), int(p[3], 16))] = int(p[4], 16)
         elif p[0] == "S":
             stops.append(p[1:])
-        elif p[0] in ("ERR", "DERR") or line.startswith("mn_pe_core: ERROR") or line.startswith("FAIL"):
+        elif p[0] in ("ERR", "DERR") or line.startswith("mn_pe_core: ERROR") or line.startswith("FAIL") or                 ": ERROR" in line:
             res["detail"] += (" | " if res["detail"] else "") + line.strip()
     res["seconds"] = round(time.time() - t0, 2)
+    errs = res["detail"]
     # stop records, in RUN order
+    waited = None
     for (first, n, base), st in zip(runs, stops):
         if st[0] == "TIMEOUT":
             res["result"] = "timeout"
@@ -620,6 +624,11 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
         reason, info, pc, steps = (int(x, 16) for x in st[:4])
         res["steps"] += steps
         res["clocks"] += int(st[5])
+        if reason == 4:
+            # WAIT (M2): the official blocks there for ever; the d gets show the state at that point
+            if waited is None:
+                waited = base + pc
+            continue
         if reason != 0:
             # pc is the entry of the loaded window
             idx = base + pc if base + pc < len(entries) else None
@@ -638,9 +647,11 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
         res["result"] = "error"
         res["detail"] = (res["detail"] + " | " if res["detail"] else "") + "missing stop records"
         return res
-    if r.returncode != 0 or res["detail"]:
+    if r.returncode != 0 or errs:
         res["result"] = "error"
         return res
+    if waited is not None:
+        res["detail"] = f"WAIT at word {waited}; " 
     rtl = rtl_records(gets, reads)
     off, _ = ndmp.read(str(job / "official.ndmp"))
     a = {k: v for k, v in off.items() if keep_record(k)}
@@ -660,7 +671,7 @@ def run_one(row, vvp: Path, timeout: int, keep: bool, tag: str = ""):
         lines = [f"{k[0]} {k[1]} {k[2]:#06x} official={a.get(k, 0):016x} rtl={b.get(k, 0):016x}"
                  for k in (mism + only_a + only_b)[:20]]
         (job / f"cmp{tag}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        res["detail"] = f"{len(mism)} differ, {len(only_a)} only official, {len(only_b)} only rtl"
+        res["detail"] += f"{len(mism)} differ, {len(only_a)} only official, {len(only_b)} only rtl"
     elif beyond:
         res["result"] = "mismatch(LM beyond depth)"
         res["detail"] = f"{beyond} official LM long words beyond {LM_LW} are not 0"

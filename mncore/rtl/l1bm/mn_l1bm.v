@@ -24,9 +24,11 @@
 //   lwrite = 1: the L1BM -> PE data come from $lbi (turnaround), in the layout of the transfer
 //     that last wrote $lbi (its bmode, wl and MAB shift, which this unit keeps; the word's own
 //     bmode does not matter), and the word makes a PE -> L1BM transfer (l1bmm@, l1bmm4@, l1bmd,
-//     l1bmr, l1bmr4; bmode 00 as 01) of the isel operand, or of zeros when isel = 111 (a
-//     turnaround read alone, `l1bmm $lbi ...`). It writes $lbi unless noforward (ll = 11) and
-//     the L1BM when me = 1.
+//     l1bmr, l1bmr4; bmode 00 as 01) of the isel operand. isel = 111 is $lbf (WP37: the official
+//     emulator and viz/core send the PE's $lbf of the cycle, the value before the word; the
+//     assembler encodes `l1bmrffadd $lbf ...` and a turnaround read alone, `l1bmm $lbi ...`, so;
+//     WP31 had zeros, which the tests could not tell from a $lbf of 0). It writes $lbi unless
+//     noforward (ll = 11) and the L1BM when me = 1.
 //   l1bmd with a MAB shift: the assembler puts -4 * shift into ladr[5:0]; with L = ladr[5:2] * 4,
 //     distribution reads block position (L + 4 m + p) mod 64, gathering writes the value of PE
 //     (m, p) at (4 m + p - L) mod 64; $lbi is written without the shift.
@@ -133,8 +135,8 @@ module mn_l1bm #(
     // ------------------------------------------------------------------ word decode
     // (official emulator, probed) A word with lwrite = 0 reads the L1BM for its L1BM -> PE data
     // (me only enables the write of a PE -> L1BM transfer). A word with lwrite = 1 takes its
-    // L1BM -> PE data from $lbi (turnaround) and makes a PE -> L1BM transfer (zero data when
-    // isel = 111) that writes $lbi unless noforward, and the L1BM when me = 1.
+    // L1BM -> PE data from $lbi (turnaround) and makes a PE -> L1BM transfer (of $lbf when
+    // isel = 111, WP37) that writes $lbi unless noforward, and the L1BM when me = 1.
     wire act    = ll[0];                                 // ll = 01 normal, 11 noforward
     wire nofwd  = (ll == 2'b11);
     wire p2l    = act & l1bm_lwrite;                     // PE -> L1BM (and turnaround read)
@@ -145,7 +147,7 @@ module mn_l1bm #(
     wire l1any  = (l1bm_bmode != 2'b00) | l1bm_lwrite | l1bm_rmode | l1bm_me | (l1bm_ladr != 13'd0) |
                   l1bm_dmode | l1bm_ext | l1bm_round_out | (l1bm_mabadr != 4'd0) |
                   (l1bm_opcode != 4'd0) | (l1bm_isel != 3'd7) | l1bm_wl;
-    assign use_src = p2l & (l1bm_isel != 3'd7);
+    assign use_src = p2l;    // isel 111: the core gives the PE's $lbf (WP37)
     assign lbf_upd = act & ~nofwd & l1any;
     wire [5:0] lsh  = {l1bm_ladr[5:2], 2'b00};           // l1bmd: MAB shift (ladr[1:0] unused)
     // PE -> L1BM layout: bmode 00 behaves as 01 (16x1)
@@ -403,11 +405,10 @@ module mn_l1bm #(
     wire       in_lo  = r_xt ? 1'b0 : r_rn ? kj[1] : k_k;
     wire [1:0] in_ln  = r_xt ? (r_rn ? kj : {k_k, kj[0]}) : r_rn ? {1'b0, kj[0]} : kj;   // lane index
     // a rounded result is one long word: the second one (wl = 1) is 0
-    wire        k_nos = (l1bm_isel == 3'd7);          // no PE operand: zero data
     // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops the MAB bits
     // that N_MAB does not have, so the source buffer gives that MAB's value)
     wire        rr_ex = (REPLICA != 0) | ({1'b0, rr_mab} < NM);
-    wire [63:0] in_w  = (rr_ex & ~k_nos) ? (in_lo ? sb_rdata[63:0] : sb_rdata[127:64]) : 64'd0;
+    wire [63:0] in_w  = rr_ex ? (in_lo ? sb_rdata[63:0] : sb_rdata[127:64]) : 64'd0;
     wire [1:0] in_fmt = r_xt ? 2'd2 : r_fmt;                       // width of the input lane
     wire [63:0] in_lane = lane_of(in_w, in_fmt, in_ln);
     assign rr_val = r_xt ? h2s(in_lane[15:0]) : in_lane;
@@ -586,7 +587,7 @@ module mn_l1bm #(
     // an item is written in the clock where its value is ready
     wire        k_wr   = (ph == P_COMMIT) & (k_dir | k_zero | (krun & rr_done & k_lane_last));
     // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops its MAB bits)
-    wire        k_vz   = clr_on | (k_dir ? (((REPLICA == 0) & ({1'b0, k_mab} >= NM)) | k_nos) : k_zero);
+    wire        k_vz   = clr_on | (k_dir ? ((REPLICA == 0) & ({1'b0, k_mab} >= NM)) : k_zero);
     wire [63:0] k_val  = k_vz ? 64'd0 : ~k_dir ? kw_n : k_k ? sb_rdata[63:0] : sb_rdata[127:64];
     assign sb_raddr = sidx(k_red ? rr_mab : k_mab, k_p, kc);
 
