@@ -20,7 +20,7 @@ one() {
   fi
   rm -f "$b.dmp" "$b.erc"
   if [ "$(cat "$b.arc")" = 0 ] && [ ! -e "$b.noemu" ]; then
-    timeout 300 "$E/gpfn3_package_main" --offchip-memory-init zero -i "$b.asm" -d "$b.dmp" > "$b.eout" 2>&1
+    timeout 1800 "$E/gpfn3_package_main" --offchip-memory-init zero -i "$b.asm" -d "$b.dmp" > "$b.eout" 2>&1
     echo $? > "$b.erc"
   fi
 }

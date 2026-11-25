@@ -1,0 +1,41 @@
+# WP36: the matrix unit on the core of the matrix bitstream M1 (mn_core N_PE = 4, MAT = 1, FPALU = 0,
+# MAU = 0, BFN = 1): without the vector MAU the matrix unit keeps the MAU result of the cycle and
+# $mauf (mn_mab_mat MAUF = 1). Script: the directed tests of mncore/sim/tb/mat/gen_mat.py that use no
+# vector MAU or FP ALU instruction (mncore/sim/tb/mat/fixed/mau0.scr; expectations from the official
+# emulator). Lint / synth: mn_mab_mat with MAUF = 1 is the lint configuration of mncore/sim/tb/mat.
+top: tb_core
+rtl_top: mn_mab_mat
+incdir: mncore/rtl/dec
+define: TB_NPE=4
+define: TB_MAT=1
+define: TB_MAU=0
+define: TB_FPALU=0
+define: TB_SCRIPT="mncore/sim/tb/mat/fixed/mau0.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/core/mn_core.v
+mncore/sim/tb/core/tb_core.v

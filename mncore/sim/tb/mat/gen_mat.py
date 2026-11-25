@@ -25,8 +25,15 @@ Tests:
   mfma_g / _f / _h / _hr   ?mfma / ?mmul with block-float data made here (valid blocks, edge
                         exponents: c around the adder grid, c far above (h: the product drop),
                         common exponent 0 / all ones, c = inf / 0, overflow), - on x / y, e on y
+  mfma_f0 / _g0 / _h0  the low bits of the dot: the residual dot - round(dot) (?mmul, then ?mfma
+                        with y = -$mauf; f: the partial-product correction) and c on the grid of a
+                        dot that is exactly 0 (x in pairs v, -v; the jam below the grid)
   mfma_mix             ?mfma with ?mwrite / ?mread / an ALU instruction reading $mreadf in the same
                         word, x from $aluf / T, the result through $mauf, masks and zero flush
+  mfma_mauf            $mauf of the matrix MAU as the ALU x (also through a nop), zero-flushed, and
+                        as the y of the next ?mfma (no vector MAU instruction)
+The tests without vector MAU / FP ALU instructions also go to fixed/mau0.scr (unit mat_m0: the core
+without the vector MAU, where the matrix unit keeps the MAU result and $mauf).
   e_unsup_dmfma        dmfmau: E_UNSUPPORTED pe_mauc_dmode (d is not implemented)
   e_range_mwrite       ?mwrite whose LM source is out of range on PE 2 only: E_RANGE, nothing written
   e_range_mfma_x       ?mfma whose x is out of range on PE 1 only (T-indirect): E_RANGE
@@ -254,6 +261,15 @@ def mf_case(rng, prec, kind, opts):
             r = rng.random()
             ce = 0 if r < 0.1 else emax if r < 0.2 else ce
         xs.append(bf_block(rng, prec, NX[prec], ce, kind))
+    if kind == "zero":
+        # x in pairs (v, -v) and the matrix elements that meet them equal: the dot is exactly 0 with
+        # non-zero common exponents, so the result is c on the adder grid (jammed below it)
+        for c in range(4):
+            xs[c] = [xs[c][j & ~1] ^ ((j & 1) << (w - 1)) for j in range(len(xs[c]))]
+        step = 2 if prec == "f" else 1      # f: x element j meets matrix element 2j
+        for i in range(rows):
+            r = mat[i]
+            mat[i] = [r[(j // step & ~1) * step + (j % step)] for j in range(len(r))]
     yraw = HALF if opts["extc"] else SINGLE
     ys = []
     for c in range(4):
@@ -265,6 +281,8 @@ def mf_case(rng, prec, kind, opts):
             g = ep - KGRID[prec]
             if kind == "grid":
                 lead = g + rng.randint(-3, 26)
+            elif kind == "zero":
+                lead = g + rng.randint(-5, 24)
             elif kind == "drop":
                 lead = ep + rng.randint(24, 40)
             else:
@@ -347,6 +365,9 @@ def mf_test(prec, seed, ncase, kinds, rnd=None):
         opts = dict(rnd=(prec == "h") and (rnd if rnd is not None else rng.random() < 0.3),
                     zeroc=rng.random() < 0.2, signa=rng.random() < 0.25, signc=rng.random() < 0.25)
         opts["extc"] = (not opts["zeroc"]) and rng.random() < 0.2 and kind != "drop"
+        if kind == "resid":
+            # dot - round(dot): a ?mmul to $mauf, then ?mfma with y = -$mauf (random data)
+            opts.update(rnd=False, zeroc=False, extc=False, signc=False)
         case = mf_case(rng, prec, kind, opts)
         reg = "lr" if k % 2 == 0 else "ls"
         R = "r" if reg == "lr" else "s"
@@ -378,7 +399,10 @@ def mf_test(prec, seed, ncase, kinds, rnd=None):
         else:
             dst = f"$lm{2 * obase}v"
         op = {"f": "fm", "g": "gm", "h": "hm"}[prec] + ("mul" if opts["zeroc"] else "fma") + ("r" if opts["rnd"] else "")
-        body.append(f"{op} $lx {xop} {dst}" if opts["zeroc"] else f"{op} $lx {xop} {yop} {dst}")
+        if kind == "resid":
+            body += [f"{prec}mmul $lx {xop} $nowrite", f"{prec}mfma $lx {xop} -$mauf {dst}"]
+        else:
+            body.append(f"{op} $lx {xop} {dst}" if opts["zeroc"] else f"{op} $lx {xop} {yop} {dst}")
         regs.append(obase)
     body.append("nop/3")
 
@@ -411,6 +435,22 @@ MF_MIX = [
     "gmread $ly1 $nowrite",
     "gmfma $lx $t $lr16v $ln88v/1010 ; lpassa $mreadf $lm80v",   # ALU reading $mreadf, mask
     "gmfma/0110 $lx $t $lr16v $ln96v", "fvpassa $mauf $lm88v",  # zero flush of the MAU result
+    "nop/3",
+]
+
+
+# $mauf of the matrix MAU: as the ALU's x after a matrix step (also through a nop), zero-flushed,
+# as the y (port c) of the next ?mfma. Without vector MAU instructions, so that it also runs on a
+# core without the vector MAU (MAU = 0: the matrix unit keeps $mauf; fixed/mau0.scr)
+MF_MAUF = [
+    "gbfn $lr0v $nowrite", "gmwrite $aluf $lx0",
+    "gbfn $lr8v $nowrite", "gmwrite $aluf $lx4",
+    "gbfn $ls0v $t", "nop/2",
+    "gmmul $lx $t $nowrite", "lpassa $mauf $lm64v",
+    "gmmul $lx $t $ln64v", "nop", "lpassa $mauf $lm72v",
+    "gmmul/1010 $lx $t $nowrite", "lpassa $mauf $lm80v",
+    "gmmul $lx $t $nowrite", "gmfma $lx $t $mauf $lm88v",
+    "gmfma $lx $t -$mauf $ln72v/0110", "lpassa $mauf $lm96v",
     "nop/3",
 ]
 
@@ -458,6 +498,10 @@ MF_G, MF_G_INIT = mf_test("g", 1, 14, ["rand", "grid", "special", "wide", "rand"
 MF_F, MF_F_INIT = mf_test("f", 1, 16, ["rand", "grid", "special", "wide"])
 MF_H, MF_H_INIT = mf_test("h", 1, 14, ["rand", "grid", "ext", "special", "drop"], rnd=False)
 MF_HR, MF_HR_INIT = mf_test("h", 2, 14, ["rand", "grid", "drop", "special", "ext"], rnd=True)
+# the low bits of the dot: the residual dot - round(dot), and c on the grid of a dot that is exactly 0
+MF_F0, MF_F0_INIT = mf_test("f", 3, 12, ["resid", "zero"])
+MF_G0, MF_G0_INIT = mf_test("g", 3, 12, ["resid", "zero"])
+MF_H0, MF_H0_INIT = mf_test("h", 3, 8, ["zero"], rnd=False)
 
 TESTS = [
     T("mat_rw_d", RW_D, init=init_seq),
@@ -469,13 +513,25 @@ TESTS = [
     T("mfma_f", MF_F, init=MF_F_INIT),
     T("mfma_h", MF_H, init=MF_H_INIT),
     T("mfma_hr", MF_HR, init=MF_HR_INIT),
+    T("mfma_f0", MF_F0, init=MF_F0_INIT),
+    T("mfma_g0", MF_G0, init=MF_G0_INIT),
+    T("mfma_h0", MF_H0, init=MF_H0_INIT),
     T("mfma_mix", MF_MIX, init=mf_mix_init),
+    T("mfma_mauf", MF_MAUF, init=mf_mix_init),
     T("e_unsup_dmfma", ERR_PRE + ["dmfmau $lx $lr0v $ls0v $nowrite"], status=(UNSUP, F["pe_mauc_dmode"])),
     T("e_range_mwrite", ERR_PRE + ["hmwrite $lmt0v $ly0"], init=t_init(TIND_PE2), status=(RANGE, last_word),
       note="the LM source of ?mwrite is out of range on PE 2 only (cycle 2): no PE writes"),
     T("e_range_mfma_x", ERR_PRE + ["gmmul $lx $lmt0v $nowrite"], init=t_init(TIND_PE1), status=(RANGE, last_word),
       note="the x of ?mmul is out of range on PE 1 only: E_RANGE before any write"),
 ]
+
+
+# the tests without vector MAU or FP ALU instructions: fixed/mau0.scr, run by the unit mat_m0 on the
+# core of the matrix bitstream (FPALU = 0, MAU = 0, BFN = 1, MAT = 1: the matrix unit keeps the MAU
+# result and $mauf)
+MAU0_TESTS = {"mat_rw_d", "mat_rw_f", "mat_rw_h", "mat_rw_mix", "mfma_g", "mfma_f", "mfma_h", "mfma_hr",
+              "mfma_f0", "mfma_g0", "mfma_h0", "mfma_mauf", "e_unsup_dmfma", "e_range_mwrite",
+              "e_range_mfma_x"}
 
 
 def program(t) -> str:
@@ -536,7 +592,10 @@ def main(argv=None) -> int:
     if not only:
         allscr = "".join(scr for _, scr in scripts) + "E\n"
         (FIXED / "all.scr").write_text(allscr, encoding="utf-8", newline="\n")
-        print(f"wrote {len(scripts)} tests to {FIXED.relative_to(ROOT)}/ (all.scr)")
+        m0 = "".join(scr for n, scr in scripts if n in MAU0_TESTS) + "E\n"
+        (FIXED / "mau0.scr").write_text(m0, encoding="utf-8", newline="\n")
+        print(f"wrote {len(scripts)} tests to {FIXED.relative_to(ROOT)}/ (all.scr; mau0.scr: "
+              f"{len([n for n, _ in scripts if n in MAU0_TESTS])} of them for the unit mat_m0)")
     return 0 if ok else 1
 
 

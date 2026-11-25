@@ -545,9 +545,10 @@ module mn_pe_core #(
             assign mau_got = 1'b0;
             assign maub_rd = 132'd0;
             /* verilator lint_off UNUSEDSIGNAL */
-            // MAU = 0: the MAU fields and port registers have no reader (removed in synthesis)
+            // MAU = 0: the MAU fields and port registers have no reader (removed in synthesis);
+            // without the matrix unit (MAT = 0) there is no matrix MAU result either (mt_got = 0)
             wire unused_mau = ^{mau_dmode, mau_round_out, mau_mdw_side, mau_signa, mau_signb, mau_signc,
-                                mau_exta, mau_extb, mau_extc, pa, pb, pc, mau_iv};
+                                mau_exta, mau_extb, mau_extc, pa, pb, pc, mau_iv, mt_got};
             /* verilator lint_on UNUSEDSIGNAL */
         end
     endgenerate

@@ -11,7 +11,7 @@ section 9). Work files go to mncore/sim/tb/mat/build/probe/.
 fields: the matrix register is filled with halves that name their face / row / column, then one
   word (assembled, then MAUC bits edited: readh, mw, ma, the read address in signa / signc / passa /
   zeroc, mdw_side, dmode) reads it to GRF0 and to $mreadf; the matrix is read back afterwards. Every
-  case is compared with matref.Mat and matref.faces (226 cases).
+  case is compared with matref.Mat and matref.faces (166 cases).
 num: random and edge block-float ?mfma / ?mmul tests on 16 MABs at once (each MAB its own data),
   compared with matref.mfma (grid, drop rule, special values, e / - / r, u / d for d).
 ext: hmmul with one extended product per output: how the shifted product is rounded (prints the

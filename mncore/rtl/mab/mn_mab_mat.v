@@ -43,7 +43,8 @@
 // Storage: BSRAM 512 x 32: 0..255 the matrix {face, physical row, word}, 256..319 $mreadf and
 //   (MAUF = 1) 320..383 $mauf of the matrix MAU, both {pe, cycle, word}. x of the mfma: BSRAM
 //   {pe, cycle} x 64 (read next to the matrix word). Reset clears the matrix and $mreadf (busy
-//   for 384 clocks).
+//   for 384 clocks). Until the first ?mwrite after reset the transposed reads are answered with 0
+//   without reading and $mreadf is not stored (it stays 0): no cost for programs without matrix.
 // Requests (level, from mn_pe_core; the operands stay stable until done / rdy):
 //   mt_req -> mt_done (1 clock); mt_z / mt_flags then hold the result until the next mt_req (with
 //   MAUF = 1 mn_pe_core uses them as the MAU result of the cycle, so it asks for the next cycle
@@ -162,6 +163,10 @@ module mn_mab_mat #(
     reg        mw_act;
     reg  [1:0] mw_k;
     reg [63:0] mr_hi, mr_lo;  // the transposed read value (mr_val)
+    // m_used: a ?mwrite has written the matrix since reset. Until then the matrix and $mreadf are
+    // all zero, so a transposed read is answered with 0 at once and its $mreadf store is left out
+    // (a core with MAT = 1 runs the programs without ?mwrite as fast as one without it)
+    reg        m_used;
 
     wire [63:0] mw_ed = w_extb ? s2d(mw_b[127:96]) : mw_b[127:64];             // d element
     wire [31:0] mw_f0 = w_extb ? h2s(mw_b[127:112]) : mw_b[127:96];
@@ -225,8 +230,10 @@ module mn_mab_mat #(
             mw_act  <= 1'b0;
             mw_k    <= 2'd0;
             mw_done <= 1'b0;
+            m_used  <= 1'b0;
         end else begin
             mw_done <= 1'b0;
+            if (mw_act) m_used <= 1'b1;
             if (clr) begin
                 clr_a <= clr_a + 9'd1;
                 if (clr_a == 9'd383) clr <= 1'b0;
@@ -247,7 +254,7 @@ module mn_mab_mat #(
                 mw_k   <= 2'd0;
             end
             if (mr_acc) begin
-                st_r  <= mr_upd;
+                st_r  <= mr_upd & m_used;
                 st_a  <= (MAUF != 0) & ma_upd;
                 st_k  <= 2'd0;
                 st_c  <= mr_cycle;
@@ -388,7 +395,12 @@ module mn_mab_mat #(
                         es <= E_IDLE;
                     end else if (mr_req && !mr_have && !mr_acc && !st_r && !st_a) begin
                         mr_lo <= 64'd0;
-                        es    <= E_MR;
+                        if (m_used) begin
+                            es <= E_MR;
+                        end else begin
+                            mr_hi   <= 64'd0;   // the matrix is still all zero
+                            mr_have <= 1'b1;
+                        end
                     end else if (fr_req && !fr_have && !fr_acc) begin
                         es <= E_FR;
                     end else if (mt_req && !mt_done && !st_a) begin
