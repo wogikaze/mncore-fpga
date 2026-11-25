@@ -65,14 +65,30 @@
 // channel at a time, whatever its latency), and the four opr_* outputs all give memory
 // opr_mem (0 GRF0, 1 GRF1, 2 LM0, 3 LM1) of cycle opr_cycle. READ then takes the sum of the
 // memories' times instead of the longest.
+//
+// NPE (WP35, for the time-multiplexed MAB of WP30): the PE state held here - T, the mask
+// registers $omr1..15 and $mb / $nb - is kept for NPE PEs (1, 2 or 4), indexed by subpe, the
+// PE's number in the MAB (the same number j<madpe> uses):
+//   - a step uses the state of PE subpe, taken at start (subpe may change after the start
+//     clock; the step keeps its PE until done),
+//   - between steps the host port's T / OMR / BAR accesses go to PE subpe (the caller drives
+//     subpe with the host's PE then; LM / GRF host accesses go to the store, whose PE the
+//     caller gives the store itself, as mn_pe_store's pe).
+//   T is {PE, cycle} in the same LUT RAMs (16 deep: no more RAM16SDP4 for NPE <= 4), the mask
+//   registers {PE, entry} (4 x NPE RAM16SDP4), $mb / $nb NPE register pairs, the T-indirect
+//   copy (tind) 4 x NPE x 12 flip-flops. The store channels are unchanged (no PE number).
+//   With NPE = 1 (default) nothing changes. A separate PE input was not added so that the
+//   existing instances (mn_pe_mem, mn_mab_mem) keep their pin lists.
 module mn_pe_lsu #(
     parameter LM_AW  = 9,  // LM0/LM1 depth = 2**LM_AW long words (chip: 11)
     parameter GRF_AW = 8,  // GRF0/GRF1 depth = 2**GRF_AW long words (chip: 8)
-    parameter RBS    = 0   // 1: shared read buffer (see above)
+    parameter RBS    = 0,  // 1: shared read buffer (see above)
+    parameter NPE    = 1   // PEs whose T / mask registers / $mb, $nb are held, by subpe (1, 2, 4)
 ) (
     input  wire         clk,
     input  wire         rst,
-    input  wire [1:0]   subpe,        // PE number in the MAB, for j<madpe>
+    input  wire [1:0]   subpe,        // PE number in the MAB, for j<madpe>; NPE > 1: also the
+                                      // PE of the step (taken at start) and of host T/OMR/BAR
     // ---- step
     input  wire         start,
     output wire         idle,         // start is accepted when idle = 1
@@ -197,7 +213,15 @@ module mn_pe_lsu #(
     localparam X_S0 = 2'd0, X_RMW = 2'd1, X_WR = 2'd2;
 
     reg  [1:0]  state, xs, wc;
-    reg  [11:0] bar0, bar1;
+    // $mb / $nb of each PE; the PE of the per-PE state: subpe between steps and in the start
+    // clock, the step's PE (pe_q, taken at start) during the step
+    reg  [11:0] bar0_r [0:3];
+    reg  [11:0] bar1_r [0:3];
+    reg  [1:0]  pe_q;
+    localparam [1:0] PMASK = (NPE > 2) ? 2'd3 : (NPE > 1) ? 2'd1 : 2'd0;
+    wire [1:0]  pix  = ((state == S_IDLE) ? subpe : pe_q) & PMASK;
+    wire [11:0] bar0 = bar0_r[pix];
+    wire [11:0] bar1 = bar1_r[pix];
     reg  [47:0] m0a_l, m1a_l;     // LM word addresses of cycle 0..3, latched at start
     reg  [3:0]  ru;               // rd_use latched at start
     reg  [3:0]  qi [0:3];         // READ: requests issued per memory
@@ -280,8 +304,16 @@ module mn_pe_lsu #(
         for (c = 0; c < 4; c = c + 1) begin : g_mr
             wire we = (state == S_IDLE) ? (hp_mr_wr & hp_req_wmask[c/2]) : (omr_go & (wc == c));
             wire [3:0] wd = (state == S_IDLE) ? hp_req_wdata[4*c +: 4] : omr_nib;
-            mn_ram_lut #(.W(4), .AW(4), .NR(1)) u_mr (
-                .clk(clk), .we(we), .waddr(mr_wa), .wdata(wd), .raddr(mr_idx), .rdata(mr_rd[4*c +: 4]));
+            if (NPE > 1) begin : g_mrp
+                // {PE, entry}
+                localparam integer PB = (NPE > 2) ? 2 : 1;
+                mn_ram_lut #(.W(4), .AW(4 + PB), .NR(1)) u_mr (
+                    .clk(clk), .we(we), .waddr({pix[PB-1:0], mr_wa}), .wdata(wd),
+                    .raddr({pix[PB-1:0], mr_idx}), .rdata(mr_rd[4*c +: 4]));
+            end else begin : g_mr1
+                mn_ram_lut #(.W(4), .AW(4), .NR(1)) u_mr (
+                    .clk(clk), .we(we), .waddr(mr_wa), .wdata(wd), .raddr(mr_idx), .rdata(mr_rd[4*c +: 4]));
+            end
         end
     endgenerate
 
@@ -574,8 +606,8 @@ module mn_pe_lsu #(
     wire [1:0]   t_wa = (state == S_IDLE) ? hp_req_addr[2:1] : wc;
     wire [63:0]  t_wd = wd;
     wire [1:0]   t_ra = (state == S_IDLE) ? hp_req_addr[2:1] : opr_cycle;
-    mn_pe_treg u_treg (
-        .clk(clk), .waddr(t_wa), .we_hi(t_we_hi), .we_lo(t_we_lo), .wdata(t_wd),
+    mn_pe_treg #(.NPE(NPE)) u_treg (
+        .clk(clk), .pe(pix), .waddr(t_wa), .we_hi(t_we_hi), .we_lo(t_we_lo), .wdata(t_wd),
         .raddr(t_ra), .rdata(t_rd), .tind(tind));
     assign opr_t = t_rd;
 
@@ -648,8 +680,8 @@ module mn_pe_lsu #(
             trap_mem <= 2'd0;
             trap_cycle <= 2'd0;
             trap_addr  <= 12'd0;
-            bar0     <= 12'd0;
-            bar1     <= 12'd0;
+            for (j = 0; j < 4; j = j + 1) begin bar0_r[j] <= 12'd0; bar1_r[j] <= 12'd0; end
+            pe_q     <= 2'd0;
             hp_wait  <= 1'b0;
             hp_lrsp  <= 1'b0;
             loc_pend <= 1'b0;
@@ -675,13 +707,14 @@ module mn_pe_lsu #(
                                                              {52'd0, hp_req_addr[0] ? bar1 : bar0};
                             end
                         end else if (sp == SP_BAR && (|hp_req_wmask[1:0])) begin
-                            if (hp_req_addr[0]) bar1 <= hp_req_wdata[11:0];
-                            else                bar0 <= hp_req_wdata[11:0];
+                            if (hp_req_addr[0]) bar1_r[pix] <= hp_req_wdata[11:0];
+                            else                bar0_r[pix] <= hp_req_wdata[11:0];
                         end
                     end
                     // step start
                     if (start_go) begin
                         trap <= 1'b0;
+                        pe_q <= subpe;
                         if (errv != 32'd0) begin
                             trap       <= 1'b1;
                             trap_wr    <= e_idx[2];
@@ -752,8 +785,8 @@ module mn_pe_lsu #(
                         end
                     end
                     // $mb / $nb: 12 bits of word 0 ($mb) or word 1 ($lmb) of the MSB long word
-                    if (active && beat[5]) bar0 <= (wwl[2] == 2'b00) ? wd[43:32] : wd[11:0];
-                    if (active && beat[6]) bar1 <= (wwl[3] == 2'b00) ? wd[43:32] : wd[11:0];
+                    if (active && beat[5]) bar0_r[pix] <= (wwl[2] == 2'b00) ? wd[43:32] : wd[11:0];
+                    if (active && beat[6]) bar1_r[pix] <= (wwl[3] == 2'b00) ? wd[43:32] : wd[11:0];
                 end
             endcase
         end

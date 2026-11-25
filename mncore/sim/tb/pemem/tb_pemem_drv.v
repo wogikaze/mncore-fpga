@@ -12,12 +12,22 @@
 // data = word address; applies to the next EXEC).
 // RBS = 1 (WP21): the DUT has the shared read buffer; opr_mem selects the memory of the ALU
 // input (isela), the only operand the core model reads.
+// NPE = 4 (WP35): mn_pe_lsu with NPE = 4 (T, mask registers, $mb / $nb per PE, by subpe) and
+// mn_pe_store with NPE = 4 (pe = subpe). A test that uses j<madpe> runs on its record's PE,
+// the others (which do not depend on subpe) on PE (test number mod 4), so T-indirect, $mb /
+// $nb and mask tests run on every PE. Before
+// a test, the other three PEs get junk in T, $omr1..15, $mb / $nb and some GRF / LM long
+// words (host port, subpe = that PE); after the test the junk is read back and must be
+// unchanged. A step that used or wrote another PE's state would fail the test's checks or the
+// junk checks (nxchk counts the junk checks). A directed check at the start writes a
+// different value to each PE and reads them all back.
 module tb_pemem_drv #(
     parameter SLOW   = 0,
     parameter SEED   = 1,
     parameter LM_AW  = 9,
     parameter GRF_AW = 8,
-    parameter RBS    = 0
+    parameter RBS    = 0,
+    parameter NPE    = 1
 ) (
     input  wire clk,
     input  wire rst,
@@ -27,7 +37,8 @@ module tb_pemem_drv #(
     output integer nexec,
     output integer ntrap,
     output integer nrmw_steps,
-    output integer nclk        // clocks from start to done, summed over the steps
+    output integer nclk,       // clocks from start to done, summed over the steps
+    output integer nxchk       // NPE > 1: checks of the other PEs' state
 );
     // ---------------------------------------------------------------- DUT signals
     reg  [1:0]   subpe;
@@ -61,7 +72,37 @@ module tb_pemem_drv #(
     wire [1:0] opr_mem = (isela_w == 4'd1) ? 2'd1 : (isela_w == 4'd3) ? 2'd2 : (isela_w == 4'd4) ? 2'd3 : 2'd0;
 
     generate
-        if (SLOW == 0) begin : g_fast
+        if (NPE > 1) begin : g_npe
+            wire [3:0]   st_req_valid, st_req_ready, st_req_we, st_rsp_valid;
+            wire [91:0]  st_req_addr;
+            wire [255:0] st_req_wdata, st_rsp_rdata;
+            wire [31:0]  st_req_wmask;
+            mn_pe_lsu #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(RBS), .NPE(NPE)) dut (
+                .clk(clk), .rst(rst), .subpe(subpe),
+                .start(start), .idle(idle), .jw(jw), .rd_use(rd_use), .busy(busy),
+                .opr_valid(opr_valid), .opr_cycle(res_cycle), .opr_mem(opr_mem),
+                .opr_grf0(opr_grf0), .opr_grf1(opr_grf1), .opr_lm0(opr_lm0), .opr_lm1(opr_lm1), .opr_t(opr_t),
+                .res_valid(res_valid), .res_ready(res_ready), .res_cycle(res_cycle),
+                .res_mau(res_mau), .res_alu(res_alu), .res_l1bm(res_l1bm), .res_mread(res_mread),
+                .res_alu_flags(res_alu_flags), .res_mau_flags(res_mau_flags),
+                .zf_en(zf_en), .zf_sel(zf_sel), .zf_mask(zf_mask),
+                .done(done), .trap(trap), .trap_wr(trap_wr), .trap_mem(trap_mem),
+                .trap_cycle(trap_cycle), .trap_addr(trap_addr), .unsup(unsup),
+                .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we),
+                .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
+                .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
+                .hp_rsp_valid(hp_rsp_valid), .hp_rsp_rdata(hp_rsp_rdata),
+                .st_req_valid(st_req_valid), .st_req_ready(st_req_ready), .st_req_we(st_req_we),
+                .st_req_addr(st_req_addr), .st_req_wdata(st_req_wdata), .st_req_wmask(st_req_wmask),
+                .st_rsp_valid(st_rsp_valid), .st_rsp_rdata(st_rsp_rdata));
+            mn_pe_store #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .NPE(NPE)) u_st (
+                .clk(clk), .rst(rst), .pe(subpe),
+                .req_valid(st_req_valid), .req_ready(st_req_ready), .req_we(st_req_we),
+                .req_addr(st_req_addr), .req_wdata(st_req_wdata), .req_wmask(st_req_wmask),
+                .rsp_valid(st_rsp_valid), .rsp_rdata(st_rsp_rdata));
+            initial st_nerr = 0;
+            assign dut_rmw = (dut.state == 2'd2) && (dut.xs == 2'd1);
+        end else if (SLOW == 0) begin : g_fast
             mn_pe_mem #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .RBS(RBS)) dut (
                 .clk(clk), .rst(rst), .subpe(subpe),
                 .start(start), .idle(idle), .jw(jw), .rd_use(rd_use), .busy(busy),
@@ -253,6 +294,82 @@ module tb_pemem_drv #(
         end
     endtask
 
+    // ---------------------------------------------------------------- other PEs (NPE > 1)
+    // junk of PE q for test t: T 8 long words, OMR entries 1..15 (16 bits), BAR 0/1 (12 bits),
+    // GRF0 / GRF1 long words 0 and 255, LM0 / LM1 long words 0 and 2**LM_AW - 1
+    function [63:0] jval(input integer q, input integer t, input [7:0] sp, input integer a);
+        jval = {8'hc3 ^ q[7:0], t[15:0], sp, a[7:0], 8'h5a ^ q[7:0], t[7:0] ^ 8'h96, a[7:0] ^ sp};
+    endfunction
+    function [63:0] jmask(input [7:0] sp);
+        jmask = (sp == 8'h10) ? 64'h0000_0000_0000_ffff : (sp == 8'h11) ? 64'h0000_0000_0000_0fff :
+                64'hffff_ffff_ffff_ffff;
+    endfunction
+    task junk_one(input integer q, input integer t, input [7:0] sp, input integer a, input do_wr);
+        reg [63:0] d;
+        begin
+            if (do_wr) begin
+                host_wr(sp, a, jval(q, t, sp, a), 8'hff);
+            end else begin
+                host_rd(sp, a, d);
+                nxchk = nxchk + 1;
+                if ((d & jmask(sp)) !== (jval(q, t, sp, a) & jmask(sp))) begin
+                    nfail = nfail + 1;
+                    $display("FAIL[%0d] test %0d: PE %0d space %h addr %0d changed: %h, expected %h",
+                             SLOW, t, q, sp, a, d, jval(q, t, sp, a) & jmask(sp));
+                end
+            end
+        end
+    endtask
+    // write (do_wr) or check the junk of every PE but p
+    task junk_others(input integer p, input integer t, input do_wr);
+        integer q, a;
+        begin
+            for (q = 0; q < NPE; q = q + 1) begin
+                if (q != p) begin
+                    subpe <= q[1:0];
+                    @(posedge clk);
+                    for (a = 0; a < 8; a = a + 1)  junk_one(q, t, 8'h05, a, do_wr);
+                    for (a = 1; a < 16; a = a + 1) junk_one(q, t, 8'h10, a, do_wr);
+                    junk_one(q, t, 8'h11, 0, do_wr);
+                    junk_one(q, t, 8'h11, 1, do_wr);
+                    junk_one(q, t, 8'h03, 0, do_wr);
+                    junk_one(q, t, 8'h04, (1 << GRF_AW) - 1, do_wr);
+                    junk_one(q, t, 8'h01, 0, do_wr);
+                    junk_one(q, t, 8'h02, (1 << LM_AW) - 1, do_wr);
+                end
+            end
+            subpe <= p[1:0];
+            @(posedge clk);
+        end
+    endtask
+    // directed: a different value in each PE's T, OMR and BAR, then all read back
+    task npe_selftest;
+        integer q;
+        reg [63:0] d;
+        begin
+            for (q = 0; q < NPE; q = q + 1) begin
+                subpe <= q[1:0];
+                @(posedge clk);
+                host_wr(8'h05, 6, {16'h7e57, q[15:0], 32'h1234_5678 ^ q}, 8'hff);
+                host_wr(8'h10, 9, {48'd0, 16'h9000 | q[15:0]}, 8'h03);
+                host_wr(8'h11, 0, {52'd0, 12'h300 | q[11:0]}, 8'hff);
+            end
+            for (q = 0; q < NPE; q = q + 1) begin
+                subpe <= q[1:0];
+                @(posedge clk);
+                host_rd(8'h05, 6, d);
+                if (d !== {16'h7e57, q[15:0], 32'h1234_5678 ^ q}) begin $display("FAIL[%0d] PE %0d T %h", SLOW, q, d); nfail = nfail + 1; end
+                host_rd(8'h10, 9, d);
+                if (d !== {48'd0, 16'h9000 | q[15:0]}) begin $display("FAIL[%0d] PE %0d OMR %h", SLOW, q, d); nfail = nfail + 1; end
+                host_rd(8'h11, 0, d);
+                if (d !== {52'd0, 12'h300 | q[11:0]}) begin $display("FAIL[%0d] PE %0d BAR %h", SLOW, q, d); nfail = nfail + 1; end
+                nxchk = nxchk + 3;
+            end
+            subpe <= 2'd0;
+            @(posedge clk);
+        end
+    endtask
+
     // ---------------------------------------------------------------- one step
     reg        xt_pend;
     reg [7:0]  xt_info;
@@ -303,9 +420,12 @@ module tb_pemem_drv #(
     reg [511:0] r;
     reg [63:0]  got;
     integer     pc, run, nmis_test;
+    integer     jp, jt;   // NPE > 1: PE and number of the test whose other PEs hold junk
+    integer     la;       // NPE > 1: look-ahead over the test's records
+    reg         uses_mj;  // NPE > 1: the test uses j<madpe>
     initial begin
         finished = 1'b0;
-        nfail = 0; nchk = 0; nexec = 0; ntrap = 0; nrmw_steps = 0; nclk = 0;
+        nfail = 0; nchk = 0; nexec = 0; ntrap = 0; nrmw_steps = 0; nclk = 0; nxchk = 0;
         seed = SEED;
         start = 1'b0; jw = 426'd0; subpe = 2'd0; junk = 32'd0;
         hp_req_valid = 1'b0; hp_req_we = 1'b0; hp_req_space = 8'd0; hp_req_addr = 23'd0;
@@ -314,13 +434,18 @@ module tb_pemem_drv #(
         @(negedge rst);
         @(posedge clk);
         host_selftest;
+        if (NPE > 1) npe_selftest;
         pc = 0;
+        jt = -1;
         run = 1;
         while (run) begin
             r = tb_pemem.rec[pc];
             pc = pc + 1;
             case (r[511:504])
-                8'd0: run = 0;
+                8'd0: begin
+                    if (NPE > 1 && jt >= 0) junk_others(jp, jt, 1'b0);
+                    run = 0;
+                end
                 8'd1: clear_all;
                 8'd2: host_wr(r[503:496], r[494:472], r[463:400], r[471:464]);
                 8'd3: if (!stopped) run_step(r[425:0]);
@@ -336,12 +461,33 @@ module tb_pemem_drv #(
                     end
                 end
                 8'd5: begin
+                    // NPE > 1: check the previous test's junk, then put junk in the other PEs.
+                    // A test whose words do not use j<madpe> (maadj, bit 91 / 111) does not
+                    // depend on subpe, so it runs on PE (test number mod NPE); a j<madpe>
+                    // test runs on its own PE.
+                    if (NPE > 1 && jt >= 0) junk_others(jp, jt, 1'b0);
                     cur_test = r[495:472];
-                    subpe <= r[497:496];
                     stopped = 1'b0;
                     xt_pend = 1'b0;
                     nmis_test = 0;
-                    @(posedge clk);
+                    if (NPE > 1) begin
+                        jt = jt + 1;
+                        uses_mj = 1'b0;
+                        la = pc;
+                        while (tb_pemem.rec[la][511:504] != 8'd5 && tb_pemem.rec[la][511:504] != 8'd0) begin
+                            if (tb_pemem.rec[la][511:504] == 8'd3 &&
+                                (tb_pemem.rec[la][425-91] || tb_pemem.rec[la][425-111]))
+                                uses_mj = 1'b1;
+                            la = la + 1;
+                        end
+                        jp = uses_mj ? (r[497:496] & (NPE - 1)) : (jt % NPE);
+                        subpe <= jp[1:0];
+                        @(posedge clk);
+                        junk_others(jp, jt, 1'b1);
+                    end else begin
+                        subpe <= r[497:496];
+                        @(posedge clk);
+                    end
                 end
                 8'd6: begin
                     xt_pend = 1'b1;
