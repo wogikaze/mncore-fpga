@@ -44,7 +44,8 @@
 - **フィールドの定義は `mncore/spec/isa/j_flat.yaml` と `m.yaml`（WP01 で確定）。**
   - `assemble3 --print-csv` の値の列を順に連結すると `j`/`m` 語と一致する。
   - ただし **CSV ヘッダの列名は auto_stride の並びなので、flat の列名には使えない**。列名は j_flat.yaml の `csv_col` で引く。
-- assemble3 の出力に出る `r` 行（.vsm のデータ行をそのまま出したもの）は、ホスト側ツールが `WR_MEM` に変換する。FPGA は解釈しない。
+- assemble3 の出力に出る `r` 行（.vsm のデータ行をそのまま出したもの）は、`mnhost` が空間 9（DRAM）への `WR_MEM` に変換する。FPGA は解釈しない。
+- `l1bm_isel` = 111 の値は `$lbf`（WP37 が公式で確認。WP31 の「値は 0」は誤りだった）。
 - submodule の .vsm は `core.autocrlf=true` だと CRLF でチェックアウトされ、assemble3 が失敗する。assemble3 に渡す前に CR を除く。
 
 ### ビット番号
@@ -85,6 +86,9 @@
   - そこへの転送は捨てる。
   - そこから受け取る結合・縮約の入力は値ゼロとする。ただし `l2bmr` の集合の外は単位元とする。
   - L1BM の結合では、存在しない MAB の位置には 0 を書く。
+  - **複製規則（`REPLICA=1`、WP37）:** 存在しない MAB / L1B を実装したユニットの複製とみなし、縮約・結合の入力は実装したユニットの値を繰り返す。
+    - 全ユニットが同じデータを持つ SPMD 的なプログラムでは、4096 PE の公式と一致する。hello_world は "Hello, world!" を出す。
+    - 正解は公式の切り出し。既定はゼロ規則で、その正解は縮小トポロジの Rust Sim（`mncore/sim/regress` の `topo_rs`）。
   - 4 PE（時分割）では、どれかの PE が範囲外なら、どの PE も書く前に E_RANGE で止まる。
   - PDM / DRAM は SDRAM に置く（WP33）。
     - DRAM: 0x00000〜0x7FFFF（`DRAM_DEPTH` = 2^19 長語）。
@@ -215,6 +219,11 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - 行列入りの実機構成（FPALU 0、MAU 0、BFN 1、MAT 1）は LUT4 72%、BSRAM 36/46、43.6 MHz。
   - MAU か FP ALU と同時に載せると、yosys の見積もりで約 75%。
 - MV（WP33）は LUT 約 1,100、BSRAM 0。
+- **M2（WP37）の実測:**
+  - M2a（FPALU 0、MAU 0、BFN 0）: LUT4 72%、BSRAM 43/46、コア 32.9 MHz。動作は 27 MHz。
+  - M2a-R（REPLICA）: LUT4 74.7%、27.8 MHz。上限ぎりぎり。
+  - MAU 入りの M2 は yosys の換算で 95.6% になり、載らない。
+  - SDRAM は統合後 99 MHz に届かず、54 MHz で動かす（WP05 の実機確認済みの設定）。
 - 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
 
 ### RAM と DSP の書き方
@@ -260,7 +269,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - 細目の正は `PROTOCOL.md`。
 - 命令メモリは 7 レーンを順に書く。
 - デザイン ID: 0x02 は `mn_top_1pe`、0x03 は `mn_top_mab`（1 MAB）。
-  - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN、bit 6 = MAT。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
+  - 0x04 は `mn_top_m2`（1 MAB + L1BM + L2BM + MV）。RESET で DRAM / PDM も 0 にする。
+  - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN、bit 6 = MAT、bit 7 = REPLICA。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
 - `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。
 - 実機での回帰は `python mncore/fpga/top_1pe/hwrun.py --all --fpalu <n>` で行う。
 - 単語の `d get` には dtype が必須。
