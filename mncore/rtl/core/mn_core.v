@@ -258,11 +258,17 @@ module mn_core #(
         if (N_PE == 1) begin : g_pe
             // one PE (M1): mn_pe_core as in WP20 (the files of the 1-PE builds stay the same)
             /* verilator lint_off UNUSEDSIGNAL */
-            // xg_* / xpe_op / prechk: only for N_PE = 4; hp_pe: one PE
+            // xg_* / xpe_op / prechk / the matrix unit's ports: only for N_PE = 4; hp_pe: one PE
             wire         u_xg_valid, u_prechk;
             wire [1:0]   u_xg_cycle, u_xz_cycle, u_xpe_op;
             wire [127:0] u_xg_x;
             wire [1:0]   unused_hp_pe = hp_pe;
+            wire         u_mg_valid, u_mt_req, u_mw_req, u_mr_req, u_mr_acc, u_mr_upd, u_ma_upd, u_fr_req;
+            wire         u_fr_sel, u_fr_acc;
+            wire [1:0]   u_mg_cycle, u_mt_cycle, u_mr_cycle, u_fr_cycle;
+            wire [63:0]  u_mg_x;
+            wire [127:0] u_mt_y, u_mw_b;
+            wire [7:0]   u_mr_hen, u_ma_hen;
             /* verilator lint_on UNUSEDSIGNAL */
             mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU),
                          .POS_N({30'd0, PE_LOC[11:10]}), .POS_C({31'd0, PE_LOC[9]}), .POS_B({29'd0, PE_LOC[8:6]}),
@@ -273,6 +279,13 @@ module mn_core #(
                 .trap_wr(trap_wr), .trap_mem(trap_mem), .trap_cycle(trap_cycle), .trap_addr(trap_addr),
                 .xpe_op(u_xpe_op), .prechk(u_prechk), .xg_valid(u_xg_valid), .xg_cycle(u_xg_cycle),
                 .xg_x(u_xg_x), .xz_cycle(u_xz_cycle), .xz_z(128'd0),
+                .mg_valid(u_mg_valid), .mg_cycle(u_mg_cycle), .mg_x(u_mg_x),
+                .mt_req(u_mt_req), .mw_req(u_mw_req), .mt_cycle(u_mt_cycle), .mt_y(u_mt_y), .mw_b(u_mw_b),
+                .mt_done(1'b0), .mt_z(128'd0), .mt_flags(4'd0), .mw_done(1'b0),
+                .mr_req(u_mr_req), .mr_cycle(u_mr_cycle), .mr_rdy(1'b0), .mr_val(128'd0),
+                .mr_acc(u_mr_acc), .mr_upd(u_mr_upd), .mr_hen(u_mr_hen), .ma_upd(u_ma_upd), .ma_hen(u_ma_hen),
+                .fr_req(u_fr_req), .fr_sel(u_fr_sel), .fr_cycle(u_fr_cycle), .fr_rdy(1'b0), .fr_val(128'd0),
+                .fr_acc(u_fr_acc),
                 .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(clr | mw_valid),
                 .hp_pe(2'd0), .hp_req_space(hp_space), .hp_req_addr(hp_addr), .hp_req_wdata(hp_wdata),
                 .hp_req_wmask(hp_wmask), .hp_req_err(hp_req_err),

@@ -83,11 +83,12 @@ module mn_mab #(
     wire [1:0]   xg_cycle, xz_cycle;
     wire [127:0] xg_x, xz_z;
     // matrix unit (MAT = 1)
-    wire         mg_valid, mt_req, mw_req, mt_done, mw_done, mr_req, mr_rdy, mr_acc, mr_upd;
-    wire         fr_req, fr_rdy, fr_acc, mat_busy;
+    wire         mg_valid, mt_req, mw_req, mt_done, mw_done, mr_req, mr_rdy, mr_acc, mr_upd, ma_upd;
+    wire         fr_req, fr_sel, fr_rdy, fr_acc, mat_busy;
     wire [1:0]   mg_cycle, mt_cycle, mr_cycle, fr_cycle;
     wire [63:0]  mg_x;
-    wire [127:0] mt_y, mw_b, mt_z, mr_val, mr_mask, fr_val;
+    wire [127:0] mt_y, mw_b, mt_z, mr_val, fr_val;
+    wire [7:0]   mr_hen, ma_hen;
     wire [3:0]   mt_flags;
 
     mn_pe_core #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .FPALU(FPALU), .MAU(MAU), .N_PE(N_PE), .BFN(BFN),
@@ -103,8 +104,9 @@ module mn_mab #(
         .mt_req(mt_req), .mw_req(mw_req), .mt_cycle(mt_cycle), .mt_y(mt_y), .mw_b(mw_b),
         .mt_done(mt_done), .mt_z(mt_z), .mt_flags(mt_flags), .mw_done(mw_done),
         .mr_req(mr_req), .mr_cycle(mr_cycle), .mr_rdy(mr_rdy), .mr_val(mr_val),
-        .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_mask(mr_mask),
-        .fr_req(fr_req), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val), .fr_acc(fr_acc),
+        .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_hen(mr_hen), .ma_upd(ma_upd), .ma_hen(ma_hen),
+        .fr_req(fr_req), .fr_sel(fr_sel), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val),
+        .fr_acc(fr_acc),
         .hp_req_valid(hp_req_valid), .hp_req_ready(hp_req_ready), .hp_req_we(hp_req_we), .hp_pe(hp_pe),
         .hp_req_space(hp_req_space), .hp_req_addr(hp_req_addr), .hp_req_wdata(hp_req_wdata),
         .hp_req_wmask(hp_req_wmask), .hp_req_err(hp_req_err),
@@ -113,15 +115,16 @@ module mn_mab #(
 
     generate
         if (N_PE > 1 && MAT != 0) begin : g_mat
-            mn_mab_mat u_mat (
+            mn_mab_mat #(.MAUF(MAU == 0)) u_mat (
                 .clk(clk), .rst(rst), .busy(mat_busy), .jw(jw), .pe(c_pe),
                 .xg_valid(mg_valid), .xg_cycle(mg_cycle), .xg_x(mg_x),
                 .mt_req(mt_req), .mt_cycle(mt_cycle), .mt_y(mt_y),
                 .mt_done(mt_done), .mt_z(mt_z), .mt_flags(mt_flags),
                 .mw_req(mw_req), .mw_cycle(mt_cycle), .mw_b(mw_b), .mw_done(mw_done),
                 .mr_req(mr_req), .mr_cycle(mr_cycle), .mr_rdy(mr_rdy), .mr_val(mr_val),
-                .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_mask(mr_mask),
-                .fr_req(fr_req), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val), .fr_acc(fr_acc));
+                .mr_acc(mr_acc), .mr_upd(mr_upd), .mr_hen(mr_hen), .ma_upd(ma_upd), .ma_hen(ma_hen),
+                .fr_req(fr_req), .fr_sel(fr_sel), .fr_cycle(fr_cycle), .fr_rdy(fr_rdy), .fr_val(fr_val),
+                .fr_acc(fr_acc));
         end else begin : g_nomat
             assign mat_busy = 1'b0;
             assign mt_done  = 1'b0;
@@ -135,7 +138,8 @@ module mn_mab #(
             /* verilator lint_off UNUSEDSIGNAL */
             // no matrix unit: mn_pe_core makes no requests (MAT = 0)
             wire unused_mat = ^{mg_valid, mg_cycle, mg_x, mt_req, mw_req, mt_cycle, mt_y, mw_b, mr_req,
-                                mr_cycle, mr_acc, mr_upd, mr_mask, fr_req, fr_cycle, fr_acc};
+                                mr_cycle, mr_acc, mr_upd, mr_hen, ma_upd, ma_hen, fr_req, fr_sel, fr_cycle,
+                                fr_acc};
             /* verilator lint_on UNUSEDSIGNAL */
         end
     endgenerate

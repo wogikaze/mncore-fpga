@@ -3,7 +3,7 @@
 //
 // Serial (a few tens of clocks per element), for the f, g and h formats (single, pseudo-single,
 // half). Bit-exact to the official emulator (gpfn3_package_main), measured in WP36
-// (mncore/status/WP-36.md, rtl/mab/MATRIX.md):
+// (mncore/status/WP-36.md, mncore/sim/tb/mat/matref.py):
 //   - Ep = (ca - bias) + (cb - bias): ca, cb are the common exponent fields of the row and of x
 //     (the largest exponent field of the block).
 //   - ca or cb = 0: the dot product is 0 and c is not aligned (the result is c rounded).
@@ -63,9 +63,12 @@ module mn_mab_mrnd (
     wire        drop_d = p_h & ~c_zero & ((uc - ep) >= 12'sd30);
     wire        cdom   = ~c_zero & (ucg >= 12'sd70);
     wire        exact  = bf_zero | cdom;               // c placed exactly, D = 0
-    // grid of the window and the offset of c's LSB on it
+    // grid of the window and the offset of c's LSB on it (-24 .. 46 when c is placed: only the
+    // sign and the low 7 bits are used)
     wire signed [11:0] gw  = exact ? (uc - 12'sd48) : g0;
+    /* verilator lint_off UNUSEDSIGNAL */
     wire signed [11:0] off = exact ? 12'sd25 : (ucg - 12'sd23);
+    /* verilator lint_on UNUSEDSIGNAL */
     wire        c_gone = ~exact & (ucg <= -12'sd2);   // c dropped by the alignment
 
     // ------------------------------------------------------------------ state
@@ -74,8 +77,7 @@ module mn_mab_mrnd (
     reg [6:0]  cnt;        // shifts still to do (c alignment)
     reg signed [11:0] ge;  // exponent of window bit 0
     reg        neg;        // the sum is negative
-    reg        sp;         // special result in z_sp
-    reg [31:0] z_sp;
+    reg [31:0] z_sp;       // the result, given in R_PACK
     reg        use_d;      // add D
     reg        sc_q;
     reg [6:0]  nsh;        // normalization shifts done
@@ -123,7 +125,6 @@ module mn_mab_mrnd (
                 R_IDLE: if (start) st <= R_SPEC;
                 R_SPEC: begin
                     // specials, then load c's significand at bit 0
-                    sp    <= 1'b0;
                     use_d <= ~exact & ~drop_d;
                     sc_q  <= sc;
                     ge    <= gw;
@@ -131,16 +132,14 @@ module mn_mab_mrnd (
                     nsh   <= 7'd0;
                     w     <= (c_zero | c_gone) ? 76'd0 : {52'd0, 1'b1, c[22:0]};
                     if (bf_inf) begin
-                        sp   <= 1'b1;
                         z_sp <= hout ? 32'h0000_7e00 : 32'h7f80_0000;
                         st   <= R_PACK;
                     end else if (c_inf) begin
-                        sp   <= 1'b1;
                         z_sp <= hout ? {16'd0, sc, 15'h7e00} : {sc, 31'h7f80_0000};
                         st   <= R_PACK;
                     end else if (c_zero | c_gone) begin
                         st <= R_ADD;
-                    end else if (off >= 12'sd0) begin
+                    end else if (!off[11]) begin
                         cnt <= off[6:0];
                         st  <= R_SHL8;
                     end else begin
@@ -149,23 +148,23 @@ module mn_mab_mrnd (
                     end
                 end
                 R_SHL8: begin   // c << off, by 8 then by 1
-                    if (cnt >= 7'd8) begin
+                    if (|cnt[6:3]) begin
                         w   <= w << 8;
-                        cnt <= cnt - 7'd8;
+                        cnt <= {cnt[6:3] - 4'd1, cnt[2:0]};
                     end else begin
                         st <= R_SHL1;
                     end
                 end
                 R_SHL1: begin
-                    if (cnt != 7'd0) begin
+                    if (|cnt[2:0]) begin
                         w   <= w << 1;
-                        cnt <= cnt - 7'd1;
+                        cnt <= {4'd0, cnt[2:0] - 3'd1};
                     end else begin
                         st <= sc_q ? R_NEGC : R_ADD;
                     end
                 end
                 R_SHR: begin    // c >> -off with the jam bit
-                    if (cnt != 7'd0) begin
+                    if (|cnt) begin
                         jam <= jam | w[0];
                         w   <= w >> 1;
                         cnt <= cnt - 7'd1;
@@ -189,7 +188,6 @@ module mn_mab_mrnd (
                 end
                 R_N8: begin
                     if (w == 76'd0) begin
-                        sp   <= 1'b1;
                         z_sp <= 32'd0;
                         st   <= R_PACK;
                     end else if (w[75:68] == 8'd0) begin
@@ -208,7 +206,6 @@ module mn_mab_mrnd (
                     end
                 end
                 R_RND: begin
-                    sp <= 1'b1;
                     if (eo >= (hout ? 12'sd63 : 12'sd255))
                         z_sp <= hout ? {16'd0, neg, 15'h7e00} : {neg, 31'h7f80_0000};
                     else if (eo <= 12'sd0)

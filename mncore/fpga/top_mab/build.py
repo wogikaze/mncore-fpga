@@ -3,6 +3,7 @@
 
   python mncore/fpga/top_mab/build.py                          # FPALU=0 MAU=1 BFN=0 (default), 27 MHz
   python mncore/fpga/top_mab/build.py --param FPALU=3 --param MAU=0 --param BFN=1
+  python mncore/fpga/top_mab/build.py --param MAU=0 --param BFN=1 --param MAT=1   # matrix (WP36)
   python mncore/fpga/top_mab/build.py --seeds 1,2,3            # try placement seeds, keep the first that meets timing
   python mncore/fpga/top_mab/build.py --no-pnr                 # synthesis only (resources)
   python mncore/fpga/top_mab/build.py --program                # ... and load it into the FPGA SRAM
@@ -39,7 +40,7 @@ import simrun  # noqa: E402  (also puts OSS CAD Suite on PATH)
 DEVICE = "GW2AR-LV18QN88C8/I7"
 FAMILY = "GW2A-18C"
 TOP = "mn_top_mab"
-DEFAULTS = {"FPALU": "0", "MAU": "1", "BFN": "0"}
+DEFAULTS = {"FPALU": "0", "MAU": "1", "BFN": "0", "MAT": "0"}
 
 
 def rtl_files():
