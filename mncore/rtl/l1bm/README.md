@@ -20,6 +20,7 @@ RRN の縮約、折り返しレジスタ `$lbi`、フォワーディングレジ
 | `RRN` | 1 | 1: 縮約に `mn_l1bm_rrn` を使う（任意の N_MAB）。2: N_MAB = 1 専用の小さな縮約（各レーンが MAB 0 の値と 0 の縮約になることを使う）。0: 縮約を持たない（l1bmr / l1bmr4 は E_UNSUPPORTED） |
 | `CLEAR` | 1 | 1: リセット後に L1BM と `$lbi` を 0 にする（2^AW クロック、その間 `idle` = 0） |
 | `REPLICA` | 0 | 1: 複製規則（WP37、`mncore/wp/WP-3x.md` の M2 の判断）。存在しない MAB m を MAB m mod N_MAB の複製とみなす（下の「存在しない MAB」）。N_MAB は 2 のべき |
+| `BS` | 0 | 1（WP34、16 MAB の仮想 PE を FPGA に載せるため）: ソースバッファ、`$lbf`、`$lbi` を BSRAM に置く（N_MAB = 16 の LUT RAM では RAM16SDP4 が 1,536 個要り、デバイスの 648 個を超える）。`lbf_rdata` は 1 クロック前の `lbf_r*` の値（読む側はアドレスを 1 クロック保つ）、`$lbi` からの結果は 1 クロック遅れ、commit は直接の転送で長語 1 つに 2 クロック、縮約は各 PE・サイクルの入力 16（または 4）個を小さな LUT RAM に写してから回す。結果は `BS = 0` と同じ。RRN は 0 か 1 |
 
 ## 境界のポート（PE コア ⇔ mn_l1bm）
 

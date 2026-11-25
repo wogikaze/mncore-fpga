@@ -1,0 +1,55 @@
+# WP34: the 64 PEs of one L1B on the virtual PEs (mn_core N_PE = 4, VPE = 1, N_MAB = 16, LM_AW = 11: the
+# chip's LM; M2 = 1: the L1BM of 16 MABs, the L2BM and MV units), run through the host ports by tb_core
+# with the behavioural SDRAM tb_sdmem. Script mncore/sim/tb/vpe/fixed/m64.scr (gen_vpe.py): directed
+# programs on the 64 PEs whose expected values come from the official emulator (hash checks of every
+# PE's GRF / LM / T / OMR and of the L1BM). The corpus regression is mncore/sim/regress/run.py --vpe 16.
+top: tb_core
+rtl_top: mn_vpe_harness
+incdir: mncore/rtl/dec
+define: TB_NPE=4
+define: TB_M2=1
+define: TB_SDMEM
+define: TB_VPE=1
+define: TB_NMAB=16
+define: TB_LMAW=11
+define: TB_SCRIPT="mncore/sim/tb/vpe/fixed/m64.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/vpe/mn_vpe_store.v
+mncore/rtl/vpe/mn_vpe_ctx.v
+mncore/rtl/vpe/mn_vpe_arb.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/vpe/mn_vpe.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/mv/mn_mv_tags.v
+mncore/rtl/mv/mn_mv_red.v
+mncore/rtl/mv/mn_mv.v
+mncore/rtl/core/mn_core.v
+mncore/sim/tb/vpe/mn_vpe_harness.v
+mncore/sim/tb/m2/tb_sdmem.v
+mncore/sim/tb/core/tb_core.v

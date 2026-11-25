@@ -48,6 +48,14 @@
 //   RRN = 2 a reduction is that of 16 (l1bmr) or 4 (l1bmr4) copies of MAB 0's value: fadd /
 //   iadd scale it by 2**4 / 2**2 (exactly, like the network: the copies have one exponent), the
 //   other operations keep it (and / or: 0 or 1).
+//   BS = 1 (WP34, for the 16 MABs of the virtual PEs on the FPGA: their source buffer, $lbf and $lbi are
+//   256-entry memories, too big for LUT RAM): those three are BSRAM with a synchronous read.
+//     - lbf_rdata is that of the address (lbf_r*) of the clock before: the reader keeps the address a
+//       clock (mn_pe_core LBS = 1);
+//     - a result from $lbi comes a clock later (res_valid; the requester waits for it anyway);
+//     - the commit reads the source buffer a clock ahead: 2 clocks per long word of a direct transfer; a
+//       reduction first copies the 16 (or 4) inputs of the PE and cycle into a small LUT RAM (RRN 0 / 1).
+//   The results are those of BS = 0.
 `default_nettype none
 module mn_l1bm #(
     parameter N_MAB = 1,    // MABs of the L1B (1..16), MAB 0 .. N_MAB-1 exist (contract N_MAB)
@@ -55,7 +63,8 @@ module mn_l1bm #(
     parameter RRN   = 1,    // 1: reduction network mn_l1bm_rrn (any N_MAB); 2: N_MAB = 1 only, one
                             // value and zeros per lane (small); 0: none, l1bmr / l1bmr4 E_UNSUPPORTED
     parameter CLEAR = 1,    // 1: after reset, clear the L1BM and $lbi (2**AW clocks, idle = 0)
-    parameter REPLICA = 0   // 1: absent MABs are copies of the implemented ones (WP37, see above)
+    parameter REPLICA = 0,  // 1: absent MABs are copies of the implemented ones (WP37, see above)
+    parameter BS    = 0     // 1: the source buffer, $lbf and $lbi in BSRAM (WP34, see above; RRN 0 / 1)
 ) (
     input  wire         clk,
     input  wire         rst,
@@ -253,12 +262,22 @@ module mn_l1bm #(
         .re(m_re), .raddr(m_raddr), .rdata(m_rdata));
 
     // ------------------------------------------------------------------ source buffer
+    localparam BSB = (BS != 0);
     wire [SAW-1:0] sb_raddr;
     wire [127:0]   sb_rdata;
     wire [SAW-1:0] sb_waddr = sidx(src_mab, src_pe, src_cycle);
     wire           sb_we    = src_we & ({1'b0, src_mab} < NM);
-    mn_ram_lut #(.W(128), .AW(SAW), .NR(1)) u_src (
-        .clk(clk), .we(sb_we), .waddr(sb_waddr), .wdata(src_data), .raddr(sb_raddr), .rdata(sb_rdata));
+    generate
+        if (BSB) begin : g_srcb
+            // BSRAM: sb_rdata is that of sb_raddr of the clock before
+            mn_ram_1r1w #(.W(128), .AW(SAW), .NWE(1), .OREG(0)) u_src (
+                .clk(clk), .we(sb_we), .waddr(sb_waddr), .wdata(src_data), .re(1'b1), .raddr(sb_raddr),
+                .rdata(sb_rdata));
+        end else begin : g_srcl
+            mn_ram_lut #(.W(128), .AW(SAW), .NR(1)) u_src (
+                .clk(clk), .we(sb_we), .waddr(sb_waddr), .wdata(src_data), .raddr(sb_raddr), .rdata(sb_rdata));
+        end
+    endgenerate
 
     /* verilator lint_off UNUSEDSIGNAL */
     // index {m, p, c} of a PE and cycle; with N_MAB = 1 the MAB bits are dropped (m is always 0)
@@ -275,9 +294,18 @@ module mn_l1bm #(
     // Not cleared at reset: reading $lbf before an L1BM -> PE transfer is an error in the
     // emulator and the assembler rejects it.
     wire lbf_ok = lbf_we & (ph == P_STEP) & lbf_upd & ({1'b0, lbf_wmab} < NM);
-    mn_ram_lut #(.W(128), .AW(SAW), .NR(1)) u_lbf (
-        .clk(clk), .we(lbf_ok), .waddr(sidx(lbf_wmab, lbf_wpe, lbf_wcycle)), .wdata(lbf_wdata),
-        .raddr(sidx(lbf_rmab, lbf_rpe, lbf_rcycle)), .rdata(lbf_rdata));
+    generate
+        if (BSB) begin : g_lbfb
+            // BSRAM: lbf_rdata is that of the address of the clock before
+            mn_ram_1r1w #(.W(128), .AW(SAW), .NWE(1), .OREG(0)) u_lbf (
+                .clk(clk), .we(lbf_ok), .waddr(sidx(lbf_wmab, lbf_wpe, lbf_wcycle)), .wdata(lbf_wdata),
+                .re(1'b1), .raddr(sidx(lbf_rmab, lbf_rpe, lbf_rcycle)), .rdata(lbf_rdata));
+        end else begin : g_lbfl
+            mn_ram_lut #(.W(128), .AW(SAW), .NR(1)) u_lbf (
+                .clk(clk), .we(lbf_ok), .waddr(sidx(lbf_wmab, lbf_wpe, lbf_wcycle)), .wdata(lbf_wdata),
+                .raddr(sidx(lbf_rmab, lbf_rpe, lbf_rcycle)), .rdata(lbf_rdata));
+        end
+    endgenerate
 
     // ------------------------------------------------------------------ $lbi (two planes)
     wire           li_we0, li_we1;
@@ -285,17 +313,30 @@ module mn_l1bm #(
     wire [63:0]    li_wdata;
     wire [LAW-1:0] li_raddr;
     wire [63:0]    li_rd0, li_rd1;
-    mn_ram_lut #(.W(64), .AW(LAW), .NR(1)) u_lbi0 (
-        .clk(clk), .we(li_we0), .waddr(li_waddr), .wdata(li_wdata), .raddr(li_raddr), .rdata(li_rd0));
-    mn_ram_lut #(.W(64), .AW(LAW), .NR(1)) u_lbi1 (
-        .clk(clk), .we(li_we1), .waddr(li_waddr), .wdata(li_wdata), .raddr(li_raddr), .rdata(li_rd1));
+    generate
+        if (BSB) begin : g_lbib
+            // BSRAM: read with the result request, the value a clock later (R_LBI)
+            mn_ram_1r1w #(.W(64), .AW(LAW), .NWE(1), .OREG(0)) u_lbi0 (
+                .clk(clk), .we(li_we0), .waddr(li_waddr), .wdata(li_wdata), .re(1'b1), .raddr(li_raddr),
+                .rdata(li_rd0));
+            mn_ram_1r1w #(.W(64), .AW(LAW), .NWE(1), .OREG(0)) u_lbi1 (
+                .clk(clk), .we(li_we1), .waddr(li_waddr), .wdata(li_wdata), .re(1'b1), .raddr(li_raddr),
+                .rdata(li_rd1));
+        end else begin : g_lbil
+            mn_ram_lut #(.W(64), .AW(LAW), .NR(1)) u_lbi0 (
+                .clk(clk), .we(li_we0), .waddr(li_waddr), .wdata(li_wdata), .raddr(li_raddr), .rdata(li_rd0));
+            mn_ram_lut #(.W(64), .AW(LAW), .NR(1)) u_lbi1 (
+                .clk(clk), .we(li_we1), .waddr(li_waddr), .wdata(li_wdata), .raddr(li_raddr), .rdata(li_rd1));
+        end
+    endgenerate
 
     // ------------------------------------------------------------------ results (L1BM -> PE)
-    localparam [1:0] R_IDLE = 2'd0, R_HI = 2'd1, R_LO = 2'd2;
+    localparam [1:0] R_IDLE = 2'd0, R_HI = 2'd1, R_LO = 2'd2, R_LBI = 2'd3;
     reg  [1:0]  rs;
     reg  [12:0] r_alo;      // address of the LSB long word (wl)
     reg         r_dual;
     reg  [63:0] r_hi;
+    reg         r_tin;      // BS: the $lbi position of the request is kept (t_in)
     // turnaround: $lbi position of PE (m, p) in the layout of the transfer that wrote $lbi
     wire [5:0] t_pos = (t_bmode == 2'b10) ? (t_wl ? {1'b0, res_mab[3:2], 1'b0, res_pe} : {2'b00, res_mab[3:2], res_pe}) :
                        (t_bmode == 2'b11) ? (t_adr + {res_mab, res_pe}) : {4'd0, res_pe};
@@ -325,11 +366,15 @@ module mn_l1bm #(
             rs        <= R_IDLE;
             res_valid <= 1'b0;
             res_data  <= 128'd0;
+            r_tin     <= 1'b0;
         end else begin
             res_valid <= 1'b0;
             case (rs)
                 R_IDLE: if (r_go) begin
-                    if (l2pi) begin
+                    if (l2pi && BSB) begin
+                        r_tin <= t_in;      // the BSRAM answers in the next clock
+                        rs    <= R_LBI;
+                    end else if (l2pi) begin
                         res_data  <= t_in ? {li_rd0, li_rd1} : 128'd0;
                         res_valid <= 1'b1;
                     end else if (l2pm & ({1'b0, res_mab} < NM)) begin
@@ -350,6 +395,11 @@ module mn_l1bm #(
                         res_valid <= 1'b1;
                         rs        <= R_IDLE;
                     end
+                end
+                R_LBI: begin     // BS: the $lbi planes of the request
+                    res_data  <= r_tin ? {li_rd0, li_rd1} : 128'd0;
+                    res_valid <= 1'b1;
+                    rs        <= R_IDLE;
                 end
                 default: begin   // R_LO
                     res_data  <= {r_hi, m_rdata};
@@ -408,7 +458,35 @@ module mn_l1bm #(
     // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops the MAB bits
     // that N_MAB does not have, so the source buffer gives that MAB's value)
     wire        rr_ex = (REPLICA != 0) | ({1'b0, rr_mab} < NM);
-    wire [63:0] in_w  = rr_ex ? (in_lo ? sb_rdata[63:0] : sb_rdata[127:64]) : 64'd0;
+    // BS: the reduction reads its inputs from the staging copy of the PE and cycle (stg: input i = MAB i,
+    // or MAB {g, i} of a 4x4 group; the long word in_lo of each), filled from the source buffer before the
+    // first lane that reads that long word
+    localparam [1:0] SG_IDLE = 2'd0, SG_RD = 2'd1, SG_LAST = 2'd2;
+    reg  [1:0]   sg;         // staging: idle, reading, the last read's write
+    reg  [3:0]   si;         // the input being read
+    reg          sg_wv;      // stg write this clock (the read of the clock before)
+    reg  [3:0]   sg_wi;
+    reg          stg_ok;     // the inputs of the item are staged ...
+    reg          stg_lo;     // ... their long word (in_lo)
+    reg          kp;         // BS: the source buffer read of a direct item is out
+    wire [3:0]   sg_mab = k_m4 ? {k_g, si[1:0]} : si;
+    wire [3:0]   sg_end = k_m4 ? 4'd3 : 4'd15;
+    wire         stg_hit = stg_ok & (stg_lo == in_lo);
+    wire [63:0]  stg_rd;
+    generate
+        if (BSB) begin : g_stg
+            mn_ram_lut #(.W(64), .AW(4), .NR(1)) u_stg (
+                .clk(clk), .we(sg_wv), .waddr(sg_wi), .wdata(stg_lo ? sb_rdata[63:0] : sb_rdata[127:64]),
+                .raddr(k_m4 ? {2'b00, rr_idx[1:0]} : rr_idx), .rdata(stg_rd));
+        end else begin : g_nostg
+            assign stg_rd = 64'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // BS = 0: no staging copy
+            wire unused_stg = ^{sg_wv, sg_wi, stg_hit};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
+    wire [63:0] in_w  = ~rr_ex ? 64'd0 : BSB ? stg_rd : in_lo ? sb_rdata[63:0] : sb_rdata[127:64];
     wire [1:0] in_fmt = r_xt ? 2'd2 : r_fmt;                       // width of the input lane
     wire [63:0] in_lane = lane_of(in_w, in_fmt, in_ln);
     assign rr_val = r_xt ? h2s(in_lane[15:0]) : in_lane;
@@ -467,7 +545,7 @@ module mn_l1bm #(
         end
     endfunction
 
-    wire rr_start = (ph == P_COMMIT) & k_red & ~k_zero & ~krun & ~rr_busy;
+    wire rr_start = (ph == P_COMMIT) & k_red & ~k_zero & ~krun & ~rr_busy & (~BSB | stg_hit);
     generate
         if (RRN == 2) begin : g_rrn1
             // N_MAB = 1: every lane reduces the value of MAB 0 with zeros (the other MABs do not
@@ -584,12 +662,13 @@ module mn_l1bm #(
     wire [63:0] kw_n   = put_lane(kw, o_fmt, kj, rr_out);
     wire        k_dir  = ~k_red;
     wire        k_lane_last = (kj == kj_last);
-    // an item is written in the clock where its value is ready
-    wire        k_wr   = (ph == P_COMMIT) & (k_dir | k_zero | (krun & rr_done & k_lane_last));
+    // an item is written in the clock where its value is ready (BS: a direct item in the clock after its
+    // source buffer read)
+    wire        k_wr   = (ph == P_COMMIT) & ((k_dir & (~BSB | kp)) | k_zero | (krun & rr_done & k_lane_last));
     // an absent MAB sends 0, or (REPLICA) the value of the MAB it copies (sidx drops its MAB bits)
     wire        k_vz   = clr_on | (k_dir ? ((REPLICA == 0) & ({1'b0, k_mab} >= NM)) : k_zero);
     wire [63:0] k_val  = k_vz ? 64'd0 : ~k_dir ? kw_n : k_k ? sb_rdata[63:0] : sb_rdata[127:64];
-    assign sb_raddr = sidx(k_red ? rr_mab : k_mab, k_p, kc);
+    assign sb_raddr = BSB ? sidx((sg == SG_RD) ? sg_mab : k_mab, k_p, kc) : sidx(k_red ? rr_mab : k_mab, k_p, kc);
 
     // ------------------------------------------------------------------ port B
     wire          k_mw   = k_wr & l1bm_me;
@@ -629,9 +708,42 @@ module mn_l1bm #(
             ko          <= 6'd0;
             kj          <= 2'd0;
             krun        <= 1'b0;
+            kp          <= 1'b0;
+            sg          <= SG_IDLE;
+            si          <= 4'd0;
+            sg_wv       <= 1'b0;
+            sg_wi       <= 4'd0;
+            stg_ok      <= 1'b0;
+            stg_lo      <= 1'b0;
         end else begin
             done        <= 1'b0;
             b_rsp_valid <= b_rgo;
+            sg_wv       <= 1'b0;
+            if (BSB && ph == P_COMMIT) begin
+                // a direct item: its source buffer read is out in its first clock, written in the second
+                if (k_wr) kp <= 1'b0;
+                else if (k_dir) kp <= 1'b1;
+                // a reduction item: copy its inputs into stg first (one read a clock, written a clock later)
+                case (sg)
+                    SG_IDLE: if (k_red && !k_zero && !stg_hit && !krun) begin
+                        sg     <= SG_RD;
+                        si     <= 4'd0;
+                        stg_ok <= 1'b0;
+                        stg_lo <= in_lo;
+                    end
+                    SG_RD: begin
+                        sg_wv <= 1'b1;
+                        sg_wi <= si;
+                        si    <= si + 4'd1;
+                        if (si == sg_end) sg <= SG_LAST;
+                    end
+                    default: begin   // SG_LAST: the last input is written in this clock
+                        stg_ok <= 1'b1;
+                        sg     <= SG_IDLE;
+                    end
+                endcase
+                if (k_wr) stg_ok <= 1'b0;
+            end
             case (ph)
                 P_CLEAR: begin
                     clr_a <= clr_a + 1'b1;
@@ -649,6 +761,9 @@ module mn_l1bm #(
                     kj   <= 2'd0;
                     krun <= 1'b0;
                     kw   <= 64'd0;
+                    kp     <= 1'b0;
+                    sg     <= SG_IDLE;
+                    stg_ok <= 1'b0;
                     if (p2l_w & ~chk_trap & ~chk_unsup) begin
                         ph <= P_COMMIT;
                     end else begin

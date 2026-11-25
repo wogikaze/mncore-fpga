@@ -24,15 +24,28 @@
 //   registers of mn_pe_lsu are those of PE hp_pe.
 // Reset clears the sequencers and the registers of mn_pe_lsu ($mb / $nb); the memories, T and the
 // mask registers are RAM and are cleared through the host port (mn_core CLEAR).
+//
+// VPE = 1 (WP34, the virtual PEs): the GRF0 / GRF1 / LM0 / LM1 of the PEs are in the SDRAM; the store
+// is mn_vpe_store (rtl/vpe) on the bus vs_* (contract 06 section 6) instead of mn_pe_store's BSRAM. The
+// PE of a request is {vm, the PE in the MAB}: vm is the (virtual) MAB whose 4 PEs this MAB runs now
+// (rtl/vpe/mn_vpe.v keeps it stable during a step). LM_AW may then be up to 11 (the chip's 2048 long
+// words). VPE = 0: vm and vs_* are not used (vs_req_valid = 0).
 `default_nettype none
 module mn_mab_mem #(
     parameter LM_AW  = 8,   // LM0/LM1 depth per PE = 2**LM_AW long words
     parameter GRF_AW = 8,   // GRF0/GRF1 depth per PE = 2**GRF_AW long words
-    parameter NPE    = 4    // PEs (4)
+    parameter NPE    = 4,   // PEs (4)
+    parameter VPE    = 0,   // 1: the memories are in the SDRAM (mn_vpe_store on vs_*)
+    /* verilator lint_off UNUSEDPARAM */
+    // read only by the VPE = 1 generate block
+    parameter [19:0] LM_BASE  = 20'hC0000,   // VPE: SDRAM long word bases (mn_vpe_store)
+    parameter [19:0] GRF_BASE = 20'hA0000
+    /* verilator lint_on UNUSEDPARAM */
 ) (
     input  wire         clk,
     input  wire         rst,
     // ---- step
+    input  wire [3:0]   vm,          // VPE: the MAB of the PEs (the upper part of the PE number)
     input  wire [1:0]   pe,
     input  wire         start,
     output wire         idle,
@@ -78,7 +91,16 @@ module mn_mab_mem #(
     input  wire [7:0]   hp_req_wmask,
     output wire         hp_req_err,
     output wire         hp_rsp_valid,
-    output wire [63:0]  hp_rsp_rdata
+    output wire [63:0]  hp_rsp_rdata,
+    // ---- VPE: the store's bus to the SDRAM
+    output wire         vs_req_valid,
+    input  wire         vs_req_ready,
+    output wire         vs_req_we,
+    output wire [22:0]  vs_req_addr,
+    output wire [63:0]  vs_req_wdata,
+    output wire [7:0]   vs_req_wmask,
+    input  wire         vs_rsp_valid,
+    input  wire [63:0]  vs_rsp_rdata
 );
     // ------------------------------------------------------------------ sequencer
     reg        run_q;      // a step is running
@@ -123,13 +145,36 @@ module mn_mab_mem #(
         .st_rsp_valid(st_rsp_valid), .st_rsp_rdata(st_rsp_rdata)
     );
 
-    // the store registers the PE with each request (mn_pe_store)
-    mn_pe_store #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .NPE(NPE)) u_store (
-        .clk(clk), .rst(rst), .pe(cur_pe),
-        .req_valid(st_req_valid), .req_ready(st_req_ready), .req_we(st_req_we),
-        .req_addr(st_req_addr), .req_wdata(st_req_wdata), .req_wmask(st_req_wmask),
-        .rsp_valid(st_rsp_valid), .rsp_rdata(st_rsp_rdata)
-    );
+    generate
+        if (VPE != 0) begin : g_vstore
+            // the virtual PEs: the memories of PE {vm, cur_pe} in the SDRAM
+            mn_vpe_store #(.LM_BASE(LM_BASE), .GRF_BASE(GRF_BASE)) u_store (
+                .clk(clk), .rst(rst), .pe({vm, cur_pe}),
+                .req_valid(st_req_valid), .req_ready(st_req_ready), .req_we(st_req_we),
+                .req_addr(st_req_addr), .req_wdata(st_req_wdata), .req_wmask(st_req_wmask),
+                .rsp_valid(st_rsp_valid), .rsp_rdata(st_rsp_rdata),
+                .b_req_valid(vs_req_valid), .b_req_ready(vs_req_ready), .b_req_we(vs_req_we),
+                .b_req_addr(vs_req_addr), .b_req_wdata(vs_req_wdata), .b_req_wmask(vs_req_wmask),
+                .b_rsp_valid(vs_rsp_valid), .b_rsp_rdata(vs_rsp_rdata));
+        end else begin : g_store
+            // the store registers the PE with each request (mn_pe_store)
+            mn_pe_store #(.LM_AW(LM_AW), .GRF_AW(GRF_AW), .NPE(NPE)) u_store (
+                .clk(clk), .rst(rst), .pe(cur_pe),
+                .req_valid(st_req_valid), .req_ready(st_req_ready), .req_we(st_req_we),
+                .req_addr(st_req_addr), .req_wdata(st_req_wdata), .req_wmask(st_req_wmask),
+                .rsp_valid(st_rsp_valid), .rsp_rdata(st_rsp_rdata)
+            );
+            assign vs_req_valid = 1'b0;
+            assign vs_req_we    = 1'b0;
+            assign vs_req_addr  = 23'd0;
+            assign vs_req_wdata = 64'd0;
+            assign vs_req_wmask = 8'd0;
+            /* verilator lint_off UNUSEDSIGNAL */
+            // VPE = 0: no SDRAM store, the MAB number is not used
+            wire unused_vs = ^{vm, vs_req_ready, vs_rsp_valid, vs_rsp_rdata};
+            /* verilator lint_on UNUSEDSIGNAL */
+        end
+    endgenerate
 
     assign idle = ~run_q & l_idle;
     assign done = l_done;

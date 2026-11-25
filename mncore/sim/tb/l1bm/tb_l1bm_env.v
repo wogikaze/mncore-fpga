@@ -23,7 +23,8 @@ module tb_l1bm_env #(
     parameter RRN   = 1,
     parameter TESTS = "mncore/sim/tb/l1bm/fixed/m1.tst",
     parameter PARG  = "m1=%s",     // plusarg that replaces TESTS
-    parameter TAG   = "m1"
+    parameter TAG   = "m1",
+    parameter BS    = 0        // WP34: mn_l1bm BS (the buffers in BSRAM: $lbf is read a clock later)
 ) (
     input  wire clk,
     input  wire go,
@@ -82,7 +83,7 @@ module tb_l1bm_env #(
     wire         b_req_ready, b_req_err, b_rsp_valid;
     wire [63:0]  b_rsp_rdata;
 
-    mn_l1bm #(.N_MAB(N_MAB), .AW(10), .RRN(RRN), .CLEAR(1)) dut (
+    mn_l1bm #(.N_MAB(N_MAB), .AW(10), .RRN(RRN), .CLEAR(1), .BS(BS)) dut (
         .clk(clk), .rst(rst),
         .ll(ll), .l1bm_bmode(bmode), .l1bm_lwrite(lwrite), .l1bm_rmode(rmode), .l1bm_me(me),
         .l1bm_ladr(ladr), .l1bm_dmode(dmode), .l1bm_ext(ext), .l1bm_round_out(rnd),
@@ -245,6 +246,7 @@ module tb_l1bm_env #(
                     if (use_src && isel == 3'd7) begin
                         // isel 111: the PE's $lbf (WP37; the official emulator sends it)
                         lbf_rmab = i / 4; lbf_rpe = i % 4; lbf_rcycle = c;
+                        if (BS != 0) @(posedge clk);   // BSRAM: the address is taken at the clock
                         #1;
                         srcb[i*4 + c] = lbf_rdata;
                     end else if (use_src) begin
@@ -254,6 +256,7 @@ module tb_l1bm_env #(
                     if (alu) begin
                         if (alu_isela == 4'd13) begin
                             lbf_rmab = i / 4; lbf_rpe = i % 4; lbf_rcycle = c;
+                            if (BS != 0) @(posedge clk);
                             #1;
                             alub[i*4 + c] = lbf_rdata;
                         end else begin
