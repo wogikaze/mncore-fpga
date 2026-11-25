@@ -21,7 +21,7 @@
 | WP31 | L1BM ユニット | 4a | 完了 2026-11-25 | 公式を期待値にした 96 本、rrn 186,396 行で一致。N_MAB=1、RRN=2 で LUT 約 1,500、BSRAM 4。sim と lint は lead が再実行して PASS |
 | WP35 | 面積の削減 | 4a | 完了 2026-11-25 | LUT 換算 −2,479。1 PE の全部入りが LUT4 71% で配置でき、実機で 259/260 一致。lsu に NPE を追加。pemem、mab、top_1pe は lead が再実行して PASS |
 | WP32 | L2BM | 4b | 完了 2026-11-25 | 公式を期待値にした 105 本が一致（hello_world の縮約部分を含む）。RRN=2、DAR=0 で LUT 約 1,100、BSRAM 8。sim は lead が再実行して PASS |
-| WP33 | MV | 4b | 実行中 | 実機 | |
+| WP33 | MV | 4b | 完了 2026-11-25 | 公式を期待値にした 64 本が 2 環境で一致。実機で 192 回と 160 回の試行がすべて一致し、hello_world の MV も通る。LUT 約 1,100、BSRAM 0。DAR は M2 では不要。sim と lint は lead が再実行して PASS | |
 | WP36 | 行列 | 4b | 実行中 | |
 | WP37 | M2 の統合（hello_world を実機で） | 4c | 未着手 | |
 | WP34 | 仮想 PE（64 PE） | 5 | 未着手 | |
