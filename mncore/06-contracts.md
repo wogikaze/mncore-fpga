@@ -224,6 +224,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
   - M2a-R（REPLICA）: LUT4 74.7%、27.8 MHz。上限ぎりぎり。
   - MAU 入りの M2 は yosys の換算で 95.6% になり、載らない。
   - SDRAM は統合後 99 MHz に届かず、54 MHz で動かす（WP05 の実機確認済みの設定）。
+- **SDRAM は FPGA の構成（ビットストリームの読み込み）の間リフレッシュされず、ビットが化けうる**（WP38: 1 回で 12.6 Mbit 中 3 ビット）。切り替えをまたいで中身を保つには、ホストが退避して書き戻すか、切り替えの前に self refresh に入れる口を足す。
+- WP38 の組（M2a 71.8%、M2aR 74.6%、MAU 69.9%、MAUF3 68.6%、L1MAU 74.1%）は、floor / ftoi / fmax / fmin、BFN、MAT を覆っていない。L1BM（縮約あり）+ MAU + FPALU 1 を 1 本に載せるには約 3,000 LUT の削減が要る。
 - 乗算器 48 個（18×18 換算）のうち FPU に最大 24 個。FMA 1 個は 9 個が目安。
 
 ### RAM と DSP の書き方
@@ -270,6 +272,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 - 命令メモリは 7 レーンを順に書く。
 - デザイン ID: 0x02 は `mn_top_1pe`、0x03 は `mn_top_mab`（1 MAB）。
   - 0x04 は `mn_top_m2`（1 MAB + L1BM + L2BM + MV）。RESET で DRAM / PDM も 0 にする。
+  - 0x05 は `mn_top_multi`（WP38 のビットストリームの組。`fpga/multi/set.json`）。PDM / DRAM は RESET コマンドでだけ消し、構成（ビットストリームの読み込み）では消さない。
+- 複数のビットストリームを要するプログラムの実機実行は `mncore/tools/host/mnrun.py` で行う（区間に分け、状態を引き継ぐ）。実機の回帰は `mnrun.py regress --all`。
   - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN、bit 6 = MAT、bit 7 = REPLICA。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
 - `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。
 - 実機での回帰は `python mncore/fpga/top_1pe/hwrun.py --all --fpalu <n>` で行う。

@@ -241,3 +241,5 @@ FPGA 側の誤り計数が 0 のままでも、ブリッジ側でデータが落
 - INFO のフラグの bit 6 = MAT（行列。WP36）。停止理由 4 = WAIT（info = タグ。WP33）。
 
 - デザイン ID 0x04: `mn_top_m2`（M2）。INFO のフラグの bit 7 = REPLICA。RESET で DRAM / PDM も 0 にする（WP37）。
+
+- デザイン ID 0x05: `mn_top_multi`（WP38）。PDM / DRAM は RESET コマンドでだけ消す。
