@@ -1,0 +1,27 @@
+# WP33: the RTL of the MV test design mvt_top (brd_host_if + mvt_core (mn_mv, mn_l2bm, test L1BM)
+# + sdr_bus64), in the format of mncore/sim/tb/<unit>/files.txt. Read by build.py.
+rtl_top: mvt_top
+incdir: mncore/rtl/dec
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/rtl/mv/mn_mv_tags.v
+mncore/rtl/mv/mn_mv_red.v
+mncore/rtl/mv/mn_mv.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/sdram/sdr_tmr.v
+mncore/rtl/sdram/sdr_ctrl.v
+mncore/rtl/sdram/sdr_fifo.v
+mncore/rtl/sdram/sdr_afifo.v
+mncore/rtl/sdram/sdr_bus64.v
+mncore/rtl/sdram/sdr_gw_pll.v
+mncore/rtl/sdram/sdr_gw_clkout.v
+mncore/rtl/board/brd_ram_1r1w.v
+mncore/rtl/board/brd_fifo.v
+mncore/rtl/board/brd_uart_rx.v
+mncore/rtl/board/brd_uart_tx.v
+mncore/rtl/board/brd_host_if.v
+mncore/fpga/mv_test/mvt_l1mem.v
+mncore/fpga/mv_test/mvt_core.v
+mncore/fpga/mv_test/mvt_top.v
