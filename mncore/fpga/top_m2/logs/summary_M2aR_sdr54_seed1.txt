@@ -1,0 +1,5 @@
+design mn_top_m2 {'FPALU': '0', 'MAU': '0', 'BFN': '0', 'MAT': '0', 'REPLICA': '1', 'SDR_HZ': '54000000', 'IDIV_SEL': '0', 'FBDIV_SEL': '1', 'ODIV_SEL': '16', 'PSDA': '11', 'CL': '2', 'RDX': '1'} synth_gowin -family gw2a -nowidelut
+yosys: LUT 11077, ALU 1937, MUX2 0, FF 4752, SSRAM 296, BSRAM 43, DSP 0, LUT_eq 15382  (LUT_eq = LUT + ALU + 8 * SSRAM = 15382, 74.2 % of 20736)
+seed 1: Fmax sclk 91.02 MHz, u_core.clk 26.84 MHz -> FAIL (core >= 27.0, SDRAM sclk >= 54.0)
+  utilisation: VCC 1/1 (100 %), IOB 33/66 (50 %), LUT4 15737/20736 (76 %), IOLOGICO 1/384 (0 %), ALU 2292/15552 (15 %), GND 1/1 (100 %), DFF 6528/15552 (42 %), RAM16SDP4 296/648 (46 %), BSRAM 43/46 (93 %), GSR 1/1 (100 %), rPLL 1/2 (50 %), BUFG 1/24 (4 %)
+no seed met timing

@@ -13,8 +13,8 @@ mn_top_m2 choose the units; the L1BM, L2BM and MV units are always there.
 Steps: yosys `synth_gowin -family gw2a -nowidelut` (contract 06 section 6) -> nextpnr-himbaechel
 (GW2AR-LV18QN88C8/I7, family GW2A-18C, top_m2.cst; the embedded SDRAM ports are bound by name) ->
 gowin_pack. Two clocks: the core on the 27 MHz board clock, the SDRAM controller on the rPLL's
-99 MHz. nextpnr gets --freq for both (the SDRAM clock needs 99); the summary lists the Fmax of every
-clock. Products and logs: mncore/fpga/top_m2/build/<tag>/ (synth.json, pnr<seed>.json, top_m2.fs,
+54 MHz (mn_top_m2's defaults: WP05's 54 MHz setting; its 99 MHz is not reached in this design, WP37).
+nextpnr gets --freq for both (the SDRAM clock needs 54); the summary lists the Fmax of every clock. Products and logs: mncore/fpga/top_m2/build/<tag>/ (synth.json, pnr<seed>.json, top_m2.fs,
 yosys.log, nextpnr<seed>.log, summary.txt).
 
 --program loads the bitstream with `openFPGALoader -b tangnano20k <fs>` into the SRAM only (volatile;
@@ -104,10 +104,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--param", action="append", default=[], help=f"{TOP} parameter K=V")
     ap.add_argument("--seeds", default="1", help="nextpnr placement seeds to try, comma separated")
-    ap.add_argument("--freq", type=float, default=99.0,
-                    help="nextpnr --freq (MHz; one target for both clocks: the SDRAM clock needs 99)")
+    ap.add_argument("--freq", type=float, default=54.0,
+                    help="nextpnr --freq (MHz; one target for both clocks: the SDRAM clock needs 54)")
     ap.add_argument("--core-mhz", type=float, default=27.0, help="the board clock domain must reach this")
-    ap.add_argument("--sdr-mhz", type=float, default=99.0, help="the SDRAM clock domain must reach this")
+    ap.add_argument("--sdr-mhz", type=float, default=54.0, help="the SDRAM clock domain must reach this")
     ap.add_argument("--tag", help="build sub-directory (default from the parameters)")
     ap.add_argument("--no-pnr", action="store_true")
     ap.add_argument("--reuse-synth", action="store_true")

@@ -1,0 +1,539 @@
+Info: Using uarch 'gowin' for device 'GW2AR-LV18QN88C8/I7'
+
+Info: Cell O_sdram_clk not found
+Info: Cell O_sdram_cke not found
+Info: Cell O_sdram_cs_n not found
+Info: Cell O_sdram_cas_n not found
+Info: Cell O_sdram_ras_n not found
+Info: Cell O_sdram_wen_n not found
+Info: Cell O_sdram_dqm[0] not found
+Info: Cell O_sdram_dqm[1] not found
+Info: Cell O_sdram_dqm[2] not found
+Info: Cell O_sdram_dqm[3] not found
+Info: Cell O_sdram_addr[0] not found
+Info: Cell O_sdram_addr[1] not found
+Info: Cell O_sdram_addr[2] not found
+Info: Cell O_sdram_addr[3] not found
+Info: Cell O_sdram_addr[4] not found
+Info: Cell O_sdram_addr[5] not found
+Info: Cell O_sdram_addr[6] not found
+Info: Cell O_sdram_addr[7] not found
+Info: Cell O_sdram_addr[8] not found
+Info: Cell O_sdram_addr[9] not found
+Info: Cell O_sdram_addr[10] not found
+Info: Cell O_sdram_ba[0] not found
+Info: Cell O_sdram_ba[1] not found
+Info: Cell IO_sdram_dq[0] not found
+Info: Cell IO_sdram_dq[1] not found
+Info: Cell IO_sdram_dq[2] not found
+Info: Cell IO_sdram_dq[3] not found
+Info: Cell IO_sdram_dq[4] not found
+Info: Cell IO_sdram_dq[5] not found
+Info: Cell IO_sdram_dq[6] not found
+Info: Cell IO_sdram_dq[7] not found
+Info: Cell IO_sdram_dq[8] not found
+Info: Cell IO_sdram_dq[9] not found
+Info: Cell IO_sdram_dq[10] not found
+Info: Cell IO_sdram_dq[11] not found
+Info: Cell IO_sdram_dq[12] not found
+Info: Cell IO_sdram_dq[13] not found
+Info: Cell IO_sdram_dq[14] not found
+Info: Cell IO_sdram_dq[15] not found
+Info: Cell IO_sdram_dq[16] not found
+Info: Cell IO_sdram_dq[17] not found
+Info: Cell IO_sdram_dq[18] not found
+Info: Cell IO_sdram_dq[19] not found
+Info: Cell IO_sdram_dq[20] not found
+Info: Cell IO_sdram_dq[21] not found
+Info: Cell IO_sdram_dq[22] not found
+Info: Cell IO_sdram_dq[23] not found
+Info: Cell IO_sdram_dq[24] not found
+Info: Cell IO_sdram_dq[25] not found
+Info: Cell IO_sdram_dq[26] not found
+Info: Cell IO_sdram_dq[27] not found
+Info: Cell IO_sdram_dq[28] not found
+Info: Cell IO_sdram_dq[29] not found
+Info: Cell IO_sdram_dq[30] not found
+Info: Cell IO_sdram_dq[31] not found
+Info: Reading constraints...
+Info: Create constant nets...
+Info: Modify LUTs...
+Info: Pack IOBs...
+Info: Pack I3C IOs...
+Info: Pack MIPI IOs...
+Info: Pack diff IOBs...
+Info: Pack FFs into IO cells...
+Info: Pack IODELAY...
+Info: Pack Input Edge Monitors...
+Info: Pack IO logic...
+Info: Pack DESER16 logic...
+Info: Pack GSR...
+Info: Pack HCLK cells...
+Info: Pack DLLDLYs...
+Info: Pack wide LUTs...
+Info: Packed MUX2_LUT8:0, MUX2_LU7:0, MUX2_LUT6:0, MUX2_LUT5:0
+Info: Pack ALUs...
+Info: Pack SSRAMs...
+Info: Constrained 2739 LUTFF pairs.
+Info: Pack PLL...
+Info: Pack ADC...
+Info: Pack GW JTAG...
+Info: Pack BSRAMs...
+Info: Pack DSP...
+Info: Pack INV...
+Info: Pack buffered nets...
+Info: Pack EMCU and UserFlash cells...
+Info: Pack UserFlash cells...
+Info: Pack DQCE cells...
+Info: Pack DCS cells...
+Info: Checksum: 0xab9372aa
+
+Info: Device utilisation:
+Info: 	                 VCC:       1/      1   100%
+Info: 	                 IOB:      10/     66    15%
+Info: 	                LUT4:   13420/  20736    64%
+Info: 	            IOLOGICI:       0/    384     0%
+Info: 	            IOLOGICO:       0/    384     0%
+Info: 	           MUX2_LUT5:       0/  10368     0%
+Info: 	           MUX2_LUT6:       0/   5184     0%
+Info: 	           MUX2_LUT7:       0/   2592     0%
+Info: 	           MUX2_LUT8:       0/   2592     0%
+Info: 	                 ALU:    2272/  15552    14%
+Info: 	                 GND:       1/      1   100%
+Info: 	                 DFF:    8815/  15552    56%
+Info: 	           RAM16SDP4:     193/    648    29%
+Info: 	               BSRAM:      31/     46    67%
+Info: 	              ALU54D:       0/     24     0%
+Info: 	     MULTADDALU18X18:       0/     24     0%
+Info: 	        MULTALU18X18:       0/     24     0%
+Info: 	        MULTALU36X18:       0/     24     0%
+Info: 	           MULT36X36:       0/     12     0%
+Info: 	           MULT18X18:       8/     48    16%
+Info: 	             MULT9X9:       0/     96     0%
+Info: 	              PADD18:       0/     48     0%
+Info: 	               PADD9:       0/     96     0%
+Info: 	                 GSR:       1/      1   100%
+Info: 	                 OSC:       0/      1     0%
+Info: 	                rPLL:       0/      2     0%
+Info: 	             GW_JTAG:       0/      1     0%
+Info: 	                BUFG:       1/     24     4%
+Info: 	                DQCE:       0/     24     0%
+Info: 	                 DCS:       0/      8     0%
+Info: 	               DHCEN:       0/     24     0%
+Info: 	              CLKDIV:       0/      8     0%
+Info: 	             CLKDIV2:       0/     16     0%
+
+Info: Running custom HCLK placer...
+Info: Placed 0 cells based on constraints.
+Info: Creating initial analytic placement for 14890 cells, random placement wirelen = 834403.
+Info:     at initial placer iter 0, wirelen = 14524
+Info:     at initial placer iter 1, wirelen = 14017
+Info:     at initial placer iter 2, wirelen = 12789
+Info:     at initial placer iter 3, wirelen = 12966
+Info: Running main analytical placer, max placement attempts per cell = 76787028.
+Info:     at iteration #1, type ALL: wirelen solved = 13076, spread = 269775, legal = 573421; time = 42.21s
+Info:     at iteration #2, type ALL: wirelen solved = 16078, spread = 229339, legal = 393366; time = 29.51s
+Info:     at iteration #3, type ALL: wirelen solved = 31773, spread = 183404, legal = 357864; time = 54.49s
+Info:     at iteration #4, type ALL: wirelen solved = 35005, spread = 163969, legal = 345868; time = 50.33s
+Info:     at iteration #5, type ALL: wirelen solved = 41664, spread = 161861, legal = 316345; time = 57.04s
+Info:     at iteration #6, type ALL: wirelen solved = 48647, spread = 166690, legal = 296886; time = 86.89s
+Info:     at iteration #7, type ALL: wirelen solved = 56826, spread = 158778, legal = 291593; time = 179.42s
+Info:     at iteration #8, type ALL: wirelen solved = 60123, spread = 160357, legal = 281559; time = 99.50s
+Info:     at iteration #9, type ALL: wirelen solved = 63689, spread = 150461, legal = 287640; time = 90.68s
+Info:     at iteration #10, type ALL: wirelen solved = 67924, spread = 145056, legal = 296825; time = 86.17s
+Info:     at iteration #11, type ALL: wirelen solved = 69901, spread = 142583, legal = 321302; time = 98.61s
+Info:     at iteration #12, type ALL: wirelen solved = 78278, spread = 150168, legal = 341982; time = 66.75s
+Info:     at iteration #13, type ALL: wirelen solved = 83886, spread = 168103, legal = 357890; time = 63.44s
+Info: HeAP Placer Time: 1018.86s
+Info:   of which solving equations: 34.10s
+Info:   of which spreading cells: 6.28s
+Info:   of which strict legalisation: 968.19s
+
+Info: Running simulated annealing placer for refinement.
+Info:   at iteration #1: temp = 0.000000, timing cost = 1251, wirelen = 281559
+Info:   at iteration #5: temp = 0.000000, timing cost = 1098, wirelen = 191951
+Info:   at iteration #10: temp = 0.000000, timing cost = 1048, wirelen = 172932
+Info:   at iteration #15: temp = 0.000000, timing cost = 985, wirelen = 165343
+Info:   at iteration #20: temp = 0.000000, timing cost = 850, wirelen = 161086
+Info:   at iteration #25: temp = 0.000000, timing cost = 872, wirelen = 158079
+Info:   at iteration #30: temp = 0.000000, timing cost = 851, wirelen = 157242
+Info:   at iteration #35: temp = 0.000000, timing cost = 852, wirelen = 156927
+Info:   at iteration #40: temp = 0.000000, timing cost = 808, wirelen = 156804
+Info:   at iteration #45: temp = 0.000000, timing cost = 852, wirelen = 156751
+Info:   at iteration #48: temp = 0.000000, timing cost = 850, wirelen = 156731 
+Info: SA placement time 463.89s
+
+Info: Max frequency for clock 'u_core.clk': 40.48 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 60 endpoint(s)
+Info:          + represents [1,60) endpoint(s)
+Info: [ 12333,  13555) |+
+Info: [ 13555,  14777) |*+
+Info: [ 14777,  15999) |***+
+Info: [ 15999,  17221) |*********+
+Info: [ 17221,  18443) |********+
+Info: [ 18443,  19665) |*******+
+Info: [ 19665,  20887) |************+
+Info: [ 20887,  22109) |************+
+Info: [ 22109,  23331) |*********+
+Info: [ 23331,  24553) |********+
+Info: [ 24553,  25775) |*******+
+Info: [ 25775,  26997) |***********+
+Info: [ 26997,  28219) |***************+
+Info: [ 28219,  29441) |*************+
+Info: [ 29441,  30663) |****************+
+Info: [ 30663,  31885) |***************+
+Info: [ 31885,  33107) |*************+
+Info: [ 33107,  34329) |****************+
+Info: [ 34329,  35551) |**************************+
+Info: [ 35551,  36773) |************************************************************ 
+Info: Checksum: 0xe6a1eb39
+Info: Routing globals...
+Info:     'u_core.clk' net was routed.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.mau_tag[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.q_ea' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.cw5_DFFR_Q_14_RESET' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.fc2_DFFR_Q_RESET_LUT2_I1_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.ic1_DFF_Q_D_LUT4_F_I3[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.hp_ch_LUT4_I2_F[3]' is routed using segments.
+Info:     'u_host.core_rst_LUT2_I0_F[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.mau_f_DFFE_Q_1_D_LUT3_F_I2[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.fcur_DFFE_Q_1_D[0]' is routed using segments.
+Info:     'u_host.u_rx.st_DFF_Q_1_D_LUT4_F_I3_LUT2_I1_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.ra1_DFFR_Q_RESET' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_store.ad_DFF_Q_26_D_LUT4_F_I3_LUT4_F_I0_LUT3_I2_2_F[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.opr_valid' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_store.ad_DFF_Q_26_D_LUT4_F_I3_LUT4_F_I0_LUT3_I2_2_F[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I3[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.of12_LUT2_I1_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.mt10_DFFR_Q_10_D_LUT4_F_I3[0]' is routed using segments.
+Info:     'u_host.ca_hi_LUT4_I1_F[2]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.out_valid_LUT4_I2_2_F' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.mau_ov' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.u_fma.fn10_DFFR_Q_1_D_LUT4_F_I3_LUT3_F_I2_LUT4_F_I3[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.qi[3]_DFFRE_Q_CE_LUT2_F_I0_LUT4_F_1_I1[3]' is routed using segments.
+Info:     'u_host.baud_pending_LUT4_I2_F_LUT3_I2_F_LUT3_F_I2_LUT4_F_I3[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.c_start_DFF_Q_D_LUT3_F_I1_LUT4_F_I2_LUT2_F_I0_LUT4_I3_F[2]' is routed using segments.
+Info:     'u_host.cnt_frame_DFFR_Q_12_D_LUT4_F_I1[3]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.g_mab.u_xb.raddr_DFFRE_Q_CE_LUT4_I3_F_LUT4_I3_F' is routed using segments.
+Info:     'dbg_probation' is routed using segments.
+Info:     'mr_addr_DFFRE_Q_1_D_LUT4_F_I3[2]' is routed using segments.
+Info:     'u_host.core_rst_LUT2_I0_1_F_LUT3_I2_F' is routed using segments.
+Info:     'u_host.baud_pending_DFFRE_Q_CE_LUT4_F_I2_LUT2_I1_F' is routed using segments.
+Info:     'mr_addr_DFFRE_Q_1_D_LUT4_F_I3[1]' is routed using segments.
+Info:     'led_OBUF_O_1_I[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.rc1_DFFR_Q_RESET' is routed using segments.
+Info:     'u_core.g_mab.u_mab.jw[331]' is routed using segments.
+Info:     'u_host.u_rx.rxf_d_LUT2_I1_F[3]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.brk1[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.u_alu.flnz3_DFFE_Q_1_D_LUT3_F_I2[1]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.q_eb' is routed using segments.
+Info:     'u_host.st_DFF_Q_12_D_LUT4_F_I2_LUT3_F_I2_LUT2_I1_F_LUT2_F_I1_LUT2_I1_F[2]' is routed using segments.
+Info:     'u_core.e_ll[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.fo_z_DFFR_Q_32_D_LUT3_F_I1[2]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.mau_tag[0]' is routed using segments.
+Info:     'u_core.g_mab.u_mab.u_pe.g_mau.u_mau.zc1' is routed using segments.
+
+Info: Routing..
+Info: Setting up routing queue.
+Info: Routing 60278 arcs.
+Info:            |   (re-)routed arcs  |   delta    | remaining|       time spent     |
+Info:    IterCnt |  w/ripup   wo/ripup |  w/r  wo/r |      arcs| batch(sec) total(sec)|
+Info:       1000 |       12        987 |   12   987 |     59299|       4.50       4.50|
+Info:       2000 |       37       1962 |   25   975 |     58377|       2.29       6.79|
+Info:       3000 |       64       2935 |   27   973 |     57443|       2.45       9.24|
+Info:       4000 |      114       3885 |   50   950 |     56527|       2.54      11.78|
+Info:       5000 |      199       4800 |   85   915 |     55731|       2.62      14.40|
+Info:       6000 |      282       5717 |   83   917 |     54897|       2.85      17.24|
+Info:       7000 |      346       6653 |   64   936 |     53989|       2.96      20.21|
+Info:       8000 |      418       7581 |   72   928 |     53198|       3.06      23.27|
+Info:       9000 |      500       8499 |   82   918 |     52320|       3.16      26.43|
+Info:      10000 |      597       9402 |   97   903 |     51482|       3.13      29.56|
+Info:      11000 |      735      10264 |  138   862 |     50701|       4.09      33.65|
+Info:      12000 |      860      11139 |  125   875 |     49951|       3.86      37.51|
+Info:      13000 |      973      12026 |  113   887 |     49139|       4.18      41.68|
+Info:      14000 |     1091      12908 |  118   882 |     48423|       4.43      46.11|
+Info:      15000 |     1278      13721 |  187   813 |     47785|       4.29      50.40|
+Info:      16000 |     1436      14563 |  158   842 |     47022|       4.10      54.49|
+Info:      17000 |     1635      15364 |  199   801 |     46338|       3.86      58.35|
+Info:      18000 |     1846      16153 |  211   789 |     45746|       4.46      62.81|
+Info:      19000 |     2066      16933 |  220   780 |     45193|       5.03      67.84|
+Info:      20000 |     2262      17737 |  196   804 |     44542|       4.75      72.59|
+Info:      21000 |     2468      18531 |  206   794 |     43947|       5.63      78.22|
+Info:      22000 |     2736      19263 |  268   732 |     43486|       4.90      83.12|
+Info:      23000 |     2958      20041 |  222   778 |     42826|       4.16      87.27|
+Info:      24000 |     3218      20781 |  260   740 |     42284|       4.29      91.57|
+Info:      25000 |     3449      21550 |  231   769 |     41758|       4.03      95.59|
+Info:      26000 |     3687      22312 |  238   762 |     41202|       4.09      99.68|
+Info:      27000 |     3909      23090 |  222   778 |     40817|       4.38     104.07|
+Info:      28000 |     4222      23777 |  313   687 |     40375|       5.64     109.71|
+Info:      29000 |     4491      24508 |  269   731 |     39837|       4.83     114.54|
+Info:      30000 |     4693      25302 |  202   794 |     39199|       4.22     118.76|
+Info:      31000 |     4947      26046 |  254   744 |     38722|       5.18     123.93|
+Info:      32000 |     5133      26854 |  186   808 |     38107|       4.65     128.59|
+Info:      33000 |     5334      27599 |  201   745 |     37407|       4.53     133.12|
+Info:      34000 |     5615      28287 |  281   688 |     36949|       4.45     137.57|
+Info:      35000 |     5956      28863 |  341   576 |     36589|       5.64     143.21|
+Info:      36000 |     6275      29512 |  319   649 |     36117|       5.48     148.69|
+Info:      37000 |     6537      30233 |  262   721 |     35568|       5.46     154.14|
+Info:      38000 |     6762      31007 |  225   774 |     35007|       4.90     159.05|
+Info:      39000 |     6934      31828 |  172   821 |     34274|       4.40     163.45|
+Info:      40000 |     7188      32574 |  254   746 |     33879|       5.94     169.39|
+Info:      41000 |     7424      33338 |  236   764 |     33252|       5.20     174.59|
+Info:      42000 |     7684      34078 |  260   740 |     32677|       6.37     180.96|
+Info:      43000 |     7849      34913 |  165   835 |     31956|       4.82     185.78|
+Info:      44000 |     8074      35637 |  225   724 |     31407|       5.53     191.31|
+Info:      45000 |     8251      36316 |  177   679 |     30769|       4.30     195.61|
+Info:      46000 |     8530      37037 |  279   721 |     30416|       5.93     201.55|
+Info:      47000 |     8872      37693 |  342   656 |     30092|       7.62     209.16|
+Info:      48000 |     9113      38452 |  241   759 |     29638|       7.05     216.21|
+Info:      49000 |     9276      39092 |  163   640 |     28910|       4.73     220.95|
+Info:      50000 |     9542      39823 |  266   731 |     28439|       7.27     228.22|
+Info:      51000 |     9764      40589 |  222   766 |     27842|       6.33     234.55|
+Info:      52000 |    10163      41190 |  399   601 |     27711|       9.36     243.91|
+Info:      53000 |    10585      41768 |  422   578 |     27678|       9.71     253.62|
+Info:      54000 |    10887      42455 |  302   687 |     27378|       7.29     260.91|
+Info:      55000 |    11152      43177 |  265   722 |     26847|       6.01     266.92|
+Info:      56000 |    11322      43993 |  170   816 |     26108|       4.38     271.29|
+Info:      57000 |    11736      44577 |  414   584 |     26040|       8.60     279.89|
+Info:      58000 |    12109      45203 |  373   626 |     25741|       8.34     288.23|
+Info:      59000 |    12284      45889 |  175   686 |     25101|       5.51     293.74|
+Info:      60000 |    12529      46639 |  245   750 |     24510|       8.17     301.91|
+Info:      61000 |    12868      47297 |  339   658 |     24176|       8.68     310.59|
+Info:      62000 |    13059      48047 |  191   750 |     23440|       5.00     315.59|
+Info:      63000 |    13342      48754 |  283   707 |     23229|       7.40     322.99|
+Info:      64000 |    13566      49439 |  224   685 |     22596|       6.12     329.11|
+Info:      65000 |    13830      50135 |  264   696 |     22120|       6.93     336.04|
+Info:      66000 |    14157      50777 |  327   642 |     21686|       7.64     343.68|
+Info:      67000 |    14314      51531 |  157   754 |     20906|       4.84     348.52|
+Info:      68000 |    14590      52230 |  276   699 |     20352|       6.58     355.10|
+Info:      69000 |    15028      52790 |  438   560 |     20223|      12.66     367.75|
+Info:      70000 |    15310      53415 |  282   625 |     19785|      11.01     378.76|
+Info:      71000 |    15597      54112 |  287   697 |     19241|       8.21     386.98|
+Info:      72000 |    15882      54775 |  285   663 |     18703|       9.88     396.85|
+Info:      73000 |    16072      55543 |  190   768 |     17991|       7.22     404.08|
+Info:      74000 |    16377      56202 |  305   659 |     17586|      12.48     416.56|
+Info:      75000 |    16637      56935 |  260   733 |     17099|       9.33     425.89|
+Info:      76000 |    16924      57640 |  287   705 |     16750|      11.29     437.18|
+Info:      77000 |    17169      58375 |  245   735 |     16214|       6.85     444.02|
+Info:      78000 |    17493      59026 |  324   651 |     15781|       9.21     453.23|
+Info:      79000 |    17918      59601 |  425   575 |     15657|      10.44     463.68|
+Info:      80000 |    18361      60158 |  443   557 |     15607|      10.97     474.65|
+Info:      81000 |    18652      60864 |  291   706 |     15053|       9.68     484.32|
+Info:      82000 |    18914      61512 |  262   648 |     14507|       8.19     492.51|
+Info:      83000 |    19175      62153 |  261   641 |     13952|       6.94     499.45|
+Info:      84000 |    19491      62796 |  316   643 |     13487|       8.96     508.41|
+Info:      85000 |    19890      63367 |  399   571 |     13184|      10.78     519.20|
+Info:      86000 |    20313      63911 |  423   544 |     13119|      11.43     530.63|
+Info:      87000 |    20563      64635 |  250   724 |     12572|       6.58     537.21|
+Info:      88000 |    20890      65270 |  327   635 |     12216|       8.16     545.36|
+Info:      89000 |    21289      65852 |  399   582 |     11962|       8.42     553.79|
+Info:      90000 |    21729      66403 |  440   551 |     11942|       8.85     562.64|
+Info:      91000 |    22150      66982 |  421   579 |     11847|       9.51     572.15|
+Info:      92000 |    22443      67664 |  293   682 |     11496|       7.43     579.58|
+Info:      93000 |    22805      68302 |  362   638 |     11215|       9.32     588.90|
+Info:      94000 |    23073      69027 |  268   725 |     10615|       6.47     595.37|
+Info:      95000 |    23476      69621 |  403   594 |     10318|      12.57     607.94|
+Info:      96000 |    23884      70213 |  408   592 |     10139|      11.13     619.07|
+Info:      97000 |    24242      70855 |  358   642 |      9840|       7.69     626.76|
+Info:      98000 |    24527      71570 |  285   715 |      9367|       7.56     634.31|
+Info:      99000 |    24814      72283 |  287   713 |      8866|       6.36     640.67|
+Info:     100000 |    25083      73014 |  269   731 |      8256|       5.37     646.04|
+Info:     101000 |    25312      73785 |  229   771 |      7567|       4.69     650.73|
+Info:     102000 |    25459      74627 |  147   842 |      6804|       5.35     656.08|
+Info:     103000 |    25616      75454 |  157   827 |      6097|       5.38     661.46|
+Info:     104000 |    25711      76345 |   95   891 |      5249|       4.12     665.57|
+Info:     105000 |    25894      77151 |  183   806 |      4698|       5.48     671.06|
+Info:     106000 |    26028      78000 |  134   849 |      3904|       5.14     676.20|
+Info:     107000 |    26451      78575 |  423   575 |      3738|      12.23     688.43|
+Info:     108000 |    26702      79313 |  251   738 |      3176|       6.32     694.75|
+Info:     109000 |    27014      79993 |  312   680 |      2761|       7.88     702.63|
+Info:     110000 |    27419      80578 |  405   585 |      2504|       8.82     711.45|
+Info:     111000 |    27934      81063 |  515   485 |      2503|      13.14     724.59|
+Info:     112000 |    28460      81537 |  526   474 |      2676|      12.27     736.86|
+Info:     113000 |    28887      82109 |  427   572 |      2456|      12.21     749.06|
+Info:     114000 |    29149      82836 |  262   727 |      1849|       7.25     756.31|
+Info:     115000 |    29525      83456 |  376   620 |      1666|       9.38     765.70|
+Info:     116000 |    29763      84212 |  238   756 |      1042|       6.93     772.63|
+Info:     117000 |    30169      84800 |  406   588 |       744|       9.58     782.21|
+Info:     118000 |    30456      85509 |  287   709 |       232|       8.96     791.17|
+Info:     118736 |    30733      85966 |  277   457 |         0|       6.36     797.53|
+Info: Routing complete.
+Info: Router1 time 797.53s
+Info: Checksum: 0xd401fc75
+
+Info: Critical path report for clock 'u_core.clk' (posedge -> posedge):
+Info:       type curr  total name
+Info:   clk-to-q  0.23  0.23 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_5.Q
+Info:    routing  0.44  0.67 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_F_LUT4_I3_F[0] (39,29) -> (40,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1_LUT1_F.I0
+Info:                          Defined in:
+Info:                               mncore/rtl/pe/mn_pe_core.v:382.17-382.22
+Info:      logic  0.55  1.22 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1_LUT1_F.F
+Info:    routing  0.18  1.40 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_I1 (40,30) -> (41,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.I1
+Info:      logic  0.57  1.97 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  1.97 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (41,30) -> (41,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/pe/mn_pe_core.v:415.32-415.45
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  2.00 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  2.00 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_CIN (41,30) -> (41,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/pe/mn_pe_core.v:415.32-415.45
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  2.04 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  2.04 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN (41,30) -> (41,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/pe/mn_pe_core.v:415.32-415.45
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.04  2.07 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT.COUT
+Info:    routing  0.00  2.07 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_CIN (41,30) -> (41,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT.CIN
+Info:                          Defined in:
+Info:                               mncore/rtl/pe/mn_pe_core.v:415.32-415.45
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/arith_map.v:57.7-63.5
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_sim.v:1033.25-1033.29
+Info:      logic  0.47  2.54 Source u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT.SUM
+Info:    routing  0.67  3.21 Net u_core.g_mab.u_mab.u_pe.gpend_DFFRE_Q_D_LUT3_F_I1_ALU_SUM_CIN_ALU_COUT_SUM[1] (41,30) -> (44,28)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.mau_isd_LUT2_I0_F_LUT4_F_I3_LUT4_I3_F_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  3.78 Source u_core.g_mab.u_mab.u_pe.mau_isd_LUT2_I0_F_LUT4_F_I3_LUT4_I3_F_LUT2_F.F
+Info:    routing  0.41  4.19 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3[2] (44,28) -> (46,28)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_I2_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  4.56 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_I2_LUT4_F.F
+Info:    routing  0.42  4.98 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_I2[0] (46,28) -> (44,28)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1.I0
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.55  5.53 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1.F
+Info:    routing  0.18  5.71 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F[2] (44,28) -> (44,29)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  6.18 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2.F
+Info:    routing  0.52  6.69 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F[3] (44,29) -> (40,29)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  7.06 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3.F
+Info:    routing  1.00  8.06 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3_F[3] (40,29) -> (27,29)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3_F_LUT4_I3.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  8.43 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3_F_LUT4_I3.F
+Info:    routing  0.71  9.14 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_I3_LUT4_F_I3_LUT3_I1_F_LUT3_I2_F_LUT4_I3_F_LUT4_I3_F[1] (27,29) -> (18,29)
+Info:                          Sink u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_F_LUT4_I3_F_LUT4_I3_F_LUT4_I1_1.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  9.51 Source u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_F_LUT4_I3_F_LUT4_I3_F_LUT4_I1_1.F
+Info:    routing  1.32  10.83 Net u_core.g_mab.u_mab.g_mab.pass_r_DFFRE_Q_D_LUT4_F_I2_LUT4_F_I2_LUT3_I2_F_LUT3_I2_1_F_LUT3_F_I1_LUT4_I1_F_LUT4_I3_F_LUT4_I3_F_LUT4_I1_1_F (18,29) -> (13,40)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.g_rb_shared.u_rbh.g_port[0].mem.0.1.RAD[2]
+Info:      logic  0.46  11.29 Source u_core.g_mab.u_mab.u_pe.g_memn.u_mem.u_lsu.g_rb_shared.u_rbh.g_port[0].mem.0.1.DO[1]
+Info:    routing  0.69  11.99 Net u_core.g_mab.u_mab.u_pe.g_memn.u_mem.opr_grf0[69] (13,40) -> (13,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT2_F_I1_LUT4_F.I0
+Info:                          Defined in:
+Info:                               mncore/rtl/mab/mn_mab_mem.v:46.25-46.33
+Info:      logic  0.55  12.53 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT2_F_I1_LUT4_F.F
+Info:    routing  0.15  12.69 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT2_F_I1[1] (13,30) -> (13,30)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT2_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  13.26 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT2_F.F
+Info:    routing  0.43  13.68 Net u_core.g_mab.u_mab.mw_b_DFFE_Q_51_D[1] (13,30) -> (12,29)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_I2_LUT4_F.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  14.25 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_I2_LUT4_F.F
+Info:    routing  0.00  14.26 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_I2[2] (12,29) -> (12,29)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  14.72 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0.F
+Info:    routing  0.49  15.21 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_CIN_ALU_COUT_SUM_LUT3_I0_F[3] (12,29) -> (12,33)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_SUM_LUT4_I1_F_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  15.58 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_SUM_LUT4_I1_F_LUT4_F.F
+Info:    routing  0.40  15.97 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_55_D_LUT3_F_I2_ALU_SUM_CIN_ALU_COUT_SUM_LUT4_I1_F[2] (12,33) -> (14,33)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0_LUT3_F_1.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  16.43 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0_LUT3_F_1.F
+Info:    routing  1.00  17.44 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0[2] (14,33) -> (20,29)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0_LUT3_I2.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  17.90 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0_LUT3_I2.F
+Info:    routing  0.19  18.09 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_31_D_LUT3_F_I2_ALU_SUM_I0_LUT3_I2_F[3] (20,29) -> (20,28)
+Info:                          Sink u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D_LUT4_F.I3
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.37  18.46 Source u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D_LUT4_F.F
+Info:    routing  0.25  18.71 Net u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D[1] (20,28) -> (22,28)
+Info:                          Sink u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D_LUT2_I1.I1
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.57  19.27 Source u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D_LUT2_I1.F
+Info:    routing  0.43  19.70 Net u_core.g_mab.u_mab.mw_b_DFFE_Q_35_D_LUT2_I1_F[3] (22,28) -> (23,29)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_19_D_LUT3_F_I2_LUT3_F_I0_ALU_SUM_CIN_ALU_COUT_SUM_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  20.16 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_19_D_LUT3_F_I2_LUT3_F_I0_ALU_SUM_CIN_ALU_COUT_SUM_LUT3_F.F
+Info:    routing  0.17  20.33 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_19_D_LUT3_F_I2_LUT3_F_I0[2] (23,29) -> (23,29)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D_LUT3_F_I2_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  20.80 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D_LUT3_F_I2_LUT3_F.F
+Info:    routing  0.96  21.76 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D_LUT3_F_I2[2] (23,29) -> (27,40)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D_LUT3_F.I2
+Info:                          Defined in:
+Info:                               C:\Users\Wogikaze\AppData\Local\Programs\oss-cad-suite\bin\../share/yosys/gowin/cells_map.v:130.20-130.21
+Info:      logic  0.46  22.22 Source u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D_LUT3_F.F
+Info:    routing  1.18  23.40 Net u_core.g_mab.u_mab.u_pe.px_DFFE_Q_20_D (27,40) -> (38,43)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.py_DFFE_Q_20_passthrough_lut$.I3
+Info:      logic  0.37  23.77 Source u_core.g_mab.u_mab.u_pe.py_DFFE_Q_20_passthrough_lut$.F
+Info:    routing  0.00  23.78 Net u_core.g_mab.u_mab.u_pe.py_DFFE_Q_20$conn$D (38,43) -> (38,43)
+Info:                          Sink u_core.g_mab.u_mab.u_pe.py_DFFE_Q_20.D
+Info:      setup  0.04  23.81 Source u_core.g_mab.u_mab.u_pe.py_DFFE_Q_20.D
+Info: 11.62 ns logic, 12.19 ns routing
+
+Info: Max frequency for clock 'u_core.clk': 41.99 MHz (PASS at 27.00 MHz)
+
+Info: Slack histogram:
+Info:  legend: times are in ps
+Info:          * represents 47 endpoint(s)
+Info:          + represents [1,47) endpoint(s)
+Info: [ 13224,  14393) |+
+Info: [ 14393,  15562) |*+
+Info: [ 15562,  16731) |***+
+Info: [ 16731,  17900) |*****+
+Info: [ 17900,  19069) |********+
+Info: [ 19069,  20238) |*********+
+Info: [ 20238,  21407) |********************+
+Info: [ 21407,  22576) |**********+
+Info: [ 22576,  23745) |*********+
+Info: [ 23745,  24914) |*********+
+Info: [ 24914,  26083) |**+
+Info: [ 26083,  27252) |***+
+Info: [ 27252,  28421) |****************+
+Info: [ 28421,  29590) |************************ 
+Info: [ 29590,  30759) |**********************+
+Info: [ 30759,  31928) |************************+
+Info: [ 31928,  33097) |****************************+
+Info: [ 33097,  34266) |*******************************+
+Info: [ 34266,  35435) |*****************************************************+
+Info: [ 35435,  36604) |************************************************************ 
+
+Info: Program finished normally.

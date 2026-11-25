@@ -4,8 +4,10 @@
 //
 // brd_host_if (UART host protocol, rtl/board/PROTOCOL.md) + mn_core (N_PE = 4, M2 = 1: instruction
 // memory, sequencer, mn_mab, mn_l1bm, mn_l2bm, mn_mv) + sdr_bus64 on the embedded SDRAM. The core
-// runs on the 27 MHz board clock; the SDRAM controller on the rPLL's 99 MHz (CL2, PSDA 8, cfg_rdx 1:
-// WP05's recommended setting) with sdr_bus64 ASYNC = 1 (the mvt_top of WP33). The core is reset by
+// runs on the 27 MHz board clock; the SDRAM controller on the rPLL's 54 MHz (CL2, PSDA 11, cfg_rdx 1:
+// WP05's measured setting for 54 MHz) with sdr_bus64 ASYNC = 1 (the mvt_top of WP33). WP05's
+// recommended 99 MHz (IDIV 2 / FBDIV 10 / ODIV 8, PSDA 8) is not reached here: in this design, 73 %
+// full, sdr_ctrl's row-hit path routes to about 89 MHz (WP37 report). The core is reset by
 // the system reset and by the RESET command (core_rst): it then clears the state of the 4 PEs, the
 // L1BM, the L2BM, the MV tags and (SDCLR = 1) the DRAM and PDM ranges of the SDRAM (the official
 // emulator starts them at 0); the SDRAM controller only by the system reset.
@@ -47,11 +49,11 @@ module mn_top_m2 #(
     parameter [19:0] PDM_BASE  = 20'h80000,
     parameter [19:0] DRAM_BASE = 20'h00000,
     parameter SDCLR         = 1,
-    parameter integer SDR_HZ    = 99000000,
-    parameter integer IDIV_SEL  = 2,
-    parameter integer FBDIV_SEL = 10,
-    parameter integer ODIV_SEL  = 8,
-    parameter integer PSDA      = 8,
+    parameter integer SDR_HZ    = 54000000,   // SDRAM clock: 27 MHz * (FBDIV_SEL + 1) / (IDIV_SEL + 1)
+    parameter integer IDIV_SEL  = 0,
+    parameter integer FBDIV_SEL = 1,
+    parameter integer ODIV_SEL  = 16,
+    parameter integer PSDA      = 11,         // the PLL phase of the SDRAM clock (rtl/sdram/README.md)
     parameter integer CL        = 2,
     parameter integer RDX       = 1,
     parameter LED_STRETCH   = 22

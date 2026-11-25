@@ -1,0 +1,5 @@
+design mn_top_m2 {'FPALU': '0', 'MAU': '0', 'BFN': '0', 'MAT': '0', 'REPLICA': '0', 'SDR_HZ': '54000000', 'IDIV_SEL': '0', 'FBDIV_SEL': '1', 'ODIV_SEL': '16', 'PSDA': '11', 'CL': '2', 'RDX': '1'} synth_gowin -family gw2a -nowidelut
+yosys: LUT 10669, ALU 1810, MUX2 0, FF 4757, SSRAM 296, BSRAM 43, DSP 0, LUT_eq 14847  (LUT_eq = LUT + ALU + 8 * SSRAM = 14847, 71.6 % of 20736)
+seed 1: Fmax sclk 97.5 MHz, u_core.clk 32.13 MHz -> PASS (core >= 27.0, SDRAM sclk >= 54.0)
+  utilisation: VCC 1/1 (100 %), IOB 33/66 (50 %), LUT4 15177/20736 (73 %), IOLOGICO 1/384 (0 %), ALU 2140/15552 (14 %), GND 1/1 (100 %), DFF 6533/15552 (42 %), RAM16SDP4 296/648 (46 %), BSRAM 43/46 (93 %), GSR 1/1 (100 %), rPLL 1/2 (50 %), BUFG 1/24 (4 %)
+bitstream: mncore/fpga/top_m2/build/M2a_s54/top_m2.fs (seed 1)

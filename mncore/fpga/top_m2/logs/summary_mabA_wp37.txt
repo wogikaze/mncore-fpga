@@ -1,0 +1,4 @@
+  utilisation: VCC 1/1 (100 %), IOB 10/66 (15 %), LUT4 13420/20736 (65 %), ALU 2272/15552 (15 %), GND 1/1 (100 %), DFF 8815/15552 (57 %), RAM16SDP4 193/648 (30 %), BSRAM 31/46 (67 %), MULT18X18 8/48 (17 %), GSR 1/1 (100 %), BUFG 1/24 (4 %)
+== gowin_pack
+  (56 s) gowin_pack: rc 0
+bitstream: mncore/fpga/top_mab/build/A_wp37/top_mab.fs (seed 1)
