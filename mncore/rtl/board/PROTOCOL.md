@@ -243,3 +243,5 @@ FPGA 側の誤り計数が 0 のままでも、ブリッジ側でデータが落
 - デザイン ID 0x04: `mn_top_m2`（M2）。INFO のフラグの bit 7 = REPLICA。RESET で DRAM / PDM も 0 にする（WP37）。
 
 - デザイン ID 0x05: `mn_top_multi`（WP38）。PDM / DRAM は RESET コマンドでだけ消す。
+
+- デザイン ID 0x06: `mn_top_vpe`（仮想 PE。WP34）。空間 ID 0x12 = ``、0x13 = ``。

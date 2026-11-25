@@ -25,6 +25,7 @@
      - ?mwrite の e で、公式は −0 の符号を残す。
      - h の 2 行書き込みの奇数行: 公式は偶数に切り捨てる。
      - h の拡張表現の積: 公式はシフトして丸める。
+   - 縮小トポロジの Rust Sim だけの誤り（WP34）: y に `e` を付けた `fvfma` で 1 ULP ずれる（公式は RTL と同じ）。FizzBuzz 系 13 本の差はこれによる。
    - `$lbf` の暗黙の更新: 公式は L1BM の欄がない語でも `$lbf` を更新するが、RTL は合わせない。assemble3 はその後の `$lbf` の読み出しを拒否するため、アセンブルしたプログラムでは結果に差が出ない（lead の判断）。
    - `$mreadf` は、公式では nop / noforward 以外の全ステップで更新される（WP20）。Rust Sim は ?mread のないステップで 0 にする。
    - ユニット単位の演算では食い違いが 4 種ある（§5、WP03）。
@@ -93,7 +94,8 @@
   - PDM / DRAM は SDRAM に置く（WP33）。
     - DRAM: 0x00000〜0x7FFFF（`DRAM_DEPTH` = 2^19 長語）。
     - PDM: 0x80000〜0x9FFFF（`PDM_DEPTH` = 2^17 長語）。
-    - 0xA0000〜0xFFFFF は空き（WP34 の仮想 PE、命令の先読み）。
+    - 0xA0000〜0xFFFFF は仮想 PE の領域（WP34）。GRF 0xA0000、文脈 0xA8000、LM 0xC0000。
+  - **仮想 PE の構成（WP34）** では N_MAB=16（64 PE）、LM_DEPTH=2048 を使える。実装したどの PE が範囲外でも、どの PE も書く前に E_RANGE で止まる。
     - チップの大きさでの折り返し: L2BM 2^15、PDM 2^19、DRAM 2^29。L2BM のアドレスは 64 長語単位。
   - 行列レジスタ（X / Y の 2 面）は MAB ごとに 1 つ持ち、リセットで 0 にする。ホストから読み書きする空間はない。
   - DAR はグループごとに持ち、縮小しない（1024 × 32bit）。N_L2B = 1 では `@.1` は 0 を読む。
@@ -273,6 +275,8 @@ rsp_valid, rsp_rdata[63:0]   // 読み出しの応答はリクエストの順に
 - デザイン ID: 0x02 は `mn_top_1pe`、0x03 は `mn_top_mab`（1 MAB）。
   - 0x04 は `mn_top_m2`（1 MAB + L1BM + L2BM + MV）。RESET で DRAM / PDM も 0 にする。
   - 0x05 は `mn_top_multi`（WP38 のビットストリームの組。`fpga/multi/set.json`）。PDM / DRAM は RESET コマンドでだけ消し、構成（ビットストリームの読み込み）では消さない。
+  - 0x06 は `mn_top_vpe`（WP34 の仮想 PE）。WP34 が提案した 0x05 は WP38 と重なるため、lead が 0x06 に変えた。WP34 の時点のビットストリームは 0x05 なので、作り直してから使う。
+  - 空間 ID 0x12 は `$aluf`、0x13 は `$mauf`（WP34）。
 - 複数のビットストリームを要するプログラムの実機実行は `mncore/tools/host/mnrun.py` で行う（区間に分け、状態を引き継ぐ）。実機の回帰は `mnrun.py regress --all`。
   - INFO のフラグ: bit 3..2 = FPALU、bit 4 = MAU、bit 5 = BFN、bit 6 = MAT、bit 7 = REPLICA。設計固有の空間（OMR、BAR）を INFO に載せる方法は未定。今の `mnhost` は「PE の空間があれば OMR もある」とみなす。
 - `mnhost.py run` は ndmp を WP02（§4）と同じ単位で出す。単語アクセスは `LM0W` などの行になる。WP04 の「単語アクセスを長語 1 行で出す」は廃止。

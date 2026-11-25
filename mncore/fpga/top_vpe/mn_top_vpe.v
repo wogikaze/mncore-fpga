@@ -10,7 +10,7 @@
 // SDCLR = 1 it then writes 0 to the DRAM / PDM (M2) and to the VPE region of the SDRAM (the PE state: the
 // official initial state), and the units clear their memories.
 //
-// INFO (PROTOCOL.md section 3): design ID 0x05 (proposed: mn_top_vpe); flags as mn_top_m2 (bit0 a real
+// INFO (PROTOCOL.md section 3): design ID 0x06 (mn_top_vpe); flags as mn_top_m2 (bit0 a real
 // core, bits 3..2 FPALU, bit 4 MAU, bit 5 BFN, bit 6 MAT (0 here), bit 7 REPLICA); topology 1/1/1/N_MAB/4;
 // the depths of the spaces 0x00 IMEM, 0x01 LM0 / 0x02 LM1 2**LM_AW, 0x03 GRF0 / 0x04 GRF1 2**GRF_AW, 0x05
 // T 8, and with M2 = 1 0x06 L1BM, 0x07 L2BM, 0x08 PDM, 0x09 DRAM. OMR (0x10), BAR (0x11) and the forwarding
@@ -139,7 +139,7 @@ module mn_top_vpe #(
     wire        dbg_rx_byte, dbg_tx_byte, dbg_err, dbg_probation;
     brd_host_if #(
         .CLK_HZ(CLK_HZ), .BAUD(BAUD), .TIMEOUT_CYC(TIMEOUT_CYC), .PROBATION_CYC(PROBATION_CYC),
-        .DESIGN_ID(8'h05), .INFO_FLAGS(INFO_FL), .IMEM_DEPTH(IMEM_DEPTH),
+        .DESIGN_ID(8'h06), .INFO_FLAGS(INFO_FL), .IMEM_DEPTH(IMEM_DEPTH),
         .TOPO(TOPO), .SPACE_DEPTH(SPACE_DEPTH)
     ) u_host (
         .clk(clk), .rst(rst),

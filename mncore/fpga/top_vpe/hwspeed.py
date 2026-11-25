@@ -38,8 +38,8 @@ def main(argv=None) -> int:
         raise SystemExit(f"take the board lock first: {LOCK}")
     dev = mnhost.Device(mnhost.Link.open(a.port, 1000000, timeout=0.2))
     inf = dev.info()
-    if inf.design_id != 0x05:
-        raise SystemExit(f"design id 0x{inf.design_id:02x}, expected 0x05 (mn_top_vpe)")
+    if inf.design_id != 0x06:
+        raise SystemExit(f"design id 0x{inf.design_id:02x}, expected 0x06 (mn_top_vpe)")
     lm_aw = inf.space_depth.get(mnhost.SPACES["LM0"], 0).bit_length() - 1
     units = (1 if inf.space_depth.get(mnhost.SPACES["L2BM"], 0) > 0 else
              2 if inf.space_depth.get(mnhost.SPACES["L1BM"], 0) > 0 else 0)

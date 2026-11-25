@@ -4,7 +4,7 @@
 usage: python mncore/fpga/top_vpe/hwrun.py [--list FILE | PROGRAM ...] [--only TEXT] [--baud 2000000]
            [--port COMx] [-o results.tsv] [--log FILE] [--no-lock-check]
 
-The configuration comes from INFO (design 0x05): the topology 1/1/1/N_MAB/4, the LM depth 2**LM_AW, the
+The configuration comes from INFO (design 0x06): the topology 1/1/1/N_MAB/4, the LM depth 2**LM_AW, the
 units (the depths of the L1BM / L2BM spaces: all, the L1BM only, none) and the flags (bits 3..2 FPALU,
 bit 4 MAU, bit 5 BFN, bit 7 REPLICA). For each program the runs of the regression `python mncore/sim/regress/run.py --vpe N_MAB
 --lm-aw LM_AW` are used (mncore/sim/regress/build/vpe<N_MAB>_lm<LM_AW>/<name>/: official.asm = the
@@ -34,7 +34,7 @@ import mnhost  # noqa: E402
 import ndmp  # noqa: E402
 
 LOCK = Path(r"C:\wgkz\nano20k\mncore\.board.lock")
-DESIGN_ID = 0x05
+DESIGN_ID = 0x06
 
 
 def rtl_tag(units: int, fpalu: int, mau: int, bfn: int, replica: int) -> str:
