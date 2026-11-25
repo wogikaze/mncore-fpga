@@ -389,7 +389,8 @@ def coverage(jwords: list[str], mwords: list[str], jexp: list[dict], mexp: list[
                 miss.append(f"{kind} unsup_vec[{i}] ({s.fields[i].name}) never set")
             if not any(e["err_kind"] and e["err_field"] == i for e in exps):
                 miss.append(f"{kind} err_field never {i} ({s.fields[i].name})")
-        if {e["err_kind"] for e in exps} != ({0, 1, 2} if kind == "j" else {0, 2}):
+        # m: E_UNSUPPORTED only while m.yaml has unsupported values (none since WP37: mn_mv decides)
+        if {e["err_kind"] for e in exps} != ({0, 1, 2} if kind == "j" else ({0, 2} if checks else {0})):
             miss.append(f"{kind} err_kind values {sorted({e['err_kind'] for e in exps})}")
     for f in SJ.fields:  # every bit of every field toggles
         if len({e[f.name] for e in jexp}) < 2:

@@ -1,0 +1,47 @@
+# WP37: the M2 core (mn_core N_PE = 4, M2 = 1) with SDCLR = 1, the board's clear of the DRAM / PDM after
+# reset, on a small DRAM / PDM (TB_DRAM_AW 10, TB_PDM_AW 8): data written before a reset (C) reads 0
+# after it (sdclr.scr). The rest of the M2 core is the unit m2 (same files).
+top: tb_core
+rtl_top: mn_m2_harness
+incdir: mncore/rtl/dec
+define: TB_NPE=4
+define: TB_M2=1
+define: TB_SDMEM
+define: TB_SDCLR=1
+define: TB_SCRIPT="mncore/sim/tb/m2_sdclr/sdclr.scr"
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/fpga/recipes/mn_mul_pipe.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/rtl/alu/mn_alu_cls.v
+mncore/rtl/alu/mn_alu_rnd.v
+mncore/rtl/alu/mn_alu_rot_stage.v
+mncore/rtl/alu/mn_alu_int.v
+mncore/rtl/fpu/mn_fp_alu_lane.v
+mncore/rtl/fpu/mn_fp_alu.v
+mncore/rtl/fpu/mn_fp_alu_bflane.v
+mncore/rtl/fpu/mn_fp_alu_bfn.v
+mncore/rtl/fpu/mn_fp_mul53.v
+mncore/rtl/fpu/mn_fp_fma.v
+mncore/rtl/fpu/mn_fp_f2h.v
+mncore/rtl/fpu/mn_mau_vec.v
+mncore/rtl/pe/mn_pe_agen.v
+mncore/rtl/pe/mn_pe_treg.v
+mncore/rtl/pe/mn_pe_store.v
+mncore/rtl/pe/mn_pe_lsu.v
+mncore/rtl/pe/mn_pe_mem.v
+mncore/rtl/mab/mn_mab_mem.v
+mncore/rtl/mab/mn_mab_mrnd.v
+mncore/rtl/mab/mn_mab_mat.v
+mncore/rtl/pe/mn_pe_core.v
+mncore/rtl/mab/mn_mab.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/mv/mn_mv_tags.v
+mncore/rtl/mv/mn_mv_red.v
+mncore/rtl/mv/mn_mv.v
+mncore/rtl/core/mn_core.v
+mncore/sim/tb/m2/mn_m2_harness.v
+mncore/sim/tb/m2/tb_sdmem.v
+mncore/sim/tb/core/tb_core.v

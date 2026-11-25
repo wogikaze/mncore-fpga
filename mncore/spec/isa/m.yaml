@@ -39,7 +39,8 @@ fields:
       - {val: "100", name: d2p, desc: "DRAM→PDM"}
       - {val: "101", name: c2p, desc: "L2BM→PDM"}
       - {val: "110", name: c2d, desc: "L2BM→DRAM"}
-    notes: "111 は未観測。"
+      - {val: "111", name: none, desc: "何もしない（MV は完了し、タグは数える。WP33 が公式で確認。アセンブラは作らない）"}
+    notes: "111 は何もしない形（WP33）。形の組み合わせのうち公式が異常終了するものは mn_mv が判定する（rtl/mv/README.md）。"
   - name: tmode
     pos: 4
     width: 3
@@ -55,7 +56,9 @@ fields:
       - {val: "011", name: b4, desc: "mvb4 / mvr4…"}
       - {val: "100", name: b, desc: "mvb / mvr…"}
       - {val: "101", name: d, desc: "mvd（分配・結合）"}
-    notes: "mvb / mvb2 / mvb4（mvr も同様）と SDM 3.5.8 の放送・縮約の各節（グループ内・グループ間・分配放送）との対応は確認していない。"
+      - {val: "110", name: none6, desc: "何もしない（MV は完了し、タグは数える。WP33 が公式で確認。アセンブラは作らない）"}
+      - {val: "111", name: none7, desc: "何もしない（同上）"}
+    notes: "mvb / mvb2 / mvb4（mvr も同様）と SDM 3.5.8 の放送・縮約の各節（グループ内・グループ間・分配放送）との対応は確認していない。mmode との組み合わせで公式が異常終了するもの（14 組）は mn_mv が判定する（WP33）。"
   - name: destid
     pos: 7
     width: 3
@@ -86,6 +89,7 @@ fields:
       - {val: "00", name: dl, desc: "倍精度 / 64bit 整数（縮約でない転送でも 00）"}
       - {val: "01", name: fi, desc: "単精度 / 32bit 整数"}
       - {val: "10", name: hs, desc: "半精度 / 16bit 整数"}
+      - {val: "11", name: none, desc: "縮約でない転送では見ない（WP33）。縮約で 11 なら公式は異常終了する（mn_mv が判定）"}
   - name: mvid
     pos: 15
     width: 8

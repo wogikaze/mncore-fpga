@@ -19,6 +19,7 @@ RRN の縮約、折り返しレジスタ `$lbi`、フォワーディングレジ
 | `AW` | 10 | L1BM の深さ 2^AW 長語（契約 `L1BM_DEPTH` = 1024。実チップは 13） |
 | `RRN` | 1 | 1: 縮約に `mn_l1bm_rrn` を使う（任意の N_MAB）。2: N_MAB = 1 専用の小さな縮約（各レーンが MAB 0 の値と 0 の縮約になることを使う）。0: 縮約を持たない（l1bmr / l1bmr4 は E_UNSUPPORTED） |
 | `CLEAR` | 1 | 1: リセット後に L1BM と `$lbi` を 0 にする（2^AW クロック、その間 `idle` = 0） |
+| `REPLICA` | 0 | 1: 複製規則（WP37、`mncore/wp/WP-3x.md` の M2 の判断）。存在しない MAB m を MAB m mod N_MAB の複製とみなす（下の「存在しない MAB」）。N_MAB は 2 のべき |
 
 ## 境界のポート（PE コア ⇔ mn_l1bm）
 
@@ -34,7 +35,7 @@ PE の番号は (m, p) で明示する（m = MAB 0〜15、p = MAB 内の PE 0〜
 
 | 信号 | 意味 |
 | --- | --- |
-| `use_src` | PE → L1BM の転送がある。コアは全 PE・全サイクルの `l1bm_isel` のオペランドを `src_*` で渡す |
+| `use_src` | PE → L1BM の転送がある（lwrite = 1 の語）。コアは全 PE・全サイクルの `l1bm_isel` のオペランドを `src_*` で渡す。**isel = 111 はその PE・サイクルの `$lbf`（語の前の値）**（WP37） |
 | `lbf_upd` | この語は `$lbf` を更新する。コアは全 PE・全サイクルの結果を取り、`lbf_w*` で書く |
 | `chk_trap`, `chk_addr` | E_RANGE（L1BM のアクセスが 2^AW 以上）。`chk_addr` は ladr が範囲外なら ladr、そうでなければ語のアクセスの最大アドレス（参考の値。停止理由の info は語番号） |
 | `chk_unsup`, `chk_field` | E_UNSUPPORTED と欄番号（`MN_J_<field>_IDX`） |
@@ -120,7 +121,7 @@ isel = 10 の書き込み先（GRF0 / GRF1 / LM0 / LM1 / T）に書くのはコ�
   - 11 l1bmd: PE (m, p) に `L1BM[(ladr & ~63) + 64c + ((L + 4m + p) mod 64)]`、L = `ladr[5:2]` × 4（MAB のずらし。`ladr[1:0]` は使わない）
   - アドレスの揃え（アラインメント）は要らない（揃っていない ladr もそのまま足す）。
 - **lwrite = 1**: L1BM → PE の値は `$lbi`（折り返し）から。並びは最後に `$lbi` を書いた転送の bmode・wl・L で決まり、**この語の bmode などは使わない**（`l1bmm $lbi ...` の語は bmode = 00, me = 0, isel = 111）。
-  さらにこの語は PE → L1BM の転送をする（isel = 111 なら値はすべて 0）。`$lbi` は noforward でなければ書き、L1BM は me = 1 のときだけ書く。bmode = 00 は 01（16x1）と同じ。
+  さらにこの語は PE → L1BM の転送をする。**isel = 111 のオペランドは `$lbf`**（WP37 が公式で確認: `l1bmp $lb0 $lr8` の後の `l1bmm@0 $lbf $lb64` は L1BM に `$lbf` を書く。アセンブラは `l1bmrffadd $lbf $lbi` も、折り返しの読み出しだけの語 `l1bmm $lbi ...` も isel = 111 にする。WP31 は「値 0」としていたが、試験では `$lbf` が 0 の場面だけだったため区別できなかった）。`$lbi` は noforward でなければ書き、L1BM は me = 1 のときだけ書く。bmode = 00 は 01（16x1）と同じ。
   - 01（l1bmm@M / l1bmr）: `L1BM[ladr + 4c + p]` ← PE (M, p)（wl: `+8c`、LSB 側は `+4`）
   - 10（l1bmm4@i / l1bmr4）: `L1BM[ladr + 16c + 4k + p]` ← PE (4k + i, p)（wl: `ladr + 32c + 8k + p` と `+4`）
   - 11（l1bmd）: `L1BM[(ladr & ~63) + 64c + ((4m + p - L) mod 64)]` ← PE (m, p)
@@ -147,6 +148,8 @@ isel = 10 の書き込み先（GRF0 / GRF1 / LM0 / LM1 / T）に書くのはコ�
   - **L1BM と `$lbi` への並びは wl で決まる。** 拡張した結果（2 長語）を wl = 0 で書くと 1 長語目だけ、丸めた結果（1 長語）を wl = 1 で書くと 2 長語目は 0。
   - d に e / r を付けた語と、整数に e を付けた d の語はエミュレータが異常終了する。E_UNSUPPORTED にする。
 - **存在しない MAB**（m ≥ N_MAB）: PE → L1BM の転送には 0 を送る（契約 §3）。L1BM → PE の値は受け取らない。N_MAB = 1 では `$lbi` の位置 0〜3 だけを持つ（ほかは常に 0）。
+  - `REPLICA` = 1（複製規則、WP37）: 存在しない MAB m は MAB m mod N_MAB の複製として値を送る（l1bmm@m、l1bmm4@i、l1bmd の結合、l1bmr / l1bmr4 の縮約の入力）。`$lbi` の持たない位置は、その複製元の位置（位置 mod 2^LBW）として読む。書き込みは受け取らない（捨てる）。
+  - `RRN` = 2 の複製規則の縮約は、MAB 0 の値の 16 個（l1bmr、4 × 4 の 2 段）または 4 個（l1bmr4）の縮約: fadd は値の指数に 4 / 2 を足す（同じ値の和は正確で、丸めは 1 回。あふれは無限大、指数 0 は 0、出力の半精度への丸めは 1 値と同じ）、iadd は 16 / 4 倍（レーンで折り返す）、max / min / band / bor は値のまま、and / or は 0 でなければ 1。
 
 ## E_UNSUPPORTED にする語（`chk_unsup`）
 

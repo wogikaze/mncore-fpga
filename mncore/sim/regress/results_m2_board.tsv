@@ -1,0 +1,248 @@
+path	kind	groups	words	steps	clocks	compared	result	detail	rust	off_rust	vs_rust	cls
+docs/mnist-golf/submissions/12.divrow-vec.vsm	solution	alu_int,fp,mau,l1bm	29	3	435	0	E_UNSUPPORTED pe_aluc_aluop	rsqrt at word 3	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+docs/mnist-golf/submissions/14.exp.vsm	solution	alu_int,fp,mau,l1bm	16	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+docs/mnist-golf/submissions/15.onehot-mini.vsm	solution	alu_int,mau,l1bm	7	1	143	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+docs/mnist-golf/submissions/16.onehot.vsm	solution	alu_int,mau,l1bm	24	2	244	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+docs/mnist-golf/submissions/17.dram-dl-256-16.vsm	solution	l1bm,l2bm,mv	5	5	1208	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/18.dram-ul-256-16.vsm	solution	l1bm,l2bm,mv	6	6	1973	15632	mismatch(DRAM,L2BM)	704 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+docs/mnist-golf/submissions/19.dram-dl-256-16p.vsm	solution	l1bm,l2bm,mv	19	19	6275	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/20.dram-ul-256-16p.vsm	solution	alu_int,l1bm,l2bm,mv	10	10	3469	15632	mismatch(DRAM,L2BM)	896 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+docs/mnist-golf/submissions/21.dram-dl-256-16-l2b.vsm	solution	l1bm,l2bm,mv	12	12	3304	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/22.dram-dl-1024-16.vsm	solution	l1bm,l2bm,mv	8	8	4604	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/23.dram-dl-256-1024.vsm	solution	l1bm,l2bm,mv	68	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+docs/mnist-golf/submissions/24.dram-dl-16.vsm	solution	l1bm,l2bm,mv	4	4	593	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/25.dram-ul-16.vsm	solution	l1bm,l2bm,mv	4	4	1060	15632	mismatch(DRAM,L2BM)	112 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+docs/mnist-golf/submissions/26.dram-dl-16-1024.vsm	solution	l1bm,l2bm,mv	39	4	16658	0	E_RANGE	word 4 at word 4	range 4	-	-	E_RANGE as rust
+docs/mnist-golf/submissions/27.dram-ul-16-1024.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7648	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+docs/mnist-golf/submissions/28.dram-dl-16-16.vsm	solution	l1bm,l2bm,mv	7	7	1579	15632	mismatch(L1BM,L2BM,LM0)	288 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM0)	pass	pass c
+docs/mnist-golf/submissions/29.dram-ul-16-16.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1275	15632	pass		ok	same	pass	pass b
+docs/mnist-golf/submissions/30.dram-dl-256.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	10	1	268	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+docs/mnist-golf/submissions/31.dram-ul-256.vsm	solution	alu_int,l1bm,l2bm,mv	7	7	1325	15632	mismatch(DRAM,L1BM,L2BM)	168 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+docs/mnist-golf/submissions/6.subrow-vec.vsm	solution	alu_int,fp,mau,l1bm	24	1	143	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+docs/mnist-golf/submissions/8.sumcol.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1363	15632	mismatch(DRAM,L1BM,L2BM)	48 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+mncompile/benchmarks/results/11.square-sum/kernel.vsm	solution	alu_int,mau,l1bm,l2bm	21	6	794	0	E_UNSUPPORTED pe_mauc_enfma	at word 6	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/12.divrow-vec/kernel.vsm	solution	alu_int,fp,mau,l1bm	56	7	978	0	E_UNSUPPORTED pe_aluc_aluop	rsqrt at word 7	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+mncompile/benchmarks/results/16.count-up/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	43	43	90434	23824	mismatch(DRAM,L1BM,L2BM)	18640 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+mncompile/benchmarks/results/16.onehot/kernel.vsm	solution	alu_int,l1bm	44	44	7481	15632	mismatch(L1BM,LM1)	122 differ, 0 only official, 0 only rtl	ok	differ(L1BM,LM1)	pass	pass c
+mncompile/benchmarks/results/17.dram-dl-256-16/kernel.vsm	solution	l1bm,l2bm,mv	5	5	1208	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/17.transpose-mab/kernel.vsm	solution	alu_int,l1bm	45	36	7365	0	E_RANGE	word 36 at word 36	range 36	-	-	E_RANGE as rust
+mncompile/benchmarks/results/18.dram-ul-256-16/kernel.vsm	solution	l1bm,l2bm,mv	6	6	1973	15632	mismatch(DRAM,L2BM)	704 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+mncompile/benchmarks/results/18.inversion-small/kernel.vsm	solution	alu_int,l1bm	30	30	3793	15632	mismatch(L1BM,LM1)	8 differ, 0 only official, 0 only rtl	ok	differ(L1BM,LM1)	pass	pass c
+mncompile/benchmarks/results/19.dram-dl-256-16p/kernel.vsm	solution	l1bm,l2bm,mv	25	25	6911	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/19.inversion/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	76	76	12267	15632	mismatch(L1BM,L2BM,LM1)	132 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM1)	pass	pass c
+mncompile/benchmarks/results/20.dram-ul-256-16p/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	16	16	6586	15632	mismatch(DRAM,L1BM,L2BM)	1440 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+mncompile/benchmarks/results/20.fizzbuzz/kernel.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	103	2	185	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/21.dram-dl-256-16-l2b/kernel.vsm	solution	l1bm,l2bm,mv	14	14	3523	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/21.hello-world/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	1922	15632	mismatch(DRAM,L1BM,L2BM)	372 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+mncompile/benchmarks/results/22.dram-dl-1024-16/kernel.vsm	solution	l1bm,l2bm,mv	10	10	4852	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/23.dram-dl-256-1024/kernel.vsm	solution	l1bm,l2bm,mv	74	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+mncompile/benchmarks/results/23.fizzbuzz-pe/kernel.vsm	solution	alu_int,mau,l1bm	12	2	610	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/24.dram-dl-16/kernel.vsm	solution	l1bm,l2bm,mv	5	5	879	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/25.dram-ul-16/kernel.vsm	solution	l1bm,l2bm,mv	5	5	1058	15632	mismatch(DRAM,L2BM)	280 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+mncompile/benchmarks/results/25.hsv2rgb/kernel.vsm	solution	alu_int,fp,mau,l1bm	27	2	236	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/26.dram-dl-16-1024/kernel.vsm	solution	l1bm,l2bm,mv	44	1	6005	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+mncompile/benchmarks/results/27.dram-ul-16-1024/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	18	18	11441	15632	mismatch(DRAM,L1BM,L2BM)	4304 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+mncompile/benchmarks/results/28.dram-dl-16-16/kernel.vsm	solution	l1bm,l2bm,mv	12	12	2413	15632	mismatch(L1BM,L2BM,LM0)	288 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM0)	pass	pass c
+mncompile/benchmarks/results/29.dram-ul-16-16/kernel.vsm	solution	l1bm,l2bm,mv	13	13	3247	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/30.dram-dl-256/kernel.vsm	solution	l1bm,l2bm,mv	11	11	1749	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/31.dram-ul-256/kernel.vsm	solution	alu_int,l1bm,l2bm,mv	9	9	1212	15632	pass		ok	same	pass	pass b
+mncompile/benchmarks/results/5.abs/kernel.vsm	solution	alu_int,mau,l1bm	15	0	98	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/6.subrow-vec/kernel.vsm	solution	alu_int,mau,l1bm	35	9	1251	0	E_UNSUPPORTED pe_mauc_enfma	at word 9	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+mncompile/benchmarks/results/8.sumcol/kernel.vsm	solution	alu_int,mau,l1bm,l2bm,mv	12	1	251	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/12.divrow-vec/answer.vsm	solution	alu_int,fp,mau,l1bm	28	2	178	0	E_UNSUPPORTED pe_aluc_aluop	rsqrt at word 2	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+problems/13.exp-low-prec/answer.vsm	solution	alu_int,fp,mau,l1bm	8	2	482	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/14.exp/answer.vsm	solution	alu_int,mau,l1bm	14	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/15.onehot-mini/answer.vsm	solution	alu_int,mau,l1bm	7	1	143	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/16.onehot/answer.vsm	solution	alu_int,mau,l1bm	24	2	244	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/17.dram-dl-256-16/answer.vsm	solution	l1bm,l2bm,mv	5	5	1208	15632	pass		ok	same	pass	pass b
+problems/17.dram-dl-256-16/main.vsm	solution	l1bm,l2bm,mv	5	5	1208	15632	pass		ok	same	pass	pass b
+problems/18.dram-ul-256-16/answer.vsm	solution	l1bm,l2bm,mv	6	6	1973	15632	mismatch(DRAM,L2BM)	704 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+problems/18.dram-ul-256-16/main.vsm	solution	l1bm,l2bm,mv	6	6	1973	15632	mismatch(DRAM,L2BM)	704 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+problems/19.dram-dl-256-16p/answer.vsm	solution	l1bm,l2bm,mv	19	19	6275	15632	pass		ok	same	pass	pass b
+problems/19.dram-dl-256-16p/main.vsm	solution	l1bm,l2bm,mv	25	25	6911	15632	pass		ok	same	pass	pass b
+problems/20.dram-ul-256-16p/answer.vsm	solution	alu_int,l1bm,l2bm,mv	10	10	3469	15632	mismatch(DRAM,L2BM)	896 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+problems/20.dram-ul-256-16p/main.vsm	solution	l1bm,l2bm,mv	26	26	9336	15632	pass		ok	same	pass	pass b
+problems/21.dram-dl-256-16-l2b/answer.vsm	solution	l1bm,l2bm,mv	12	12	3304	15632	pass		ok	same	pass	pass b
+problems/21.dram-dl-256-16-l2b/main.vsm	solution	l1bm,l2bm,mv	14	14	3523	15632	pass		ok	same	pass	pass b
+problems/22.dram-dl-1024-16/answer.vsm	solution	l1bm,l2bm,mv	8	8	4604	15632	pass		ok	same	pass	pass b
+problems/22.dram-dl-1024-16/main.vsm	solution	l1bm,l2bm,mv	10	10	4852	15632	pass		ok	same	pass	pass b
+problems/23.dram-dl-256-1024/answer.vsm	solution	l1bm,l2bm,mv	68	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+problems/23.dram-dl-256-1024/main.vsm	solution	l1bm,l2bm,mv	74	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+problems/24.dram-dl-16/answer.vsm	solution	l1bm,l2bm,mv	3	3	606	15632	pass		ok	same	pass	pass b
+problems/24.dram-dl-16/main.vsm	solution	l1bm,l2bm,mv	5	5	891	15632	pass		ok	same	pass	pass b
+problems/25.dram-ul-16/answer.vsm	solution	l1bm,l2bm,mv	4	4	1060	15632	mismatch(DRAM,L2BM)	112 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+problems/25.dram-ul-16/main.vsm	solution	l1bm,l2bm,mv	5	5	1058	15632	mismatch(DRAM,L2BM)	112 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+problems/26.dram-dl-16-1024/answer.vsm	solution	l1bm,l2bm,mv	39	4	16658	0	E_RANGE	word 4 at word 4	range 4	-	-	E_RANGE as rust
+problems/26.dram-dl-16-1024/main.vsm	solution	l1bm,l2bm,mv	41	4	16675	0	E_RANGE	word 4 at word 4	range 4	-	-	E_RANGE as rust
+problems/27.dram-ul-16-1024/answer.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7648	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+problems/27.dram-ul-16-1024/main.vsm	solution	l1bm,l2bm,mv	41	12	6832	0	E_RANGE	word 12 at word 12	range 12	-	-	E_RANGE as rust
+problems/28.dram-dl-16-16/answer.vsm	solution	l1bm,l2bm,mv	7	7	1579	15632	mismatch(L1BM,L2BM,LM0)	288 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM0)	pass	pass c
+problems/28.dram-dl-16-16/main.vsm	solution	l1bm,l2bm,mv	13	13	3225	15632	mismatch(L1BM,L2BM,LM0)	288 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM0)	pass	pass c
+problems/29.dram-ul-16-16/answer.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1275	15632	pass		ok	same	pass	pass b
+problems/29.dram-ul-16-16/improved.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1275	15632	pass		ok	same	pass	pass b
+problems/29.dram-ul-16-16/main.vsm	solution	l1bm,l2bm,mv	13	13	3247	15632	pass		ok	same	pass	pass b
+problems/30.dram-dl-256/answer.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	10	1	268	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/30.dram-dl-256/main.vsm	solution	l1bm,l2bm,mv	11	11	1749	15632	pass		ok	same	pass	pass b
+problems/31.dram-ul-256/answer.vsm	solution	alu_int,l1bm,l2bm,mv	7	7	1325	15632	mismatch(DRAM,L1BM,L2BM)	168 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+problems/6.subrow-vec/answer.vsm	solution	alu_int,fp,mau,l1bm	22	0	74	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/8.sumcol/answer.vsm	solution	alu_int,l1bm,l2bm,mv	6	6	1102	15632	mismatch(DRAM,L1BM,L2BM)	40 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+problems/8.sumcol/main.vsm	solution	mau,l1bm,l2bm,mv	11	0	74	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/11.square-sum/answer.vsm	solution	alu_int,mau,l1bm	11	2	206	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/11.square-sum/main.vsm	solution	alu_int,mau,l1bm	11	2	206	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/13.mod3/answer.vsm	solution	alu_int,mau,l1bm	8	2	260	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/13.mod3/main.vsm	solution	alu_int,mau,l1bm	8	2	260	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/16.count-up/answer.vsm	solution	alu_int,mau,l1bm,l2bm,mv	21	1	89	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+problems/challenge/16.count-up/main.vsm	solution	alu_int,mau,l1bm,l2bm,mv	21	1	89	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+problems/challenge/17.transpose-mab/answer.vsm	solution	alu_int,mau,l1bm	15	2	213	0	E_RANGE	word 2 at word 2	range 2	-	-	E_RANGE as rust
+problems/challenge/17.transpose-mab/main.vsm	solution	alu_int,mau,l1bm	15	2	213	0	E_RANGE	word 2 at word 2	range 2	-	-	E_RANGE as rust
+problems/challenge/19.inversion/answer.vsm	solution	alu_int,mau,l1bm,l2bm,mv	31	2	329	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	range 4	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/19.inversion/main.vsm	solution	alu_int,mau,l1bm,l2bm,mv	31	2	329	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	range 4	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/20.fizzbuzz/answer.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	47	1	87	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/20.fizzbuzz/lpha100.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	100	2	312	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	parse_error	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/21.hello-world/answer.vsm	solution	alu_int,mau,l1bm,l2bm,mv	9	1	103	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/21.hello-world/main.vsm	solution	alu_int,mau,l1bm,l2bm,mv	9	1	103	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/23.fizzbuzz-pe/answer.vsm	solution	alu_int,mau,l1bm	9	2	610	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/23.fizzbuzz-pe/main.vsm	solution	alu_int,mau,l1bm	9	2	610	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/24.log2/answer.vsm	solution	alu_int,mau,l1bm	7	1	175	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/24.log2/main.vsm	solution	alu_int,mau,l1bm	7	1	175	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/25.hsv2rgb/answer.vsm	solution	alu_int,fp,mau,l1bm	12	1	143	0	E_UNSUPPORTED pe_aluc_aluop	ilrelud at word 1	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+problems/challenge/25.hsv2rgb/main.vsm	solution	alu_int,fp,mau,l1bm	12	1	143	0	E_UNSUPPORTED pe_aluc_aluop	ilrelud at word 1	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+problems/challenge/5.abs/answer.vsm	solution	alu_int,mau,l1bm	13	0	98	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/5.abs/main.vsm	solution	alu_int,mau,l1bm	13	0	98	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/6.fadd-mul/answer.vsm	solution	alu_int,fp,mau,l1bm	14	2	590	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/6.fadd-mul/main.vsm	solution	alu_int,fp,mau,l1bm	14	2	590	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/7.mul2/answer.vsm	solution	fp,mau,l1bm	9	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+problems/challenge/7.mul2/main.vsm	solution	fp,mau,l1bm	9	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/30-lbf-valid.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/31-lbf-nop.vsm	standalone	alu_int,l1bm	7	7	272	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/32-lbf-noforward.vsm	standalone	alu_int,l1bm	5	5	320	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/initial-uniform-assumption/programs/33-lbf-noforward-alu.vsm	standalone	alu_int,l1bm	5	5	332	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/30-lbf-valid.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-nop.vsm	standalone	alu_int,l1bm	7	7	272	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/31-lbf-valid.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-noforward.vsm	standalone	alu_int,l1bm	5	5	320	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/32-lbf-nop.vsm	standalone	alu_int,l1bm	7	7	272	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward-alu.vsm	standalone	alu_int,l1bm	5	5	332	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/33-lbf-noforward.vsm	standalone	alu_int,l1bm	5	5	320	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/matrix-retention-assumption/programs/34-lbf-noforward-alu.vsm	standalone	alu_int,l1bm	5	5	332	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/programs/33-lbf-valid.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/programs/34-lbf-nop.vsm	standalone	alu_int,l1bm	7	7	272	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/programs/35-lbf-noforward.vsm	standalone	alu_int,l1bm	5	5	320	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/forwarding/programs/36-lbf-noforward-alu.vsm	standalone	alu_int,l1bm	5	5	332	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/00-disabled-write/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/01-disabled-discard/template.vsm	standalone	alu_int,l1bm	4	4	247	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/02-disabled-mask-off/template.vsm	standalone	alu_int,l1bm	4	4	247	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/03-disabled-narrow-off/template.vsm	standalone	alu_int,l1bm	4	4	247	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/04-disabled-chain/template.vsm	standalone	alu_int,l1bm	5	5	348	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/05-after-alu-imm/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/06-after-mau/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/07-after-two-ordinary/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/08-producer-new/driver.vsm	standalone	l1bm	1	1	156	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/08-producer-new/intended.vsm	standalone	alu_int,l1bm	5	5	419	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/08-producer-new/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/driver.vsm	standalone	l1bm	1	1	112	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/intended.vsm	standalone	alu_int,l1bm	5	5	375	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/09-noforward-producer-new/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/10-nop/intended.vsm	standalone	alu_int,l1bm	7	7	272	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/lbf-encoded/10-nop/template.vsm	standalone	alu_int,l1bm	4	4	263	15632	pass		ok	same	pass	pass b
+proofs_lean/evidence/ul29/solution.vsm	standalone	alu_int,l1bm,l2bm,mv	8	8	1280	15632	pass		ok	same	pass	pass b
+research/experiments/algo-redesign/t_coord.vsm	standalone	alu_int,l1bm,l2bm,mv	19	19	23083	15632	mismatch(DRAM)	3584 differ, 0 only official, 0 only rtl	ok	differ(DRAM)	pass	pass c
+research/experiments/algo-redesign/t_coord2.vsm	standalone	alu_int,l1bm,l2bm,mv	20	20	23133	15632	mismatch(DRAM)	3584 differ, 0 only official, 0 only rtl	ok	differ(DRAM)	pass	pass c
+research/experiments/fable52/v13_54.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	54	4	494	0	E_UNSUPPORTED pe_mauc_enfma	at word 4	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v13_55.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	55	9	1047	0	E_UNSUPPORTED pe_mauc_enfma	at word 9	range 10	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_47.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	47	1	87	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_47_commented.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	47	1	87	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_47_fmt.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	47	1	87	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_48.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	48	1	123	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 8	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_49.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	49	2	602	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	range 10	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_50.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	50	5	1267	0	E_UNSUPPORTED pe_mauc_enfma	at word 5	range 13	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v15_51.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	51	4	578	0	E_UNSUPPORTED pe_mauc_enfma	at word 4	range 11	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v3_75.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	75	23	2412	0	E_RANGE	word 23 at word 23	range 23	-	-	E_RANGE as rust
+research/experiments/fable52/v4_60.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	60	15	1910	0	E_UNSUPPORTED pe_mauc_enfma	at word 15	range 16	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v4_62.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	62	15	2059	0	E_UNSUPPORTED pe_mauc_enfma	at word 15	range 23	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v4_65.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	65	18	2221	0	E_UNSUPPORTED pe_mauc_enfma	at word 18	range 19	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v4_66.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	66	16	1909	0	E_RANGE	word 16 at word 16	range 16	-	-	E_RANGE as rust
+research/experiments/fable52/v5_59.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	59	14	1893	0	E_UNSUPPORTED pe_mauc_enfma	at word 14	range 21	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v8_58.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	58	8	1006	0	E_UNSUPPORTED pe_mauc_enfma	at word 8	range 26	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v9_55.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	55	10	1100	0	E_UNSUPPORTED pe_mauc_enfma	at word 10	range 15	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/fable52/v9_57.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	57	10	1152	0	E_UNSUPPORTED pe_mauc_enfma	at word 10	range 15	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/isa-analyst/progs/b_base.vsm	standalone	mv	1	1	3	15632	pass		ok	same	pass	pass b
+research/experiments/isa-analyst/progs/b_mvd.vsm	standalone	mv	2	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvp_l2bm_par.vsm	standalone	mv	1	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvp_l2bm_single.vsm	standalone	mv	1	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvp_pdm.vsm	standalone	mv	2	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvr.vsm	standalone	mv	1	0	73	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvr2.vsm	standalone	mv	1	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/b_mvr4.vsm	standalone	mv	1	0	137	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/isa-analyst/progs/e2_l1bmd_extent.vsm	standalone	alu_int,l1bm	5	5	530	15632	mismatch(L1BM)	240 differ, 0 only official, 0 only rtl	ok	differ(L1BM)	pass	pass c
+research/experiments/isa-analyst/progs/e2_multiwrite.vsm	standalone	alu_int,l1bm,l2bm	5	5	1009	15632	mismatch(L1BM)	60 differ, 0 only official, 0 only rtl	ok	differ(L1BM)	pass	pass c
+research/experiments/isa-analyst/progs/e2_three_mem.vsm	standalone	alu_int,l1bm,l2bm	9	9	1453	15632	mismatch(L1BM,L2BM)	365 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM)	pass	pass c
+research/experiments/isa-analyst/progs/t_base.vsm	standalone	mv	1	1	3	15632	pass		ok	same	pass	pass b
+research/experiments/isa-analyst/progs/t_l2bm_dram.vsm	standalone	mv	1	1	175	15632	pass		ok	same	pass	pass b
+research/experiments/isa-analyst/progs/t_mvp.vsm	standalone	mv	1	1	213	15632	pass		ok	same	pass	pass b
+research/experiments/isa-analyst/progs/t_pdm_base.vsm	standalone	mv	1	1	3	15632	pass		ok	same	pass	pass b
+research/experiments/lowerbound/nine_word.vsm	standalone	alu_int,l1bm,l2bm,mv	9	9	22206	15632	mismatch(DRAM,L1BM,L2BM)	4840 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/packer/probes/p07_tag_2block.vsm	standalone	alu_int,l1bm,l2bm,mv	21	21	23055	15632	mismatch(DRAM,L1BM,L2BM)	4712 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/packer/probes/p12_2block_pack.vsm	standalone	alu_int,l1bm,l2bm,mv	52	52	25950	15632	mismatch(DRAM,L1BM,L2BM)	4712 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/packer/probes/p12_final_2block.vsm	standalone	alu_int,l1bm,l2bm,mv	51	51	25892	15632	mismatch(DRAM,L1BM,L2BM)	4712 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/11.square-sum/base.vsm	solution	alu_int,mau,l1bm	11	2	206	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/12.divrow-vec/best.vsm	solution	alu_int,fp,mau,l1bm	28	2	178	0	E_UNSUPPORTED pe_aluc_aluop	rsqrt at word 2	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+research/experiments/resched/12.divrow-vec/p1.vsm	solution	alu_int,fp,mau,l1bm	28	2	178	0	E_UNSUPPORTED pe_aluc_aluop	rsqrt at word 2	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+research/experiments/resched/13.exp-low-prec/answer.vsm	solution	alu_int,fp,mau,l1bm	10	2	578	0	E_UNSUPPORTED pe_aluc_aluop	lrelud at word 2	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+research/experiments/resched/13.exp-low-prec/c8.vsm	solution	alu_int,fp,mau,l1bm	8	2	482	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/13.exp-low-prec/exp8.vsm	solution	alu_int,fp,mau,l1bm	8	2	482	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/14.exp/a14.vsm	solution	alu_int,mau,l1bm	14	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/14.exp/exp14.vsm	solution	alu_int,mau,l1bm	14	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/16.count-up/base.vsm	solution	alu_int,mau,l1bm,l2bm,mv	21	1	89	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+research/experiments/resched/16.count-up/dbg.vsm	solution	alu_int,mau,l1bm,l2bm,mv	21	1	89	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+research/experiments/resched/16.count-up/proto_mv.vsm	solution	mv	7	1	3549	0	E_RANGE	word 1 at word 1	range 1	-	-	E_RANGE as rust
+research/experiments/resched/16.count-up/v1.vsm	solution	alu_int,l1bm,l2bm,mv	35	29	5817	0	E_RANGE	word 29 at word 29	range 29	-	-	E_RANGE as rust
+research/experiments/resched/16.onehot/c23.vsm	solution	alu_int,mau,l1bm	23	2	244	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/17.transpose-mab/base.vsm	solution	alu_int,mau,l1bm	15	2	213	0	E_RANGE	word 2 at word 2	range 2	-	-	E_RANGE as rust
+research/experiments/resched/25.hsv2rgb/dbg.vsm	solution	alu_int,fp,mau,l1bm	12	1	143	0	E_UNSUPPORTED pe_aluc_aluop	ilrelud at word 1	ok	-	-	E_UNSUPPORTED pe_aluc_aluop
+research/experiments/resched/27.dram-ul-16-1024/base.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7648	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/27.dram-ul-16-1024/c3.vsm	solution	alu_int,l1bm,l2bm,mv	12	12	6033	15632	mismatch(DRAM,L1BM,L2BM)	2272 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/27.dram-ul-16-1024/t1.vsm	solution	alu_int,l1bm,l2bm,mv	12	9	2714	0	E_RANGE	word 9 at word 9	range 9	-	-	E_RANGE as rust
+research/experiments/resched/27.dram-ul-16-1024/v_bar.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7491	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/27.dram-ul-16-1024/v_noimm.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7491	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/27.dram-ul-16-1024/v_t1.vsm	solution	alu_int,l1bm,l2bm,mv	12	12	7394	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/27.dram-ul-16-1024/v_t2.vsm	solution	alu_int,l1bm,l2bm,mv	12	12	7439	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/5.abs/base.vsm	solution	alu_int,mau,l1bm	13	0	98	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/6.subrow-vec/best.vsm	solution	alu_int,fp,mau,l1bm	22	0	74	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/6.subrow-vec/cand22.vsm	solution	alu_int,fp,mau,l1bm	22	0	74	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/6.subrow-vec/cand23.vsm	solution	alu_int,fp,mau,l1bm	23	0	74	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/8.sumcol/base.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1363	15632	mismatch(DRAM,L1BM,L2BM)	48 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/8.sumcol/best.vsm	solution	alu_int,l1bm,l2bm,mv	6	6	1102	15632	mismatch(DRAM,L1BM,L2BM)	40 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/8.sumcol/c6a.vsm	solution	alu_int,l1bm,l2bm,mv	6	6	1102	15632	mismatch(DRAM,L1BM,L2BM)	40 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/8.sumcol/c7a.vsm	solution	alu_int,l1bm,l2bm,mv	7	7	1103	15632	mismatch(DRAM,L1BM,L2BM)	48 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/challenge-mid/21.hello-world/base.vsm	solution	alu_int,mau,l1bm,l2bm,mv	9	1	103	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/base.vsm	solution	alu_int,mau,l1bm	9	2	610	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/challenge-mid/23.fizzbuzz-pe/c8a.vsm	solution	alu_int,mau,l1bm	8	2	610	0	E_UNSUPPORTED pe_mauc_enfma	at word 2	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/dar-sweep/17.dram-dl-256-16/d0.vsm	solution	l1bm,l2bm,mv	5	5	1226	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dar-sweep/18.dram-ul-256-16/a2.vsm	solution	l1bm,l2bm,mv	5	5	2225	15632	mismatch(DRAM,L2BM)	480 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+research/experiments/resched/dram-sweep/17.dram-dl-256-16/base.vsm	solution	l1bm,l2bm,mv	5	5	1208	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/18.dram-ul-256-16/base.vsm	solution	l1bm,l2bm,mv	6	6	1973	15632	mismatch(DRAM,L2BM)	704 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+research/experiments/resched/dram-sweep/19.dram-dl-256-16p/base.vsm	solution	l1bm,l2bm,mv	19	19	6275	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/20.dram-ul-256-16p/base.vsm	solution	alu_int,l1bm,l2bm,mv	10	10	3469	15632	mismatch(DRAM,L2BM)	896 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+research/experiments/resched/dram-sweep/21.dram-dl-256-16-l2b/base.vsm	solution	l1bm,l2bm,mv	12	12	3304	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/22.dram-dl-1024-16/base.vsm	solution	l1bm,l2bm,mv	8	8	4604	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/23.dram-dl-256-1024/base.vsm	solution	l1bm,l2bm,mv	68	0	265	0	E_RANGE	word 0 at word 0	range 0	-	-	E_RANGE as rust
+research/experiments/resched/dram-sweep/24.dram-dl-16/base.vsm	solution	l1bm,l2bm,mv	4	4	593	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/24.dram-dl-16/best.vsm	solution	l1bm,l2bm,mv	3	3	606	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3.vsm	solution	l1bm,l2bm,mv	3	3	606	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/24.dram-dl-16/c3m.vsm	solution	l1bm,l2bm,mv	3	3	594	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/25.dram-ul-16/base.vsm	solution	l1bm,l2bm,mv	4	4	1060	15632	mismatch(DRAM,L2BM)	112 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L2BM)	pass	pass c
+research/experiments/resched/dram-sweep/26.dram-dl-16-1024/base.vsm	solution	l1bm,l2bm,mv	39	4	16658	0	E_RANGE	word 4 at word 4	range 4	-	-	E_RANGE as rust
+research/experiments/resched/dram-sweep/27.dram-ul-16-1024/base.vsm	solution	alu_int,l1bm,l2bm,mv	13	13	7648	15632	mismatch(DRAM,L1BM,L2BM)	3296 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/dram-sweep/28.dram-dl-16-16/base.vsm	solution	l1bm,l2bm,mv	7	7	1579	15632	mismatch(L1BM,L2BM,LM0)	288 differ, 0 only official, 0 only rtl	ok	differ(L1BM,L2BM,LM0)	pass	pass c
+research/experiments/resched/dram-sweep/29.dram-ul-16-16/base.vsm	solution	alu_int,l1bm,l2bm,mv	8	8	1275	15632	pass		ok	same	pass	pass b
+research/experiments/resched/dram-sweep/30.dram-dl-256/base.vsm	solution	alu_int,fp,mau,l1bm,l2bm,mv	10	1	268	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/dram-sweep/31.dram-ul-256/base.vsm	solution	alu_int,l1bm,l2bm,mv	7	7	1325	15632	mismatch(DRAM,L1BM,L2BM)	168 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+research/experiments/resched/mnist-small/15.onehot-mini/base.vsm	solution	alu_int,mau,l1bm	7	1	143	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/mnist-small/7.sumcol-mini/s4_l1bm.vsm	solution	alu_int,l1bm	4	4	711	15632	mismatch(LM1)	24 differ, 0 only official, 0 only rtl	ok	differ(LM1)	pass	pass c
+research/experiments/resched/small-alu/24.log2/d7.vsm	solution	alu_int,mau,l1bm	7	1	175	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/experiments/resched/small-alu/7.mul2/d9.vsm	solution	fp,mau,l1bm	9	0	90	0	E_UNSUPPORTED pe_mauc_enfma	at word 0	ok	-	-	E_UNSUPPORTED pe_mauc_enfma
+research/preliminary/fizzbuzz-delivery/vsm/delivery_tail.vsm	standalone	l1bm,l2bm,mv	8	8	22094	15632	pass		ok	same	pass	pass b
+research/preliminary/fizzbuzz-delivery/vsm/mvp16384.vsm	standalone	mv	1	1	53363	15632	pass		ok	same	pass	pass b
+research/preliminary/fizzbuzz-delivery/vsm/nine_word.vsm	standalone	alu_int,l1bm,l2bm,mv	9	9	22206	15632	mismatch(DRAM,L1BM,L2BM)	4840 differ, 0 only official, 0 only rtl	ok	differ(DRAM,L1BM,L2BM)	pass	pass c
+solutions/02_fable_47.vsm	standalone	alu_int,fp,mau,l1bm,l2bm,mv	47	1	87	0	E_UNSUPPORTED pe_mauc_enfma	at word 1	range 9	-	-	E_UNSUPPORTED pe_mauc_enfma

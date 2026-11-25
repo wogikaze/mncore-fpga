@@ -22,6 +22,7 @@ L1BM の中身へは、WP31 の `mn_l1bm` のポート B を通してアクセ�
 | `RRN` | 1 | 1: 縮約に `mn_l1bm_rrn` を使う（任意の N_L1B）。2: N_L1B = 1 専用の小さな縮約（各レーンが L1B 0 の値と、0 または単位元の縮約になることを使い、1 長語を 1 クロックで作る）。0: bor だけ（`l2bm@n` は使える。ほかの縮約は E_UNSUPPORTED） |
 | `DAR` | 1 | 1: DAR と DAR バッファを持つ（BSRAM 3 個）。0: 持たない（`l2bmdars` / `l2bmdarw` は E_UNSUPPORTED） |
 | `CLEAR` | 1 | 1: リセット後に L2BM、DAR、DAR バッファを 0 にする（max(2^AW, 1024) クロック、その間 `idle` = 0） |
+| `REPLICA` | 0 | 1: 複製規則（WP37、`mncore/wp/WP-3x.md` の M2 の判断）。存在しない L1B b を L1B b mod N_L1B の複製とみなして読む（下の「存在しない L1B」）。N_L1B は 2 のべき |
 
 M2（1 L2B・1 L1B、hello_world は `l2bmrhfadd` を使う）では `N_L1B` = 1、`RRN` = 2 が安い。MV の間接参照を使わないなら `DAR` = 0 で BSRAM が 3 個減る。
 
@@ -136,6 +137,8 @@ act でない j 語（ll = 00 の語も）を 1 つ実行するごとに mn_l2bm
   L2BM の hfadd は半精度のまま（`fmt` = 2、`out_half` = 0）。
 - **単位元**（集合の外の L1B が送る値。レーンの幅で）: fadd / iadd / bor / or は 0、max と band は全ビット 1、min は符号以外の全ビット 1、and は 1。全演算で公式と一致（Rust Sim の `rrn::unit_value` とも同じ）。
 - **存在しない L1B**（b ≥ N_L1B、契約 §3）: そこへの転送は捨てる（読み出しもしない）。集合の中で存在しない L1B は縮約に 0 を送る。結合は 0 を書く。`l2bmi` の読み出し元が存在しなければ 0 を書く。
+  - `REPLICA` = 1（複製規則、WP37）: 存在しない L1B b は L1B b mod N_L1B の複製として読む: 縮約（l2bmr、l2bmr2、l2bm@）の入力、結合のスロット、`l2bmi` の読み出し元は、その L1B の L1BM の値になる。書き込みは今までどおり捨てる。範囲の検査も、読み出しは複製元のアクセスとして行う。
+  - `RRN` = 2 の複製規則の縮約は、集合の中の入力 n 個（l2bmr は 2^popcount(immode) 個、l2bmr2 は L1B 2g・2g+1 のうち集合の中のもの）がすべて L1B 0 の値の縮約: fadd は値の指数に log2 n を足す（同じ値の和は正確で、丸めは 1 回。あふれは無限大、指数 0 は 0）、iadd は n 倍、max / min / band / bor は値のまま、and / or は 0 でなければ 1。n = 0 は単位元。
   N_L1B = 1 では、`l2bmi` は L1B 0 が集合の中なら何もせず、外なら 0 を書く（L1BM を読まない）。
 - **noforward**（ll = 11）は L2BM 命令に影響しない。ll = 00 の語は何もしない。
 

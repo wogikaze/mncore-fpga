@@ -1,0 +1,11 @@
+# hwrun m2 2026-11-25 18:20:29: design 0x04, 27000000 Hz, 2000000 baud, imem 512, topo (1, 1, 1, 1, 4), FPALU=0 MAU=0 BFN=0 MAT=0 REPLICA=0, rtl table results_TB_FPALU0_TB_MAU0_TB_BFN0.tsv (247 rows), 247 programs
+[1/247] E_UNSUPPORTED pe_aluc_aluop as rtl     29 words     3 steps     0 lw   4.82 s  docs/mnist-golf/submissions/12.divrow-vec.vsm rsqrt at word 3
+[2/247] E_UNSUPPORTED pe_mauc_enfma as rtl     16 words     0 steps     0 lw   0.32 s  docs/mnist-golf/submissions/14.exp.vsm at word 0
+[3/247] E_UNSUPPORTED pe_mauc_enfma as rtl      7 words     1 steps     0 lw   0.09 s  docs/mnist-golf/submissions/15.onehot-mini.vsm at word 1
+[4/247] E_UNSUPPORTED pe_mauc_enfma as rtl     24 words     2 steps     0 lw   1.05 s  docs/mnist-golf/submissions/16.onehot.vsm at word 2
+[5/247] pass b                   as rtl      5 words     5 steps 15632 lw   6.44 s  docs/mnist-golf/submissions/17.dram-dl-256-16.vsm  rust ok off_rust same vs_rust pass
+[6/247] pass c                   as rtl      6 words     6 steps 15632 lw   5.90 s  docs/mnist-golf/submissions/18.dram-ul-256-16.vsm 704 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[7/247] pass b                   as rtl     19 words    19 steps 15632 lw  10.19 s  docs/mnist-golf/submissions/19.dram-dl-256-16p.vsm  rust ok off_rust same vs_rust pass
+[8/247] pass c                   as rtl     10 words    10 steps 15632 lw  11.10 s  docs/mnist-golf/submissions/20.dram-ul-256-16p.vsm 896 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[9/247] pass b                   as rtl     12 words    12 steps 15632 lw   8.92 s  docs/mnist-golf/submissions/21.dram-dl-256-16-l2b.vsm  rust ok off_rust same vs_rust pass
+[10/247] pass b                   as rtl      8 words     8 steps 15632 lw  22.24 s  docs/mnist-golf/submissions/22.dram-dl-1024-16.vsm  rust ok off_rust same vs_rust pass

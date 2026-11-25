@@ -123,6 +123,11 @@ module mn_top_mab #(
     // ---------------------------------------------------------------- core
     /* verilator lint_off UNUSEDSIGNAL */
     wire [16:0] core_trap;   // E_RANGE detail: not reported by protocol version 1
+    // no L1BM / L2BM / MV units (mn_core M2 = 0): the SDRAM bus and the indicators are unused
+    wire        u_sd_valid, u_sd_we, u_busy, u_err;
+    wire [22:0] u_sd_addr;
+    wire [63:0] u_sd_wdata;
+    wire [7:0]  u_sd_wmask;
     /* verilator lint_on UNUSEDSIGNAL */
     mn_core #(
         .IMEM_AW(IMEM_AW), .IMEM_RD(0), .LM_AW(LM_AW), .GRF_AW(GRF_AW), .CLEAR(1),
@@ -135,7 +140,10 @@ module mn_top_mab #(
         .mr_loc(mr_loc), .mr_addr(mr_addr), .mr_rsp_valid(mr_rsp_valid), .mr_rsp_data(mr_rsp_data),
         .run_start(run_start), .run_pc(run_pc), .run_count(run_count),
         .core_busy(core_busy), .core_reason(core_reason), .core_info(core_info),
-        .core_pc(core_pc), .core_steps(core_steps), .core_trap(core_trap)
+        .core_pc(core_pc), .core_steps(core_steps), .core_trap(core_trap),
+        .sd_req_valid(u_sd_valid), .sd_req_ready(1'b0), .sd_req_we(u_sd_we), .sd_req_addr(u_sd_addr),
+        .sd_req_wdata(u_sd_wdata), .sd_req_wmask(u_sd_wmask), .sd_rsp_valid(1'b0), .sd_rsp_rdata(64'd0),
+        .sd_err_addr(1'b0), .unit_busy(u_busy), .unit_err(u_err)
     );
 
     // ---------------------------------------------------------------- LED

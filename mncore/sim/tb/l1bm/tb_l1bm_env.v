@@ -242,7 +242,12 @@ module tb_l1bm_env #(
             // reads
             for (i = 0; i < NPE; i = i + 1) begin
                 for (c = 0; c < 4; c = c + 1) begin
-                    if (use_src) begin
+                    if (use_src && isel == 3'd7) begin
+                        // isel 111: the PE's $lbf (WP37; the official emulator sends it)
+                        lbf_rmab = i / 4; lbf_rpe = i % 4; lbf_rcycle = c;
+                        #1;
+                        srcb[i*4 + c] = lbf_rdata;
+                    end else if (use_src) begin
                         pe_read(i, c, isel, b);
                         srcb[i*4 + c] = b;
                     end
