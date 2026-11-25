@@ -1,0 +1,5 @@
+design mn_top_multi {'UNITS': '1', 'FPALU': '0', 'MAU': '1', 'BFN': '0', 'MAT': '0', 'REPLICA': '0', 'L1_RRN': '2', 'SDRAM': '0'} (files_l1.txt) synth_gowin -family gw2a -nowidelut
+yosys: LUT 11361, ALU 2173, MUX2 0, FF 7890, SSRAM 289, BSRAM 35, DSP 8, LUT_eq 15846  (LUT_eq = LUT + ALU + 8 * SSRAM = 15846, 76.4 % of 20736)
+seed 1: nextpnr failed: ERROR: Unable to find legal placement for all cells, design is probably at utilisation limit.
+seed 2: nextpnr failed: ERROR: Unable to find legal placement for all cells, design is probably at utilisation limit.
+no seed met timing

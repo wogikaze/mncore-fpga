@@ -1,0 +1,26 @@
+#   loaded M2a in 6.75 s
+loaded M2a: design 0x05 flags 0x01
+#   loaded M2a in 18.67 s
+# wrote 12288 long words in 1.6 s on M2a
+#   loaded M2a in 17.98 s
+#   DRAM 0x0 +4096: 0 long words differ (0 bits)
+#   DRAM 0x7f000 +4096: 0 long words differ (0 bits)
+#   PDM 0x0 +4096: 0 long words differ (0 bits)
+# PASS: the DRAM / PDM kept their content across M2a -> M2a (23.0 s without the first member, 5.0 s waited)
+# after RESET: DRAM 0..63 all 0
+# mnrun regress 2026-11-25 21:16:32: 4 programs, rule zero, members M2a (L1+L1R+L2+MV+SDRAM), MAU (MAU+MAUF+SDRAM), 2000000 baud, rtl table results_m2.tsv
+[1/4] pass c                     expected:yes as rtl     13 words    13 steps 15632 lw sw 0   5.75 s  mncompile/benchmarks/results/21.hello-world/kernel.vsm [0-12:M2a] 372 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[2/4] pass c                     expected:yes as rtl      6 words     6 steps 15632 lw sw 0   3.50 s  problems/8.sumcol/answer.vsm [0-5:M2a] 40 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L1BM,L2BM) vs_rust pass
+[3/4] pass c                     expected:yes as rtl      5 words     5 steps 15632 lw sw 0   4.49 s  problems/25.dram-ul-16/main.vsm [0-4:M2a] 112 differ, 0 only official, 0 only board rust ok off_rust differ(DRAM,L2BM) vs_rust pass
+[4/4] E_RANGE as rust            expected:yes as rtl     21 words     1 steps     0 lw sw 0   0.11 s  problems/challenge/16.count-up/main.vsm [0-20:M2a] word 1 at word 1
+# 4 programs in 17 s; link: crc_err 0 frame_err 0 overrun 0 timeout 0, host retries 0
+# pass 3/4; as the RTL with every unit 4/4; as the plan expects 4/4; switches 0 (in 0 programs), bitstream loads 0, load time 0 s, save 0 s, restore 0 s
+#   loaded M2a in 9.83 s
+# wrote 196608 long words in 19.9 s on M2a
+#   loaded M2a in 11.54 s
+#   DRAM 0x0 +65536: 1 long words differ (1 bits)
+#   DRAM 0x70000 +65536: 0 long words differ (0 bits)
+#   PDM 0x0 +65536: 2 long words differ (2 bits)
+# FAIL: the DRAM / PDM kept their content across M2a -> M2a (11.5 s without the first member, 0.0 s waited)
+# after RESET: DRAM 0..63 all 0
+loaded M2a: design 0x05 flags 0x01

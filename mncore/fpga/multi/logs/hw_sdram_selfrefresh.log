@@ -1,0 +1,9 @@
+#   loaded M2a in 32.55 s
+# wrote 49152 long words in 3.5 s on M2a
+#   loaded MAUF3 in 16.83 s
+#   loaded M2a in 13.90 s
+#   DRAM 0x0 +16384: 1 long words differ (1 bits)
+#   DRAM 0x7c000 +16384: 2 long words differ (2 bits)
+#   PDM 0x0 +16384: 1 long words differ (1 bits)
+# FAIL: the DRAM / PDM kept their content across M2a -> MAUF3 -> M2a (60.7 s without the first member, 30.0 s waited)
+# after RESET: DRAM 0..63 all 0

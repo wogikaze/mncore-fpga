@@ -1,0 +1,5 @@
+design mn_top_multi {'UNITS': '0', 'FPALU': '0', 'MAU': '1', 'BFN': '0', 'MAT': '0', 'REPLICA': '0', 'L1_RRN': '2'} (files.txt) synth_gowin -family gw2a -nowidelut
+yosys: LUT 10265, ALU 2081, MUX2 0, FF 8390, SSRAM 233, BSRAM 31, DSP 8, LUT_eq 14210  (LUT_eq = LUT + ALU + 8 * SSRAM = 14210, 68.5 % of 20736)
+seed 1: Fmax sclk 89.61 MHz, u_core.clk 44.49 MHz -> PASS (core >= 27.0, SDRAM sclk >= 54.0)
+  utilisation: VCC 1/1 (100 %), IOB 33/66 (50 %), LUT4 14489/20736 (70 %), IOLOGICO 1/384 (0 %), ALU 2360/15552 (15 %), GND 1/1 (100 %), DFF 9788/15552 (63 %), RAM16SDP4 233/648 (36 %), BSRAM 31/46 (67 %), MULT18X18 8/48 (17 %), GSR 1/1 (100 %), rPLL 1/2 (50 %), BUFG 1/24 (4 %)
+bitstream: mncore/fpga/multi/build/MAU/top_multi.fs (seed 1)

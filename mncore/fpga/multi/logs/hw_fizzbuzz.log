@@ -1,0 +1,8 @@
+# 2026-11-25 22:54:09 mnrun.py run problems/challenge/20.fizzbuzz/answer.vsm (zero rule)
+#   loaded L1MAU in 3.92 s
+#   segment 0: words 0..46 on L1MAU (word 19 needs FP2+L1+MAU+MAUF: no member has FP2)
+# 47 entries, 1 segments (0-46:L1MAU), 0 switches, 1 loads, 1 RUNs, 9 steps, 0 ndmp lines, 4.7 s (load 3.92 s, save 0.0 s, restore 0.0 s)
+# the plan is incomplete: word 19 needs FP2+L1+MAU+MAUF: no member has FP2
+# STOPPED: E_RANGE at entry 9 (word 9)
+words 0..46 on L1MAU (needs FP1+FP2+L1+L1R+L2+MAU+MAUF+MV)  STOP: word 19 needs FP2+L1+MAU+MAUF: no member has FP2
+1 segments, 0 switches; incomplete: word 19 needs FP2+L1+MAU+MAUF: no member has FP2
