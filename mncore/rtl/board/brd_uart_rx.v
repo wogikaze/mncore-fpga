@@ -62,6 +62,10 @@ module brd_uart_rx #(
     reg          push;
     reg [7:0]    push_data;
 
+    // r - 1 clock (shared by the countdown and the next bit), and r <= 1 clock as logic (WP35)
+    wire [DIVW:0] r_m1 = r - Q1;
+    wire          due  = (r[DIVW:9] == {(DIVW-8){1'b0}}) & (~r[8] | (r[7:0] == 8'd0));
+
     always @(posedge clk) begin
         if (rst) begin
             st         <= S_IDLE;
@@ -93,8 +97,8 @@ module brd_uart_rx #(
                     end
                 end
                 S_BITS: begin
-                    if (r <= Q1) begin
-                        r    <= r + div_e - Q1;
+                    if (due) begin
+                        r    <= r_m1 + div_e;
                         bitn <= bitn + 1'b1;
                         if (bitn == 4'd0) begin
                             if (rxf) st <= S_IDLE;               // glitch, not a start bit
@@ -113,7 +117,7 @@ module brd_uart_rx #(
                             sh <= {rxf, sh[7:1]};
                         end
                     end else begin
-                        r <= r - Q1;
+                        r <= r_m1;
                     end
                 end
                 S_WAITHI: begin
