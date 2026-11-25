@@ -235,6 +235,7 @@ class ProgramRun:
         self.dram_fresh = False      # the loaded member's RESET cleared them (no configuration since)
         self.dram_dirty = False      # they may hold something else than the zeros of the clear
         self.dram_now = False        # this segment runs its PDM / DRAM lines at once (it has MV words)
+        self._rcache = None          # dram_flush: long words of a group of d gets, read together
 
     # -- helpers
     @property
@@ -353,11 +354,38 @@ class ProgramRun:
         return False
 
     def dram_flush(self):
-        """Run the waiting PDM / DRAM lines on this member (it has the SDRAM)."""
+        """Run the waiting PDM / DRAM lines on this member (it has the SDRAM). The d gets between two
+        writes read their long words together (some programs have 16,384 one-word d gets of the DRAM)."""
         q, self.dq = self.dq, []
         now, self.dram_now = self.dram_now, True
-        for d in q:
-            self.event(d)
+        smap = mnhost.SpaceMap(self.dev.info())
+        topo = mnhost.Topology(self.dev.info().topo)
+        i = 0
+        while i < len(q):
+            j = i
+            while j < len(q) and q[j].op == "get":
+                j += 1
+            if j > i:
+                # the long words of the d gets q[i:j], read in runs, then the d gets from that copy
+                need: dict = {}
+                for d in q[i:j]:
+                    dep = smap.depth(d.space)
+                    for f in topo.locations(d.space, d.loc):
+                        key = (mnhost.SPACES[d.space], mnhost.loc_code(**f))
+                        need.setdefault(key, set()).update(
+                            lw for _, _, lw, _ in mnhost.get_units(d) if lw is not None and lw < dep)
+                self._rcache = {}
+                for (sp, lc), lws in need.items():
+                    c = self._rcache.setdefault((sp, lc), {})
+                    for run in mnhost._addr_runs(lws):
+                        c.update(zip(run, self.dev.read(sp, lc, run[0], len(run), window=WINDOW)))
+                for d in q[i:j]:
+                    self.event(d)
+                self._rcache = None
+                i = j
+            else:
+                self.event(q[i])
+                i += 1
         self.dram_now = now
 
     # -- d / r lines
@@ -410,7 +438,11 @@ class ProgramRun:
                     if on_dev:
                         sp, lc, a0 = smap.target(space, f, run[0]) if space not in UNIT_DEPTH else \
                             (mnhost.SPACES[space], 0, run[0])
-                        got = self.dev.read(sp, lc, a0, len(run), window=WINDOW)
+                        c = self._rcache.get((sp, lc)) if self._rcache else None
+                        if c is not None and all(a in c for a in run):
+                            got = [c[a] for a in run]          # read together by dram_flush
+                        else:
+                            got = self.dev.read(sp, lc, a0, len(run), window=WINDOW)
                     else:
                         sh = self.shadow_of(space)
                         got = [sh[a] for a in run]

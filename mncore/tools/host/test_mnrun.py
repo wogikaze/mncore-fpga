@@ -182,6 +182,7 @@ class FakeDev:
 
     def read(self, space, loc, addr, n, window=0):
         st = self._store(space)
+        self.nread = getattr(self, "nread", 0) + 1
         return [st.get((space, loc, addr + i), 0) for i in range(n)]
 
     def write_imem(self, addr, entries):
@@ -303,6 +304,16 @@ class Executor(unittest.TestCase):
         self.assertEqual(b.history, ["MAU", "M2a"])
         self.assertEqual(r.records[("DRAM", "n0", 5)], 0)            # RESET on M2a cleared it again
         self.assertEqual(r.records[("DRAM", "n0", 8)], 0xaa)         # the r line came after that RESET
+
+    def test_dram_d_gets_read_together(self):
+        # 300 one-word d gets of the DRAM after an r line: a few reads, the values of each address
+        ev = [(0, "r 0 0 4 " + "".join(f"{k + 1:016x}" for k in range(4)))]
+        ev += [(1, f"d getd $d{k}n0 1") for k in range(300)]
+        b = FakeBoard([M2A])
+        pr = mr.ProgramRun(b, program([L1_READ], ev))
+        r = pr.execute()
+        self.assertEqual([r.records[("DRAM", "n0", k)] for k in range(5)], [1, 2, 3, 4, 0])
+        self.assertLessEqual(b.dev.nread, 3)
 
     def test_stop_ends_the_program(self):
         b = FakeBoard([M2A, MAU])
