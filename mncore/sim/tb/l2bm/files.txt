@@ -1,0 +1,15 @@
+# WP32: the L2BM unit (mn_l2bm) with the L1BM units (mn_l1bm, WP31) it reaches through port B.
+# Default top tb_l2bm: the directed tests (fixed/*.tst, made by gen_tests.py with the official
+# emulator) on N_L1B = 1 (RRN = 1 and 2) and N_L1B = 8.
+# The decoder (rtl/dec, WP10) gives the testbench the fields of the words.
+top: tb_l2bm
+rtl_top: mn_l2bm
+incdir: mncore/rtl/dec
+mncore/fpga/recipes/mn_ram_lut.v
+mncore/fpga/recipes/mn_ram_1r1w.v
+mncore/rtl/l1bm/mn_l1bm_rrn.v
+mncore/rtl/l1bm/mn_l1bm.v
+mncore/rtl/l2bm/mn_l2bm.v
+mncore/rtl/dec/mn_dec_j.v
+mncore/sim/tb/l2bm/tb_l2bm_env.v
+mncore/sim/tb/l2bm/tb_l2bm.v
