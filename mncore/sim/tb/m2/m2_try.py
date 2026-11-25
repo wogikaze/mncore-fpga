@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Run one .vsm on the M2 core (RTL), the official emulator and the reduced-topology Rust simulator, and
-compare (WP37 debugging aid).
+compare (WP37 debugging aid; gen_m2.py uses prepare() for the directed programs).
 
-    python mncore/sim/tb/m2/m2_try.py X.vsm [--out DIR] [--define TB_REPLICA=1] [--probe] [--keep-vvp]
+    python mncore/sim/tb/m2/m2_try.py X.vsm [--out DIR] [--define TB_REPLICA=1] [--probe]
 
 The program is taken as it is (standalone: its own d set / r / d get lines; with --probe the M2 probe is
 appended). Prints the records where the RTL differs from the official (cut to the implemented units) and
-from the Rust run (the zero rule). Outputs in DIR (default mncore/sim/tb/m2/build/try/<name>/).
+from the Rust run (the zero rule). Outputs in DIR (default mncore/sim/tb/m2/build/try/<name>/): the
+official run (official.asm, official.ndmp), rust.ndmp, rtl.scr (the tb_core script), rtl.out.
 """
 from __future__ import annotations
 
@@ -25,6 +26,31 @@ regress.configure(4, m2=True)
 gl = regress.gl
 
 
+def prepare(vsm: Path, job: Path, probe: bool = False, log=print) -> str:
+    """The official run, the Rust run (zero rule) and the tb_core script of a standalone program in job.
+    Returns the official status."""
+    job.mkdir(parents=True, exist_ok=True)
+    prog = gl.load_program(vsm, "none", "none")
+    if probe:
+        prog.probe = "m2"
+        prog.probe_text = regress.probe_text()
+    gl.write_official_job(prog, job)
+    gl.run_official_jobs([job], parallel=1, keep=True, on_line=lambda s: None)
+    st = gl.read_status(job)
+    r = subprocess.run([str(regress.TOPO_DUMP), "--topology", regress.TOPO_M2, "-"],
+                       input=prog.rust_source().encode(), capture_output=True)
+    (job / "rust.ndmp").write_text("# ndmp v1\n" + r.stdout.decode(), encoding="utf-8")
+    (job / "rust.status").write_text(("ok" if r.returncode == 0 else f"error{r.returncode}") + "\n")
+    log(f"{vsm.name}: official {st}, rust rc {r.returncode} {r.stderr.decode().strip()[:200]}")
+    if st == "ok":
+        entries, events, _ = regress.parse_official_asm((job / "official.asm").read_text(encoding="utf-8"))
+        script, _, _ = regress.make_script(entries, events)
+        (job / "rtl.scr").write_text(script, encoding="utf-8", newline="\n")
+    else:
+        log((job / "official.log").read_text(errors="replace")[-2000:])
+    return st
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("vsm")
@@ -33,28 +59,11 @@ def main(argv=None) -> int:
     ap.add_argument("--probe", action="store_true")
     a = ap.parse_args(argv)
     vsm = Path(a.vsm).resolve()
-    name = vsm.stem
-    job = Path(a.out) if a.out else HERE / "build" / "try" / name
-    job.mkdir(parents=True, exist_ok=True)
-    prog = gl.load_program(vsm, "none", "none")
-    if a.probe:
-        prog.probe = "m2"
-        prog.probe_text = regress.probe_text()
-    gl.write_official_job(prog, job)
-    gl.run_official_jobs([job], parallel=1, keep=True, on_line=lambda s: None)
-    st = gl.read_status(job)
-    print(f"official: {st}")
-    # Rust on the reduced topology
-    r = subprocess.run([str(regress.TOPO_DUMP), "--topology", regress.TOPO_M2, "-"],
-                       input=prog.rust_source().encode(), capture_output=True)
-    (job / "rust.ndmp").write_text("# ndmp v1\n" + r.stdout.decode(), encoding="utf-8")
-    print(f"rust: rc {r.returncode} {r.stderr.decode().strip()[:200]}")
-    if st != "ok":
-        print((job / "official.log").read_text(errors="replace")[-2000:])
+    job = Path(a.out) if a.out else HERE / "build" / "try" / vsm.stem
+    if prepare(vsm, job, a.probe) != "ok":
         return 1
     entries, events, _ = regress.parse_official_asm((job / "official.asm").read_text(encoding="utf-8"))
-    script, runs, gets = regress.make_script(entries, events)
-    (job / "rtl.scr").write_text(script, encoding="utf-8", newline="\n")
+    _, runs, gets = regress.make_script(entries, events)
     vvp = regress.compile_tb(print, a.define)
     rr = subprocess.run(["vvp", "-n", str(vvp), f"+script={(job / 'rtl.scr').as_posix()}", "+quiet",
                          "+maxclk=50000000"], cwd=ROOT, capture_output=True, text=True)

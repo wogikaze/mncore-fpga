@@ -56,6 +56,18 @@
 `ifndef TB_REPLICA
 `define TB_REPLICA 0
 `endif
+// -DTB_SDCLR=1: the core clears the DRAM / PDM after reset itself (mn_core SDCLR, the board's setting),
+// on a small DRAM / PDM (-DTB_DRAM_AW / -DTB_PDM_AW, default 10 / 8) so that the clear is short;
+// C then does not clear tb_sdmem
+`ifndef TB_SDCLR
+`define TB_SDCLR 0
+`endif
+`ifndef TB_DRAM_AW
+`define TB_DRAM_AW ((`TB_SDCLR != 0) ? 10 : 19)
+`endif
+`ifndef TB_PDM_AW
+`define TB_PDM_AW ((`TB_SDCLR != 0) ? 8 : 17)
+`endif
 module tb_core;
     localparam IMEM_AW = 9, LM_AW = `TB_LMAW, GRF_AW = 8, NPE = `TB_NPE;
 
@@ -93,7 +105,8 @@ module tb_core;
 
     mn_core #(.IMEM_AW(IMEM_AW), .IMEM_RD(1), .LM_AW(LM_AW), .GRF_AW(GRF_AW),
               .FPALU(`TB_FPALU), .MAU(`TB_MAU), .N_PE(NPE), .BFN(`TB_BFN), .MAT(`TB_MAT),
-              .M2(`TB_M2), .REPLICA(`TB_REPLICA)) dut (
+              .M2(`TB_M2), .REPLICA(`TB_REPLICA), .SDCLR(`TB_SDCLR), .DRAM_AW(`TB_DRAM_AW),
+              .PDM_AW(`TB_PDM_AW)) dut (
         .clk(clk), .rst(rst),
         .mw_valid(mw_valid), .mw_ready(mw_ready), .mw_err(mw_err), .mw_space(mw_space),
         .mw_loc(mw_loc), .mw_addr(mw_addr), .mw_data(mw_data), .mw_mask(mw_mask),
@@ -171,7 +184,7 @@ module tb_core;
         bd_ok = 1'b0;
 `ifdef TB_SDMEM
         bd_ok = !nobd && (sp == 8'h08 || sp == 8'h09) && (loc == 16'd0) && (a >= 23'd64) &&
-                (a < ((sp == 8'h08) ? 23'h20000 : 23'h80000));
+                (a < ((sp == 8'h08) ? (23'd1 << `TB_PDM_AW) : (23'd1 << `TB_DRAM_AW)));
 `endif
     endfunction
     task automatic bd_write(input [7:0] sp, input [22:0] a, input [7:0] mask, input [63:0] d, output reg err);
@@ -242,7 +255,7 @@ module tb_core;
                         rst = 1'b1;
                         blocked = 1'b0;
 `ifdef TB_SDMEM
-                        u_sdmem.clear;     // the board clears the DRAM / PDM after RESET (SDCLR)
+                        if (`TB_SDCLR == 0) u_sdmem.clear;   // the board clears the DRAM / PDM after RESET (SDCLR)
 `endif
                         repeat (16) @(negedge clk);
                         rst = 1'b0;

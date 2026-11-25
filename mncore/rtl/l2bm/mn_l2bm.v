@@ -367,7 +367,8 @@ module mn_l2bm #(
     wire [2:0]  i_src = (l2bm_l1adr & keep) | (u & l2bm_immode);
     // reduction: the input L1B being fetched
     wire [2:0]  f_b   = (bd == 2'b01) ? fq[2:0] : {u[1:0], fq[0]};
-    wire [3:0]  f_last = (bd == 2'b01) ? {1'b0, UL} : 4'd1;
+    // (REPLICA: every L1B of the set sends a value, also those beyond N_L1B: the copies)
+    wire [3:0]  f_last = (bd == 2'b01) ? ((REPLICA != 0) ? 4'd7 : {1'b0, UL}) : 4'd1;
     // L1BM read: L1B and address
     wire [2:0]  q_l1b = (job == J_IMC) ? i_src : (job == J_RED) ? f_b : u;
     wire [12:0] q_adr = (job == J_GATH) ? l_8 : l_16;

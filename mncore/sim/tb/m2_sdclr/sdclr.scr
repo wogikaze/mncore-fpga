@@ -1,0 +1,26 @@
+# WP37: mn_core SDCLR (the board's clear of the DRAM / PDM after RESET) on a small DRAM / PDM
+# (TB_DRAM_AW 10, TB_PDM_AW 8): data written before a reset reads 0 after it. Long words 0..63
+# go through the host port (mn_mv, which waits for the clear), the others through the backdoor.
+C
+W 9 0 0 ff 1111111111111111
+W 9 0 3f ff 1212121212121212
+W 9 0 40 ff 1313131313131313
+W 9 0 3ff ff 2222222222222222
+W 8 0 0 ff 3333333333333333
+W 8 0 ff ff 4444444444444444
+Q 9 0 0 1111111111111111
+Q 9 0 3f 1212121212121212
+Q 9 0 40 1313131313131313
+Q 9 0 3ff 2222222222222222
+Q 8 0 0 3333333333333333
+Q 8 0 ff 4444444444444444
+C
+Q 9 0 0 0
+Q 9 0 3f 0
+Q 9 0 40 0
+Q 9 0 3ff 0
+Q 8 0 0 0
+Q 8 0 ff 0
+W 9 0 5 ff 5555555555555555
+Q 9 0 5 5555555555555555
+E

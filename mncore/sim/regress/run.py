@@ -10,7 +10,7 @@ usage: python mncore/sim/regress/run.py [--pes 1|4] [--only TEXT] [-j N] [--offi
 --m2 (WP37): the M2 core (mn_core N_PE = 4, M2 = 1: one MAB, L1B, L2B and group with the L1BM,
    L2BM and MV units; tb_core of the unit m2 with the behavioural SDRAM memory), on the programs
    that pe1 leaves out for the l1bm / l2bm / mv groups (and their run-time LM addresses), not the
-   matrix ones (--matrix adds those too, with --define TB_MAT=1). Results in build/m2/.
+   matrix ones (--matrix: the ones with the matrix group, with --define TB_MAT=1). Results in build/m2/.
    The probe adds L1BM n0c0b0 (1024 long words), L2BM n0c0 (2048) and DRAM n0 (8192); `r` lines
    become DRAM writes. Each program is also run on the Rust simulator on the reduced topology (zero
    rule, contract 06 section 3 (a); mncore/sim/regress/topo_rs, `topo_dump`), and the RTL is compared
@@ -782,9 +782,10 @@ def main(argv=None) -> int:
                 groups |= set(x.split(":", 1)[1].split("+"))
             else:
                 rest.add(x)
+        # --m2: no matrix group; --m2 --matrix: the ones with the matrix group (TB_MAT=1)
         allowed = {"l1bm", "l2bm", "mv"} | ({"matrix"} if a.matrix else set())
         return bool(groups) and groups <= allowed and rest <= lm_only and \
-            (a.matrix or "matrix" not in groups) and bool(groups & {"l1bm", "l2bm", "mv"})
+            (("matrix" in groups) == a.matrix) and bool(groups & {"l1bm", "l2bm", "mv"})
 
     def selected(r) -> bool:
         reasons = set(filter(None, r.get("pe1_reason", "").split(";")))

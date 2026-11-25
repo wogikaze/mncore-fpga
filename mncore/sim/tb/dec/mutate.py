@@ -41,7 +41,12 @@ MUTANTS = [
     ("noforward wrong", "j", "assign noforward = (ll == MN_J_LL_NOFORWARD);", "assign noforward = ll[1];"),
     ("err priority: rsv_164 before rsv_162", "j", "        unsup_vec[66] ? 7'd66 :\n        unsup_vec[67] ? 7'd67 :",
      "        unsup_vec[67] ? 7'd67 :\n        unsup_vec[66] ? 7'd66 :"),
-    ("m dmode check without valid", "m", "assign mv_unsup_vec[5] = mv_valid & (", "assign mv_unsup_vec[5] = ("),
+    # WP37: m.yaml has no unsupported values any more (mn_mv decides), and the L2BM bdmode / opcode
+    # checks hold only for lwrite = 1 words; each mutant restores the old (wrong) check
+    ("m dmode 11 flagged (before WP37)", "m", "assign mv_unsup_vec[5] = 1'b0;  // dmode",
+     "assign mv_unsup_vec[5] = mv_valid & (mv_dmode == 2'b11);  // dmode"),
+    ("l2bm_bdmode check ignores lwrite (before WP37)", "j",
+     "exec & (l2bm_lwrite == 1'b1) & (l2bm_bdmode == 2'b11)", "exec & (l2bm_bdmode == 2'b11)"),
     ("m adra off by one", "mvh", "`define MN_M_ADRA(w) w[57:28]", "`define MN_M_ADRA(w) w[58:29]"),
 ]
 

@@ -33,7 +33,7 @@ module mn_top_m2 #(
     parameter LM_AW         = 8,
     parameter GRF_AW        = 8,
     parameter FPALU         = 0,
-    parameter MAU           = 1,
+    parameter MAU           = 0,         // 1 does not fit with the M2 units (WP37: LUT_eq 96 %)
     parameter BFN           = 0,
     parameter MAT           = 0,
     parameter REPLICA       = 0,

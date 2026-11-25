@@ -1,6 +1,8 @@
-// mn_m2_harness: the lint / synth top of the unit m2 (WP37): mn_core in the M2 configuration of
-// the board (N_PE = 4, LM_AW = 8, M2 = 1: the L1BM, L2BM and MV units; FPALU = 0, MAU = 1, BFN = 0)
-// with its ports passed through. mncore/sim/tb/m2/lint_cfg.py lints the other configurations.
+// mn_m2_harness: the lint / synth top of the unit m2 (WP37): mn_core in the minimum M2
+// configuration of the WP37 brief (N_PE = 4, LM_AW = 8, M2 = 1: the L1BM, L2BM and MV units; the
+// integer ALU and the MAU: FPALU = 0, MAU = 1, BFN = 0) with its ports passed through. (The board's
+// bitstream M2a has MAU = 0: with the MAU the board design does not fit, mncore/status/WP-37.md.)
+// mncore/sim/tb/m2/lint_cfg.py lints the other configurations.
 `default_nettype none
 module mn_m2_harness #(
     parameter FPALU   = 0,

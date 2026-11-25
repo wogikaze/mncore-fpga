@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Build the M2 board design mn_top_m2 (WP37) for the Tang Nano 20K, optionally load it.
 
-  python mncore/fpga/top_m2/build.py                  # FPALU=0 MAU=1 BFN=0 MAT=0 REPLICA=0 (default)
+  python mncore/fpga/top_m2/build.py                  # M2a: FPALU=0 MAU=0 BFN=0 MAT=0 REPLICA=0 (default)
+  python mncore/fpga/top_m2/build.py --param MAU=1    # with the MAU: LUT_eq 96 %, does not fit (WP37)
   python mncore/fpga/top_m2/build.py --param REPLICA=1   # the replica rule (WP-3x)
   python mncore/fpga/top_m2/build.py --no-pnr         # synthesis only (resources)
   python mncore/fpga/top_m2/build.py --program        # ... and load it into the FPGA SRAM
@@ -38,7 +39,7 @@ import simrun  # noqa: E402,F401  (also puts OSS CAD Suite on PATH)
 DEVICE = "GW2AR-LV18QN88C8/I7"
 FAMILY = "GW2A-18C"
 TOP = "mn_top_m2"
-DEFAULTS = {"FPALU": "0", "MAU": "1", "BFN": "0", "MAT": "0", "REPLICA": "0"}
+DEFAULTS = {"FPALU": "0", "MAU": "0", "BFN": "0", "MAT": "0", "REPLICA": "0"}   # M2a (WP37)
 
 
 def rtl_files():

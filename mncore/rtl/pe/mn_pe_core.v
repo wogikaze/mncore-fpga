@@ -99,9 +99,10 @@
 //   - x_unsup / x_field: the units' E_UNSUPPORTED (chk_unsup); the word is then not executed,
 //     after the range checks, like the PE's own unsupported words. The decoder's judgment of the
 //     L1BM / L2BM fields (68..90) is not used: the units decide (WP32, WP37).
-//   - the PE -> L1BM operand (l1bm_isel: $lr $ls $t $lm $ln $mauf $aluf) of every cycle of a normal
-//     step is gathered on one more port when lu_src (mn_l1bm use_src) and given on ls_* (the PE is
-//     mn_mab's; the unit writes the L1BM only at commit, after the 4 PEs).
+//   - the PE -> L1BM operand (l1bm_isel: $lr $ls $t $lm $ln $mauf $aluf $lbf) of every cycle of a
+//     normal step is gathered on one more port when lu_src (mn_l1bm use_src) and given on ls_* (the
+//     PE is mn_mab's; the unit writes the L1BM only at commit, after the 4 PEs). isel 111 is $lbf, the
+//     value before the word (WP37, official; the gather reads it from the unit, source 13).
 //   - the L1BM -> PE value of the cycle being collected is fetched on lr_* when the word writes a
 //     destination with isel 10 or updates $lbf (lu_lbf: mn_l1bm lbf_upd), and goes to mn_pe_lsu as
 //     its isel 10 result; with the forwarding update it is written zero-flushed (zero_sel 10) to
@@ -413,8 +414,7 @@ module mn_pe_core #(
         code3 = (s == 3'd5) ? 4'd11 : (s == 3'd6) ? 4'd12 : (s == 3'd7) ? 4'd13 : {1'b0, s};
     endfunction
     wire [5:0] glow = gpend & (~gpend + 6'd1);          // lowest pending port, one-hot
-    // (the L1BM operand selector has the codes of the 3-bit selectors: 5 $mauf, 6 $aluf; 7, none,
-    // is never gathered: lu_src is 0 then)
+    // (the L1BM operand selector has the codes of the 3-bit selectors: 5 $mauf, 6 $aluf, 7 $lbf)
     wire [3:0] gcode = glow[0] ? alu_isela : glow[1] ? code3(alu_iselb) :
                        glow[2] ? code3(mau_isela) : glow[3] ? code3(mau_iselb) :
                        glow[4] ? code3(mau_iselc) : code3(l1_isel);

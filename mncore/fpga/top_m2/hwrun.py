@@ -86,7 +86,7 @@ def corpus_rows(matrix: bool) -> dict:
                     rest.add(x)
             allowed = {"l1bm", "l2bm", "mv"} | ({"matrix"} if matrix else set())
             if (r.get("official") == "ok" and groups and groups <= allowed and rest <= lm_only and
-                    groups & {"l1bm", "l2bm", "mv"}):
+                    groups & {"l1bm", "l2bm", "mv"} and (("matrix" in groups) == matrix)):
                 rows[r["path"]] = r
     return rows
 

@@ -63,7 +63,7 @@ def reads_forwarding(word: int, fp: dict) -> list[str]:
     def f(name):
         pos, w = fp[name]
         return regress.jfield(word, pos, w)
-    if f("ll") & 1 == 0:
+    if (f("ll") & 1) == 0:          # nop / stop: no operands
         return []
     out = []
     aluop = f("pe_aluc_aluop")
