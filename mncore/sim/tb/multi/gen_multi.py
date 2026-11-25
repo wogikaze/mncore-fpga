@@ -246,6 +246,17 @@ def main() -> int:
            "W 7 0 7ff ff 8888888888888888", "Q 7 0 7ff 1 8888888888888888", "G 7 0 800 5"]
     u2 += ["# an MAU word: E_UNSUPPORTED", "C", f"I 0 {hello.entries[1]:0112x}", "X 0 1",
            f"K 2 {FIELD['PE_MAUC_ENFMA']:x}"]
+    # the MV tag counts as mnrun.py restores them: an m word with mmode 111 counts its tag (a wait then
+    # passes), two of them make the wait E_UNSUPPORTED wd, none makes it WAIT
+    sys.path.insert(0, str(HERE.parents[2] / "tools" / "host"))
+    import mnrun  # noqa: E402
+    from mnisa import codec  # noqa: E402
+    def wait(t):
+        return mnhost.imem_entry("j", int(codec.encode({"ll": 0, "wd": t}, "j"), 2))
+    u2 += ["# MV tags: mmode 111 m words count their tag (mnrun.py restores the counts so)", "C",
+           f"I 0 {mnrun.nop_m_word(5):0112x}", f"I 1 {wait(5):0112x}", "X 0 2", "K 0 0", "P 2 2",
+           f"I 0 {mnrun.nop_m_word(6):0112x}", f"I 1 {mnrun.nop_m_word(6):0112x}", f"I 2 {wait(6):0112x}",
+           "X 0 3", f"K 2 {FIELD['WD']:x}", f"I 0 {wait(5):0112x}", "X 0 1", "K 4 5"]
     u2 += ["# hello_world words 4..8 after the PE state of words 0..3 (u0), as mnrun.py hands it over", "C"]
     for (sp, loc, a), v in sorted(state.items()):
         if v:
